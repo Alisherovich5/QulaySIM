@@ -5,10 +5,9 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // react-simple-maps & deps ship CommonJS — pre-bundle them for the dev server.
+  // These deps ship CommonJS — pre-bundle them for the dev server.
   optimizeDeps: {
     include: [
-      'react-simple-maps',
       'prop-types',
       'd3-geo',
       'topojson-client',
