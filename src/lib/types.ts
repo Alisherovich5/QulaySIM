@@ -80,6 +80,59 @@ export interface Faq {
   category: string
 }
 
+// Admin-managed landing content (localized server-side).
+export interface Benefit {
+  id: number
+  icon: string
+  title: string
+  text: string
+}
+
+export interface Testimonial {
+  id: number
+  name: string
+  location: string
+  text: string
+  rating: number
+}
+
+export interface Device {
+  id: number
+  name: string
+}
+
+export interface Promo {
+  eyebrow: string
+  title: string
+  text: string
+  code: string
+  cta_link: string
+}
+
+export interface LandingContent {
+  benefits: Benefit[]
+  testimonials: Testimonial[]
+  devices: Device[]
+  faqs: Faq[]
+  promo: Promo | null
+}
+
+export interface ReferralEntry {
+  referred_email: string
+  status: string
+  reward_code: string
+  created_at: string
+}
+
+export interface ReferralSummary {
+  code: string
+  invited: number
+  completed: number
+  pending: number
+  rewards: string[]
+  entries: ReferralEntry[]
+}
+
 export interface CartItem {
   plan: Plan
   countryName: string

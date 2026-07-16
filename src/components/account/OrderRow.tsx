@@ -2,6 +2,8 @@ import { QrCode, Receipt } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Order } from '../../lib/types'
 import { formatDate, formatPrice } from '../../lib/format'
+import Card from '../ui/Card'
+import IconBadge from '../ui/IconBadge'
 
 const STATUS_STYLE: Record<string, string> = {
   paid: 'bg-accent-500/10 text-accent-600',
@@ -13,10 +15,8 @@ const STATUS_STYLE: Record<string, string> = {
 export default function OrderRow({ order }: { order: Order }) {
   const { t } = useTranslation()
   return (
-    <div className="card flex items-center gap-4 p-4">
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600">
-        <Receipt size={18} />
-      </span>
+    <Card className="flex items-center gap-4 p-4">
+      <IconBadge icon={Receipt} tone="brand" size="md" />
       <div className="min-w-0 flex-1">
         <p className="font-600 text-ink">
           {t('account.orderNo', { id: order.id })}
@@ -34,6 +34,6 @@ export default function OrderRow({ order }: { order: Order }) {
         })}
       </span>
       <p className="w-20 text-right font-700 text-ink">{formatPrice(order.total)}</p>
-    </div>
+    </Card>
   )
 }

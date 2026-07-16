@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   AlertTriangle,
   DollarSign,
+  Gift,
   Globe2,
   Map as MapIcon,
+  MessageSquareText,
   Plus,
   QrCode,
   Receipt,
@@ -17,14 +19,17 @@ import { useAuth } from '../context/AuthContext'
 import type { AccountSummary, ESIM, Order } from '../lib/types'
 import EsimCard from '../components/EsimCard'
 import Reveal from '../components/Reveal'
+import { Button, Card } from '../components/ui'
 import ProfileHeader from '../components/account/ProfileHeader'
 import StatTile from '../components/account/StatTile'
 import PassportCard from '../components/account/PassportCard'
 import OrderRow from '../components/account/OrderRow'
 import SettingsForm from '../components/account/SettingsForm'
 import WorldMap from '../components/account/WorldMap'
+import ReferralPanel from '../components/account/ReferralPanel'
+import ReviewPanel from '../components/account/ReviewPanel'
 
-type Tab = 'map' | 'esims' | 'orders' | 'settings'
+type Tab = 'map' | 'esims' | 'orders' | 'review' | 'referral' | 'settings'
 
 export default function Account() {
   const { logout } = useAuth()
@@ -39,6 +44,7 @@ export default function Account() {
   const [tab, setTab] = useState<Tab>('map')
   const [activating, setActivating] = useState<number | null>(null)
   const [toppingUp, setToppingUp] = useState<number | null>(null)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   const load = () => {
     setLoading(true)
@@ -59,7 +65,9 @@ export default function Account() {
 
   useEffect(load, [])
 
-  const handleLogout = () => {
+  const handleLogout = () => setShowLogoutConfirm(true)
+
+  const confirmLogout = () => {
     logout()
     navigate('/')
   }
@@ -109,9 +117,9 @@ export default function Account() {
           </span>
           <h1 className="mt-4 text-xl font-700">{t('account.errorTitle')}</h1>
           <p className="mt-2 text-slate-soft">{t('account.errorSubtitle')}</p>
-          <button onClick={load} className="btn-primary mx-auto mt-5 w-fit px-6 py-3">
+          <Button onClick={load} className="mx-auto mt-5 w-fit px-6 py-3">
             <RotateCw size={16} /> {t('account.retry')}
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -121,6 +129,8 @@ export default function Account() {
     { key: 'map', label: t('account.tabMap'), icon: MapIcon },
     { key: 'esims', label: t('account.tabEsims'), icon: QrCode },
     { key: 'orders', label: t('account.tabOrders'), icon: Receipt },
+    { key: 'review', label: t('account.tabReview'), icon: MessageSquareText },
+    { key: 'referral', label: t('referral.tab'), icon: Gift },
     { key: 'settings', label: t('account.tabSettings'), icon: SignalHigh },
   ]
 
@@ -154,12 +164,12 @@ export default function Account() {
       </div>
 
       {/* Tabs */}
-      <div className="mt-8 flex gap-1 rounded-xl bg-mist p-1 ring-1 ring-line">
+      <div className="mt-8 flex gap-1 overflow-x-auto rounded-xl bg-mist p-1 ring-1 ring-line">
         {tabs.map((tb) => (
           <button
             key={tb.key}
             onClick={() => setTab(tb.key)}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-600 transition ${
+            className={`flex min-w-max flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-600 transition ${
               tab === tb.key
                 ? 'bg-surface text-brand-600 shadow-sm'
                 : 'text-slate-soft hover:text-ink'
@@ -181,16 +191,16 @@ export default function Account() {
         {tab === 'esims' && (
           <div className="space-y-6">
             {esims.length === 0 ? (
-              <div className="card p-12 text-center">
+              <Card className="p-12 text-center">
                 <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-brand-50 text-brand-500">
                   <QrCode size={26} />
                 </span>
                 <h2 className="mt-4 text-xl font-700">{t('account.emptyTitle')}</h2>
                 <p className="mt-2 text-slate-soft">{t('account.emptySubtitle')}</p>
-                <Link to="/destinations" className="btn-primary mx-auto mt-5 w-fit px-6 py-3">
+                <Button to="/destinations" className="mx-auto mt-5 w-fit px-6 py-3">
                   <Plus size={16} /> {t('account.buyAnother')}
-                </Link>
-              </div>
+                </Button>
+              </Card>
             ) : (
               <div className="grid gap-4 lg:grid-cols-2">
                 {esims.map((e, i) => (
@@ -212,7 +222,7 @@ export default function Account() {
         {tab === 'orders' && (
           <div className="space-y-3">
             {orders.length === 0 ? (
-              <div className="card p-12 text-center text-slate-soft">{t('account.noOrders')}</div>
+              <Card className="p-12 text-center text-slate-soft">{t('account.noOrders')}</Card>
             ) : (
               orders.map((o, i) => (
                 <Reveal key={o.id} delay={i * 40}>
@@ -223,10 +233,28 @@ export default function Account() {
           </div>
         )}
 
+        {tab === 'referral' && <ReferralPanel />}
+
+        {tab === 'review' && <ReviewPanel />}
+
         {tab === 'settings' && (
           <SettingsForm initialName={summary.full_name} onSaved={load} onLogout={handleLogout} />
         )}
       </div>
+
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[120] grid place-items-center bg-slate-950/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="logout-title" onMouseDown={(e) => { if (e.target === e.currentTarget) setShowLogoutConfirm(false) }}>
+          <Card className="w-full max-w-sm p-6 shadow-2xl">
+            <span className="grid h-12 w-12 place-items-center rounded-full bg-red-500/10 text-red-500"><AlertTriangle size={23} /></span>
+            <h2 id="logout-title" className="mt-4 text-xl font-700">{t('account.logoutConfirmTitle')}</h2>
+            <p className="mt-2 text-sm text-slate-soft">{t('account.logoutConfirmText')}</p>
+            <div className="mt-6 flex justify-end gap-3">
+              <Button variant="ghost" onClick={() => setShowLogoutConfirm(false)}>{t('account.logoutCancel')}</Button>
+              <Button onClick={confirmLogout} className="bg-red-500 hover:bg-red-600">{t('account.logoutConfirm')}</Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, UserPlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import ThemeToggle from '../components/ThemeToggle'
+import { Button, Card } from '../components/ui'
 
 export default function Register() {
   const { register, customer } = useAuth()
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const referralCode = searchParams.get('ref') || ''
   const from = (location.state as { from?: string })?.from || '/account'
 
   useEffect(() => {
@@ -33,7 +36,7 @@ export default function Register() {
     }
     setLoading(true)
     try {
-      await register(email, fullName, password)
+      await register(email, fullName, password, referralCode)
       navigate(from, { replace: true })
     } catch (err: unknown) {
       const detail =
@@ -58,9 +61,14 @@ export default function Register() {
             <LanguageSwitcher />
           </div>
         </div>
-        <div className="card mt-6 p-8">
+        <Card className="mt-6 p-8">
           <h1 className="text-2xl font-700">{t('auth.registerTitle')}</h1>
           <p className="mt-1.5 text-sm text-slate-soft">{t('auth.registerSubtitle')}</p>
+          {referralCode && (
+            <p className="mt-3 rounded-lg bg-accent-500/10 px-3 py-2 text-center text-xs font-600 text-accent-600">
+              {t('referral.referredBy', { code: referralCode })}
+            </p>
+          )}
 
           <form onSubmit={submit} className="mt-6 space-y-4">
             <div>
@@ -94,9 +102,9 @@ export default function Register() {
               />
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
-              <UserPlus size={18} /> {loading ? t('auth.creating') : t('auth.create')}
-            </button>
+            <Button type="submit" loading={loading} fullWidth className="py-3">
+              {!loading && <UserPlus size={18} />} {loading ? t('auth.creating') : t('auth.create')}
+            </Button>
           </form>
 
           <p className="mt-5 text-center text-sm text-slate-soft">
@@ -105,7 +113,7 @@ export default function Register() {
               {t('auth.signIn')}
             </Link>
           </p>
-        </div>
+        </Card>
         <Link
           to="/"
           className="mt-5 flex items-center justify-center gap-1.5 text-sm font-600 text-slate-soft transition hover:text-brand-600"

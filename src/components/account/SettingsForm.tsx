@@ -3,6 +3,7 @@ import { Check, KeyRound, LogOut, UserRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
+import { Button, Card } from '../ui'
 
 interface Props {
   initialName: string
@@ -91,21 +92,26 @@ export default function SettingsForm({ initialName, onSaved, onLogout }: Props) 
         </div>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
-        <button type="submit" disabled={saving} className="btn-primary sheen w-full py-3">
+        <Button type="submit" loading={saving} sheen fullWidth className="py-3">
           {ok ? <Check size={18} /> : null}
           {saving ? t('account.saving') : ok ? t('account.saved') : t('account.saveChanges')}
-        </button>
+        </Button>
       </form>
 
-      <div className="card flex flex-col justify-between p-6">
+      <Card className="flex flex-col justify-between p-6">
         <div>
           <h2 className="font-700">{t('account.session')}</h2>
           <p className="mt-2 text-sm text-slate-soft">{t('account.sessionHint')}</p>
         </div>
-        <button onClick={onLogout} className="btn-ghost mt-5 w-full py-3 text-red-500 ring-red-200 hover:ring-red-300">
+        <Button
+          onClick={onLogout}
+          variant="ghost"
+          fullWidth
+          className="mt-5 py-3 text-red-500 ring-red-200 hover:ring-red-300"
+        >
           <LogOut size={16} /> {t('account.logout')}
-        </button>
-      </div>
+        </Button>
+      </Card>
     </div>
   )
 }

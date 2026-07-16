@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import ThemeToggle from '../components/ThemeToggle'
+import { Button, Card } from '../components/ui'
 
 export default function Login() {
   const { login, customer } = useAuth()
@@ -47,7 +48,7 @@ export default function Login() {
             <LanguageSwitcher />
           </div>
         </div>
-        <div className="card mt-6 p-8">
+        <Card className="mt-6 p-8">
           <h1 className="text-2xl font-700">{t('auth.loginTitle')}</h1>
           <p className="mt-1.5 text-sm text-slate-soft">{t('auth.loginSubtitle')}</p>
 
@@ -73,9 +74,9 @@ export default function Login() {
               />
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3">
-              <LogIn size={18} /> {loading ? t('auth.signingIn') : t('auth.signIn')}
-            </button>
+            <Button type="submit" loading={loading} fullWidth className="py-3">
+              {!loading && <LogIn size={18} />} {loading ? t('auth.signingIn') : t('auth.signIn')}
+            </Button>
           </form>
 
           <p className="mt-5 text-center text-sm text-slate-soft">
@@ -87,7 +88,7 @@ export default function Login() {
           <p className="mt-3 rounded-lg bg-mist p-3 text-center text-xs text-slate-soft">
             {t('auth.demoHint')}
           </p>
-        </div>
+        </Card>
         <Link
           to="/"
           className="mt-5 flex items-center justify-center gap-1.5 text-sm font-600 text-slate-soft transition hover:text-brand-600"

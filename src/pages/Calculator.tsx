@@ -17,6 +17,7 @@ import { useCart } from '../context/CartContext'
 import Flag from '../components/Flag'
 import Counter from '../components/Counter'
 import Reveal from '../components/Reveal'
+import { Badge, Button, Card } from '../components/ui'
 
 type Profile = 'light' | 'medium' | 'heavy'
 const PER_DAY_MB: Record<Profile, number> = { light: 512, medium: 1024, heavy: 2560 }
@@ -108,9 +109,9 @@ export default function Calculator() {
         <div className="aurora" />
         <div className="hero-grid" />
         <div className="container-page relative py-14 text-center">
-          <span className="chip mx-auto bg-white/10 text-white ring-1 ring-white/15">
+          <Badge tone="onDark" className="mx-auto">
             <Gauge size={12} className="text-accent-400" /> {t('calc.badge')}
-          </span>
+          </Badge>
           <h1 className="mt-5 font-display text-3xl font-700 text-white sm:text-4xl">
             {t('calc.title')}
           </h1>
@@ -123,7 +124,7 @@ export default function Calculator() {
         <div className="space-y-6">
           {/* 1. destination */}
           <Reveal>
-            <div className="card p-6">
+            <Card className="p-6">
               <div className="flex items-center gap-2">
                 <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand-50 text-sm font-700 text-brand-600">
                   1
@@ -170,12 +171,12 @@ export default function Calculator() {
                   </div>
                 )}
               </div>
-            </div>
+            </Card>
           </Reveal>
 
           {/* 2. duration */}
           <Reveal delay={60}>
-            <div className="card p-6">
+            <Card className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand-50 text-sm font-700 text-brand-600">
@@ -210,12 +211,12 @@ export default function Calculator() {
                   </button>
                 ))}
               </div>
-            </div>
+            </Card>
           </Reveal>
 
           {/* 3. usage profile */}
           <Reveal delay={120}>
-            <div className="card p-6">
+            <Card className="p-6">
               <div className="flex items-center gap-2">
                 <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand-50 text-sm font-700 text-brand-600">
                   3
@@ -245,13 +246,13 @@ export default function Calculator() {
                   </button>
                 ))}
               </div>
-            </div>
+            </Card>
           </Reveal>
         </div>
 
         {/* Result */}
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <div className="card overflow-hidden">
+          <Card className="overflow-hidden">
             <div className="relative overflow-hidden bg-brand-900 px-6 py-7 text-center text-white">
               <div className="aurora" style={{ opacity: 0.6 }} />
               <div className="relative">
@@ -300,10 +301,10 @@ export default function Calculator() {
                     )}
                   </div>
 
-                  <button onClick={handleAdd} className="btn-primary sheen mt-4 w-full py-3">
+                  <Button onClick={handleAdd} sheen fullWidth className="mt-4 py-3">
                     {added ? <Check size={18} /> : null}
                     {added ? t('plan.added') : t('calc.addToCart')}
-                  </button>
+                  </Button>
                   <Link
                     to={`/destinations/${detail.slug}`}
                     className="mt-2 flex items-center justify-center gap-1 py-2 text-sm font-600 text-brand-600 hover:gap-2"
@@ -315,7 +316,7 @@ export default function Calculator() {
                 <p className="py-8 text-center text-sm text-slate-soft">{t('calc.noPlans')}</p>
               )}
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>

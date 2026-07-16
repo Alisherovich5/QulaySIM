@@ -45,9 +45,8 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 text-xs text-slate-soft sm:flex-row">
+        <div className="mt-12 border-t border-line pt-6 text-center text-xs text-slate-soft sm:text-left">
           <p>{t('footer.rights')}</p>
-          <p>{t('footer.builtWith')}</p>
         </div>
       </div>
     </footer>

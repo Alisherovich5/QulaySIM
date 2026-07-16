@@ -2,6 +2,7 @@ import { Stamp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { PassportCountry } from '../../lib/types'
 import Flag from '../Flag'
+import { Badge, Card, IconBadge } from '../ui'
 
 interface Props {
   passport: PassportCountry[]
@@ -14,18 +15,16 @@ export default function PassportCard({ passport }: Props) {
   const { t } = useTranslation()
 
   return (
-    <div className="card overflow-hidden">
+    <Card className="overflow-hidden">
       <div className="flex items-center justify-between border-b border-line px-6 py-4">
         <div className="flex items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand-50 text-brand-600">
-            <Stamp size={18} />
-          </span>
+          <IconBadge icon={Stamp} tone="brand" size="sm" />
           <div>
             <h2 className="font-700 leading-tight">{t('account.passportTitle')}</h2>
             <p className="text-xs text-slate-soft">{t('account.passportSubtitle')}</p>
           </div>
         </div>
-        <span className="chip bg-brand-50 text-brand-600">{passport.length}</span>
+        <Badge tone="muted">{passport.length}</Badge>
       </div>
 
       {passport.length === 0 ? (
@@ -60,6 +59,6 @@ export default function PassportCard({ passport }: Props) {
           ))}
         </div>
       )}
-    </div>
+    </Card>
   )
 }

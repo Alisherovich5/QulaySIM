@@ -15,20 +15,25 @@
   --font-weight-600: 600;
   --font-weight-700: 700;
 
-  --color-brand-50: #eff3ff;
-  --color-brand-100: #dbe3ff;
-  --color-brand-200: #bcc9ff;
-  --color-brand-300: #94a7ff;
-  --color-brand-400: #6c81ff;
-  --color-brand-500: #1b4dff;
-  --color-brand-600: #1740d6;
-  --color-brand-700: #1231a8;
-  --color-brand-800: #0d2580;
-  --color-brand-900: #0a1f5c;
+  --color-brand-50: #e6f5f3;
+  --color-brand-100: #c1e8e2;
+  --color-brand-200: #94d8cd;
+  --color-brand-300: #5cc2b3;
+  --color-brand-400: #1aa28e;
+  --color-brand-500: #008e7c;
+  --color-brand-600: #007365;
+  --color-brand-700: #005a4e;
+  --color-brand-800: #004038;
+  --color-brand-900: #002823;
 
-  --color-accent-400: #2ce0c2;
-  --color-accent-500: #00c9a7;
-  --color-accent-600: #00a98d;
+  --color-accent-400: #34e3b0;
+  --color-accent-500: #10b981;
+  --color-accent-600: #059669;
+
+  /* eSIMCard-style gold — used for stars, ratings and "popular" highlights */
+  --color-gold-400: #f1d98a;
+  --color-gold-500: #d4af37;
+  --color-gold-600: #b8941f;
 
   --color-amber-signal: #ffb020;
 
@@ -49,13 +54,13 @@
    these CSS variables (bg-surface, bg-canvas, text-ink, text-slate-soft,
    ring-line, bg-mist …) flip automatically. */
 .dark {
-  --color-canvas: #0a1020;
-  --color-surface: #111c30;
-  --color-surface-2: #16223a;
-  --color-ink: #e8edf6;
-  --color-slate-soft: #94a0b8;
-  --color-mist: #131f33;
-  --color-line: #25344f;
+  --color-canvas: #06141a;
+  --color-surface: #0d2730;
+  --color-surface-2: #123440;
+  --color-ink: #e7f1f0;
+  --color-slate-soft: #8fb0ab;
+  --color-mist: #0d2730;
+  --color-line: #1d3d47;
 }
 
 @layer base {
@@ -130,9 +135,9 @@
   inset: -40%;
   pointer-events: none;
   background:
-    radial-gradient(38% 38% at 78% 18%, rgba(0, 201, 167, 0.45) 0%, transparent 60%),
-    radial-gradient(42% 42% at 12% 82%, rgba(27, 77, 255, 0.65) 0%, transparent 60%),
-    radial-gradient(36% 36% at 60% 60%, rgba(108, 129, 255, 0.4) 0%, transparent 60%);
+    radial-gradient(38% 38% at 78% 18%, rgba(16, 185, 129, 0.45) 0%, transparent 60%),
+    radial-gradient(42% 42% at 12% 82%, rgba(0, 142, 124, 0.65) 0%, transparent 60%),
+    radial-gradient(36% 36% at 60% 60%, rgba(0, 90, 78, 0.45) 0%, transparent 60%);
   filter: blur(8px);
   animation: aurora-move 18s ease-in-out infinite alternate;
 }
@@ -141,6 +146,35 @@
   50% { transform: translate3d(4%, 3%, 0) rotate(8deg) scale(1.08); }
   100% { transform: translate3d(-2%, 4%, 0) rotate(-6deg) scale(1.04); }
 }
+
+/* Original QulaySIM hero concept motion */
+@keyframes hero-globe-breathe {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.025); }
+}
+@keyframes hero-scan {
+  0% { transform: translateY(12px); opacity: 0; }
+  12%, 88% { opacity: 1; }
+  100% { transform: translateY(174px); opacity: 0; }
+}
+@keyframes hero-scan-six {
+  0% { transform: translateY(10px); opacity: 0; }
+  12%, 88% { opacity: 1; }
+  100% { transform: translateY(132px); opacity: 0; }
+}
+@keyframes hero-ready-pulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(52, 227, 176, 0.18); }
+  50% { box-shadow: 0 8px 34px rgba(52, 227, 176, 0.38); }
+}
+.hero-globe { animation: hero-globe-breathe 5s ease-in-out infinite; }
+.hero-scan-line { animation: hero-scan 2.6s ease-in-out infinite; }
+.group:hover .hero-scan-line { animation-duration: 1.35s; }
+.hero-scan-line-six { animation: hero-scan-six 2.8s ease-in-out infinite; }
+.group:hover .hero-scan-line-six { animation-duration: 1.5s; }
+.hero-status-check { animation: hero-ready-pulse 2s ease-in-out infinite; }
+.hero-ready-pill { animation: hero-ready-pulse 2.4s ease-in-out infinite; }
+.hero-map-point { animation: fs-pulse 2s ease-in-out infinite; }
+.hero-map-point-delay { animation: fs-pulse 2s ease-in-out 0.7s infinite; }
 
 /* Faint moving grid overlay */
 .hero-grid {
@@ -199,7 +233,7 @@
 
 /* Animated gradient text (headlines / accents) */
 .text-gradient {
-  background: linear-gradient(100deg, #6c81ff 0%, #00c9a7 50%, #6c81ff 100%);
+  background: linear-gradient(100deg, #34e3b0 0%, #008e7c 50%, #34e3b0 100%);
   background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -219,7 +253,7 @@
 }
 .lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 40px -18px rgba(27, 77, 255, 0.35);
+  box-shadow: 0 18px 40px -18px rgba(0, 142, 124, 0.35);
 }
 
 /* Logo mark shine sweep */
@@ -241,5 +275,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
-  .aurora, .float, .text-gradient, .pulse-dot, .page-in, .rise { animation: none; }
+  .aurora, .float, .text-gradient, .pulse-dot, .page-in, .rise,
+  .hero-globe, .hero-scan-line, .hero-scan-line-six, .hero-status-check,
+  .hero-ready-pill, .hero-map-point, .hero-map-point-delay { animation: none; }
 }

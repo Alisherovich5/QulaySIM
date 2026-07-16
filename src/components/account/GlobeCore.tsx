@@ -17,8 +17,8 @@ interface Props {
 }
 
 // status colors
-const C_VISITED = '#1B4DFF' // status 2 — user has connected
-const C_AVAILABLE = '#00C9A7' // status 1 — we have plans
+const C_VISITED = '#008e7c' // status 2 — user has connected
+const C_AVAILABLE = '#34e3b0' // status 1 — we have plans
 const C_DISABLED = '#1b2535' // status 3 — not served (disabled)
 
 export default function GlobeCore({
@@ -83,7 +83,7 @@ export default function GlobeCore({
       backgroundColor="rgba(0,0,0,0)"
       showGlobe
       showAtmosphere
-      atmosphereColor="#1B4DFF"
+      atmosphereColor="#008e7c"
       atmosphereAltitude={0.18}
       globeMaterial={globeMaterial}
       polygonsData={features}
@@ -91,19 +91,19 @@ export default function GlobeCore({
         d === hover ? 0.12 : isVisited(d) ? 0.06 : inCatalog(d) ? 0.03 : 0.008
       }
       polygonCapColor={(d: any) => {
-        if (isVisited(d)) return d === hover ? '#4a6bff' : C_VISITED
-        if (inCatalog(d)) return d === hover ? '#2ce0c2' : C_AVAILABLE
+        if (isVisited(d)) return d === hover ? '#34e3b0' : C_VISITED
+        if (inCatalog(d)) return d === hover ? '#7df0d3' : C_AVAILABLE
         return C_DISABLED
       }}
       polygonSideColor={(d: any) =>
-        isVisited(d) ? 'rgba(27,77,255,0.25)' : inCatalog(d) ? 'rgba(0,201,167,0.2)' : 'rgba(20,30,45,0.4)'
+        isVisited(d) ? 'rgba(0,142,124,0.25)' : inCatalog(d) ? 'rgba(52,227,176,0.2)' : 'rgba(20,30,45,0.4)'
       }
       polygonStrokeColor={() => '#0a0f1a'}
       polygonLabel={(d: any) => {
         const tag = isVisited(d)
-          ? '<span style="color:#2CE0C2">✓ visited</span>'
+          ? '<span style="color:#34e3b0">✓ visited</span>'
           : inCatalog(d)
-            ? '<span style="color:#94a7ff">→ view plans</span>'
+            ? '<span style="color:#5cc2b3">→ view plans</span>'
             : '<span style="color:#5b6478">not available</span>'
         return `<div style="background:#0e1525;color:#fff;padding:5px 10px;border-radius:8px;font-size:12px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.45)">${d.properties.name}<div style="font-size:10px;font-weight:500;margin-top:2px">${tag}</div></div>`
       }}
@@ -125,10 +125,10 @@ export default function GlobeCore({
         const el = document.createElement('div')
         el.style.pointerEvents = 'none'
         el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;transform:translateY(-50%)">
-          <div style="background:#fff;border:1.5px solid #1B4DFF;border-radius:3px;padding:1px;box-shadow:0 4px 12px rgba(0,0,0,.4)">
+          <div style="background:#fff;border:1.5px solid #008e7c;border-radius:3px;padding:1px;box-shadow:0 4px 12px rgba(0,0,0,.4)">
             <img src="${flagUrl(d.iso2, 40)}" style="width:22px;height:14px;border-radius:1px;display:block;object-fit:cover"/>
           </div>
-          <div style="width:1.5px;height:8px;background:#1B4DFF"></div>
+          <div style="width:1.5px;height:8px;background:#008e7c"></div>
         </div>`
         return el
       }}

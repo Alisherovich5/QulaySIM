@@ -5,7 +5,7 @@ export default function Logo({ light = false }: { light?: boolean }) {
     <Link to="/" className="group inline-flex items-center gap-2.5">
       <span
         className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl shadow-lg shadow-brand-500/30 ring-1 ring-white/10"
-        style={{ background: 'linear-gradient(135deg, #1B4DFF 0%, #0D2580 60%, #0A1F5C 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #008e7c 0%, #004038 60%, #002823 100%)' }}
       >
         {/* connectivity / signal mark */}
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none">
@@ -21,7 +21,7 @@ export default function Logo({ light = false }: { light?: boolean }) {
             strokeWidth="2"
             strokeLinecap="round"
           />
-          <circle cx="12" cy="17.2" r="1.9" fill="#2CE0C2" />
+          <circle cx="12" cy="17.2" r="1.9" fill="#34e3b0" />
         </svg>
         {/* shine sweep on hover */}
         <span

@@ -12,7 +12,12 @@ interface AuthState {
   customer: Customer | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, fullName: string, password: string) => Promise<void>
+  register: (
+    email: string,
+    fullName: string,
+    password: string,
+    referralCode?: string,
+  ) => Promise<void>
   logout: () => void
   refresh: () => Promise<void>
 }
@@ -54,11 +59,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCustomer(me.data)
   }
 
-  const register = async (email: string, fullName: string, password: string) => {
+  const register = async (
+    email: string,
+    fullName: string,
+    password: string,
+    referralCode?: string,
+  ) => {
     const { data } = await api.post('/auth/register', {
       email,
       full_name: fullName,
       password,
+      referral_code: referralCode || null,
     })
     tokenStore.set(data.access_token)
     const me = await api.get<Customer>('/auth/me')

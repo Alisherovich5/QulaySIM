@@ -2,6 +2,7 @@ import { CalendarClock, CheckCircle2, CircleDot, Plus, Power } from 'lucide-reac
 import { useTranslation } from 'react-i18next'
 import type { ESIM } from '../lib/types'
 import { formatDate, usedLabel } from '../lib/format'
+import { Button, Card } from './ui'
 
 interface Props {
   esim: ESIM
@@ -38,7 +39,7 @@ export default function EsimCard({ esim, onActivate, onTopup, activating, toppin
   const dash = unlimited ? circ : circ * (1 - pct / 100)
 
   return (
-    <div className="card lift overflow-hidden">
+    <Card className="lift overflow-hidden">
       <div className="flex flex-col gap-5 p-5 sm:flex-row">
         <div className="grid shrink-0 place-items-center rounded-xl bg-white p-3 ring-1 ring-line">
           <img src={esim.qr_image} alt="eSIM QR code" className="h-28 w-28" />
@@ -97,26 +98,30 @@ export default function EsimCard({ esim, onActivate, onTopup, activating, toppin
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
             {esim.status === 'pending' && (
-              <button
+              <Button
                 onClick={() => onActivate(esim.id)}
-                disabled={activating}
-                className="btn-primary sheen px-4 py-2 text-sm"
+                loading={activating}
+                sheen
+                className="px-4 py-2 text-sm"
               >
-                <Power size={15} /> {activating ? t('account.activating') : t('account.activate')}
-              </button>
+                {!activating && <Power size={15} />}{' '}
+                {activating ? t('account.activating') : t('account.activate')}
+              </Button>
             )}
             {esim.status === 'active' && !unlimited && onTopup && (
-              <button
+              <Button
                 onClick={() => onTopup(esim.id)}
-                disabled={toppingUp}
-                className="btn-ghost px-4 py-2 text-sm"
+                loading={toppingUp}
+                variant="ghost"
+                className="px-4 py-2 text-sm"
               >
-                <Plus size={15} /> {toppingUp ? t('account.toppingUp') : t('account.topUp')}
-              </button>
+                {!toppingUp && <Plus size={15} />}{' '}
+                {toppingUp ? t('account.toppingUp') : t('account.topUp')}
+              </Button>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   )
 }

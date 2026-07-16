@@ -6,6 +6,7 @@ import { api } from '../lib/api'
 import type { Country, Region } from '../lib/types'
 import CountryCard from '../components/CountryCard'
 import Reveal from '../components/Reveal'
+import { Card } from '../components/ui'
 
 export default function Destinations() {
   const [params, setParams] = useSearchParams()
@@ -93,9 +94,9 @@ export default function Destinations() {
         <>
           <h2 className="mt-10 text-lg font-700">{heading}</h2>
           {countries.length === 0 ? (
-            <div className="card mt-5 p-10 text-center text-slate-soft">
+            <Card className="mt-5 p-10 text-center text-slate-soft">
               {t('destinations.noMatch')}
-            </div>
+            </Card>
           ) : (
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {countries.map((c, i) => (

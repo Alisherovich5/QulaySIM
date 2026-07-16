@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   BadgeCheck,
   CreditCard,
@@ -15,6 +15,7 @@ import { api } from '../lib/api'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import Flag from '../components/Flag'
+import { Button, Card } from '../components/ui'
 import type { Order, Quote } from '../lib/types'
 
 export default function Checkout() {
@@ -97,23 +98,23 @@ export default function Checkout() {
         </div>
         <div className="mx-auto mt-10 grid max-w-2xl gap-4">
           {order.esims.map((e) => (
-            <div key={e.id} className="card flex items-center gap-5 p-5">
+            <Card key={e.id} className="flex items-center gap-5 p-5">
               <img src={e.qr_image} alt="QR" className="h-28 w-28 rounded-lg ring-1 ring-line" />
               <div>
                 <p className="font-600">{e.plan.title}</p>
                 <p className="mt-1 font-mono text-xs text-slate-soft">ICCID {e.iccid}</p>
                 <p className="mt-2 text-sm text-slate-soft">{t('checkout.installHint')}</p>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
         <div className="mt-8 flex justify-center gap-3">
-          <Link to="/account" className="btn-primary px-6 py-3">
+          <Button to="/account" className="px-6 py-3">
             {t('checkout.goToMyEsims')}
-          </Link>
-          <Link to="/destinations" className="btn-ghost px-6 py-3">
+          </Button>
+          <Button to="/destinations" variant="ghost" className="px-6 py-3">
             {t('checkout.keepShopping')}
-          </Link>
+          </Button>
         </div>
       </div>
     )
@@ -129,9 +130,9 @@ export default function Checkout() {
           </span>
           <h1 className="mt-5 text-2xl font-700">{t('checkout.emptyTitle')}</h1>
           <p className="mt-2 text-slate-soft">{t('checkout.emptySubtitle')}</p>
-          <Link to="/destinations" className="btn-primary mx-auto mt-6 w-fit px-6 py-3">
+          <Button to="/destinations" className="mx-auto mt-6 w-fit px-6 py-3">
             {t('common.browseDestinations')}
-          </Link>
+          </Button>
         </div>
       </div>
     )
@@ -187,7 +188,7 @@ export default function Checkout() {
 
         {/* Summary */}
         <div className="space-y-4">
-          <div className="card p-6">
+          <Card className="p-6">
             <h2 className="font-700">{t('checkout.summary')}</h2>
 
             <div className="mt-4">
@@ -202,9 +203,9 @@ export default function Checkout() {
                     className="w-full bg-transparent py-2.5 text-sm outline-none"
                   />
                 </div>
-                <button onClick={applyPromo} className="btn-ghost px-4 py-2 text-sm">
+                <Button onClick={applyPromo} variant="ghost" className="px-4 py-2 text-sm">
                   {t('checkout.apply')}
-                </button>
+                </Button>
               </div>
               {promoError && <p className="mt-1.5 text-xs text-red-500">{promoError}</p>}
               {appliedPromo && (
@@ -233,18 +234,18 @@ export default function Checkout() {
               </div>
             </dl>
 
-            <button onClick={pay} disabled={paying} className="btn-primary sheen mt-5 w-full py-3.5">
-              <CreditCard size={18} />
+            <Button onClick={pay} loading={paying} sheen fullWidth className="mt-5 py-3.5">
+              {!paying && <CreditCard size={18} />}
               {paying
                 ? t('checkout.processing')
                 : customer
                   ? t('checkout.payNow')
                   : t('checkout.signInToPay')}
-            </button>
+            </Button>
             <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-soft">
               <Lock size={12} /> {t('checkout.mockNote')}
             </p>
-          </div>
+          </Card>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { LogOut, MapPin, ShieldCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { AccountSummary } from '../../lib/types'
 import { formatDate } from '../../lib/format'
+import { Button, Card } from '../ui'
 
 interface Props {
   summary: AccountSummary
@@ -18,7 +19,7 @@ export default function ProfileHeader({ summary, onLogout }: Props) {
   const { t } = useTranslation()
 
   return (
-    <div className="card relative overflow-hidden">
+    <Card className="relative overflow-hidden">
       {/* travel-themed gradient banner */}
       <div className="relative h-28 bg-brand-900">
         <div className="aurora" style={{ opacity: 0.7 }} />
@@ -39,9 +40,9 @@ export default function ProfileHeader({ summary, onLogout }: Props) {
             </div>
           </div>
 
-          <button onClick={onLogout} className="btn-ghost px-4 py-2 text-sm">
+          <Button onClick={onLogout} variant="ghost" className="px-4 py-2 text-sm">
             <LogOut size={16} /> {t('account.logout')}
-          </button>
+          </Button>
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-soft">
@@ -55,6 +56,6 @@ export default function ProfileHeader({ summary, onLogout }: Props) {
           </span>
         </div>
       </div>
-    </div>
+    </Card>
   )
 }

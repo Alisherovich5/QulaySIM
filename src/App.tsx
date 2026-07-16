@@ -13,6 +13,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Support from './pages/Support'
 import NotFound from './pages/NotFound'
+import HeroOptions from './pages/HeroOptions'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -35,6 +36,7 @@ export default function App() {
               <Route path="/destinations/:slug" element={<CountryDetail />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/support" element={<Support />} />
+              <Route path="/hero-options" element={<HeroOptions />} />
               <Route
                 path="/account"
                 element={

@@ -7,6 +7,7 @@ import type { CountryDetail as CountryDetailType, Plan } from '../lib/types'
 import PlanCard from '../components/PlanCard'
 import Flag from '../components/Flag'
 import Reveal from '../components/Reveal'
+import { Button } from '../components/ui'
 import { useCart } from '../context/CartContext'
 
 export default function CountryDetail() {
@@ -79,9 +80,9 @@ export default function CountryDetail() {
       </div>
 
       <div className="mt-10 flex justify-center">
-        <Link to="/checkout" className="btn-ghost px-6 py-3">
+        <Button to="/checkout" variant="ghost" className="px-6 py-3">
           <ShoppingBag size={18} /> {t('common.goToCart')}
-        </Link>
+        </Button>
       </div>
     </div>
   )
