@@ -1,7 +1,7 @@
 import { Check, Clock, Signal, Wifi, Zap } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Plan } from '../lib/types'
-import { formatPrice } from '../lib/format'
+import { useCurrency } from '../context/CurrencyContext'
 import { Badge, Button, Card } from './ui'
 
 interface Props {
@@ -12,8 +12,9 @@ interface Props {
 
 export default function PlanCard({ plan, onAdd, added }: Props) {
   const { t } = useTranslation()
+  const { formatPrice } = useCurrency()
   return (
-    <Card hover className={`relative flex flex-col p-6 ${plan.is_popular ? 'ring-2 ring-gold-500' : ''}`}>
+    <Card hover className={`relative flex flex-col p-5 sm:p-6 ${plan.is_popular ? 'ring-2 ring-gold-500' : ''}`}>
       {plan.is_popular && (
         <Badge tone="gold" className="absolute -top-3 left-6 shadow-sm">
           <Zap size={12} /> {t('plan.mostPopular')}
@@ -46,7 +47,7 @@ export default function PlanCard({ plan, onAdd, added }: Props) {
         </li>
       </ul>
 
-      <div className="mt-6 flex items-end justify-between border-t border-line pt-5">
+      <div className="mt-6 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="font-display text-2xl font-700 text-ink">{formatPrice(plan.price_usd)}</p>
           <p className="text-xs text-slate-soft">{t('plan.oneTime')}</p>
@@ -55,7 +56,7 @@ export default function PlanCard({ plan, onAdd, added }: Props) {
           onClick={() => onAdd(plan)}
           variant={added ? 'accent' : 'primary'}
           sheen={!added}
-          className="px-4 py-2.5 text-sm"
+          className="w-full px-4 py-2.5 text-sm sm:w-auto"
         >
           {added ? (
             <>

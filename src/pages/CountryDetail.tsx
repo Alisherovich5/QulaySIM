@@ -48,7 +48,7 @@ export default function CountryDetail() {
   }
 
   return (
-    <div className="container-page py-12">
+    <div className="container-page py-8 sm:py-12">
       <Link
         to="/destinations"
         className="inline-flex items-center gap-1.5 text-sm font-600 text-slate-soft hover:text-brand-600"
@@ -56,16 +56,16 @@ export default function CountryDetail() {
         <ArrowLeft size={16} /> {t('country.backToAll')}
       </Link>
 
-      <div className="mt-6 flex items-center gap-5">
+      <div className="mt-6 flex items-center gap-3 sm:gap-5">
         <Flag
           iso2={country.iso2}
           w={160}
           alt={`${country.name} flag`}
-          className="h-16 w-24 rounded-lg object-cover ring-1 ring-line"
+          className="h-14 w-20 rounded-lg object-cover ring-1 ring-line sm:h-16 sm:w-24"
         />
         <div>
-          <h1 className="text-3xl font-700">{country.name}</h1>
-          <p className="mt-1 text-slate-soft">
+          <h1 className="text-2xl font-700 sm:text-3xl">{country.name}</h1>
+          <p className="mt-1 text-sm leading-5 text-slate-soft sm:text-base">
             {country.region?.name} · {t('country.plansAvailable', { count: country.plans.length })}
           </p>
         </div>

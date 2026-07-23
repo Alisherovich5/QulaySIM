@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
-  BadgeCheck,
   CreditCard,
   Lock,
   Minus,
@@ -13,23 +11,20 @@ import {
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { useCart } from '../context/CartContext'
-import { useAuth } from '../context/AuthContext'
+import { useCurrency } from '../context/CurrencyContext'
 import Flag from '../components/Flag'
 import { Button, Card } from '../components/ui'
-import type { Order, Quote } from '../lib/types'
+import type { Quote } from '../lib/types'
 
 export default function Checkout() {
-  const { items, setQuantity, remove, clear, subtotal } = useCart()
-  const { customer } = useAuth()
-  const navigate = useNavigate()
+  const { items, setQuantity, remove, subtotal } = useCart()
   const { t } = useTranslation()
+  const { formatPrice } = useCurrency()
 
   const [promo, setPromo] = useState('')
   const [appliedPromo, setAppliedPromo] = useState<string | null>(null)
   const [quote, setQuote] = useState<Quote | null>(null)
   const [promoError, setPromoError] = useState<string | null>(null)
-  const [paying, setPaying] = useState(false)
-  const [order, setOrder] = useState<Order | null>(null)
 
   const payload = () => ({
     items: items.map((i) => ({ plan_id: i.plan.id, quantity: i.quantity })),
@@ -66,60 +61,6 @@ export default function Checkout() {
     }
   }
 
-  const pay = async () => {
-    if (!customer) {
-      navigate('/login', { state: { from: '/checkout' } })
-      return
-    }
-    setPaying(true)
-    try {
-      const { data } = await api.post<Order>('/checkout', payload())
-      setOrder(data)
-      clear()
-    } catch {
-      setPromoError(t('checkout.payFailed'))
-    } finally {
-      setPaying(false)
-    }
-  }
-
-  // Success screen
-  if (order) {
-    return (
-      <div className="container-page py-16">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-accent-500/10 text-accent-600">
-            <BadgeCheck size={34} />
-          </span>
-          <h1 className="mt-5 text-3xl font-700">{t('checkout.successTitle')}</h1>
-          <p className="mt-2 text-slate-soft">
-            {t('checkout.successSubtitle', { id: order.id, count: order.esims.length })}
-          </p>
-        </div>
-        <div className="mx-auto mt-10 grid max-w-2xl gap-4">
-          {order.esims.map((e) => (
-            <Card key={e.id} className="flex items-center gap-5 p-5">
-              <img src={e.qr_image} alt="QR" className="h-28 w-28 rounded-lg ring-1 ring-line" />
-              <div>
-                <p className="font-600">{e.plan.title}</p>
-                <p className="mt-1 font-mono text-xs text-slate-soft">ICCID {e.iccid}</p>
-                <p className="mt-2 text-sm text-slate-soft">{t('checkout.installHint')}</p>
-              </div>
-            </Card>
-          ))}
-        </div>
-        <div className="mt-8 flex justify-center gap-3">
-          <Button to="/account" className="px-6 py-3">
-            {t('checkout.goToMyEsims')}
-          </Button>
-          <Button to="/destinations" variant="ghost" className="px-6 py-3">
-            {t('checkout.keepShopping')}
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
   // Empty cart
   if (items.length === 0) {
     return (
@@ -139,25 +80,26 @@ export default function Checkout() {
   }
 
   return (
-    <div className="container-page py-12">
-      <h1 className="text-3xl font-700">{t('checkout.title')}</h1>
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
+    <div className="container-page py-8 sm:py-12">
+      <h1 className="text-2xl font-700 sm:text-3xl">{t('checkout.title')}</h1>
+      <div className="mt-6 grid gap-6 sm:mt-8 sm:gap-8 lg:grid-cols-[1fr_380px]">
         {/* Items */}
         <div className="space-y-4">
           {items.map((item) => (
-            <div key={item.plan.id} className="card flex items-center gap-4 p-4">
+            <div key={item.plan.id} className="card grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-4 sm:flex sm:gap-4">
               <Flag
                 iso2={item.iso2}
                 alt={item.countryName}
                 className="h-10 w-14 shrink-0 rounded-md object-cover ring-1 ring-line"
               />
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0">
                 <p className="truncate font-600">{item.plan.title}</p>
                 <p className="text-sm text-slate-soft">
                   {item.countryName} · {item.plan.network_type} · {item.plan.validity_days} days
                 </p>
               </div>
-              <div className="flex items-center gap-1 rounded-lg ring-1 ring-line">
+              <div className="col-span-3 flex items-center justify-between gap-3 border-t border-line pt-3 sm:ml-auto sm:border-0 sm:pt-0">
+                <div className="flex items-center gap-1 rounded-lg ring-1 ring-line">
                 <button
                   onClick={() => setQuantity(item.plan.id, item.quantity - 1)}
                   className="grid h-8 w-8 place-items-center text-slate-soft hover:text-brand-600"
@@ -171,13 +113,14 @@ export default function Checkout() {
                 >
                   <Plus size={14} />
                 </button>
+                </div>
+                <p className="text-right text-sm font-700 sm:text-base">
+                  {formatPrice(item.plan.price_usd * item.quantity)}
+                </p>
               </div>
-              <p className="w-16 text-right font-700">
-                ${(item.plan.price_usd * item.quantity).toFixed(2)}
-              </p>
               <button
                 onClick={() => remove(item.plan.id)}
-                className="grid h-8 w-8 place-items-center text-slate-soft hover:text-red-500"
+                className="col-start-3 row-start-1 grid h-8 w-8 place-items-center text-slate-soft hover:text-red-500 sm:order-last"
                 aria-label="Remove"
               >
                 <Trash2 size={16} />
@@ -188,7 +131,7 @@ export default function Checkout() {
 
         {/* Summary */}
         <div className="space-y-4">
-          <Card className="p-6">
+          <Card className="p-5 sm:p-6">
             <h2 className="font-700">{t('checkout.summary')}</h2>
 
             <div className="mt-4">
@@ -218,32 +161,28 @@ export default function Checkout() {
             <dl className="mt-5 space-y-2.5 border-t border-line pt-5 text-sm">
               <div className="flex justify-between">
                 <dt className="text-slate-soft">{t('checkout.subtotal')}</dt>
-                <dd className="font-600">${(quote?.subtotal ?? subtotal).toFixed(2)}</dd>
+                <dd className="font-600">{formatPrice(quote?.subtotal ?? subtotal)}</dd>
               </div>
               {quote && quote.discount > 0 && (
                 <div className="flex justify-between text-accent-600">
                   <dt>{t('checkout.discount')}</dt>
-                  <dd className="font-600">−${quote.discount.toFixed(2)}</dd>
+                  <dd className="font-600">−{formatPrice(quote.discount)}</dd>
                 </div>
               )}
               <div className="flex justify-between border-t border-line pt-3 text-base">
                 <dt className="font-700">{t('checkout.total')}</dt>
                 <dd className="font-display text-xl font-700">
-                  ${(quote?.total ?? subtotal).toFixed(2)}
+                  {formatPrice(quote?.total ?? subtotal)}
                 </dd>
               </div>
             </dl>
 
-            <Button onClick={pay} loading={paying} sheen fullWidth className="mt-5 py-3.5">
-              {!paying && <CreditCard size={18} />}
-              {paying
-                ? t('checkout.processing')
-                : customer
-                  ? t('checkout.payNow')
-                  : t('checkout.signInToPay')}
+            <Button disabled fullWidth className="mt-5 py-3.5">
+              <CreditCard size={18} />
+              {t('checkout.paymentSetup')}
             </Button>
             <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-soft">
-              <Lock size={12} /> {t('checkout.mockNote')}
+              <Lock size={12} /> {t('checkout.paymentSetupNote')}
             </p>
           </Card>
         </div>

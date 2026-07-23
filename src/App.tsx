@@ -4,6 +4,7 @@ import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
+import { CurrencyProvider } from './context/CurrencyContext'
 import Home from './pages/Home'
 import Destinations from './pages/Destinations'
 import CountryDetail from './pages/CountryDetail'
@@ -26,10 +27,11 @@ function ScrollToTop() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <ScrollToTop />
-          <Routes>
+      <CurrencyProvider>
+        <AuthProvider>
+          <CartProvider>
+            <ScrollToTop />
+            <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
               <Route path="/destinations" element={<Destinations />} />
@@ -49,9 +51,10 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </CartProvider>
-      </AuthProvider>
+            </Routes>
+          </CartProvider>
+        </AuthProvider>
+      </CurrencyProvider>
     </BrowserRouter>
   )
 }

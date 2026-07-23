@@ -12,8 +12,9 @@ import {
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import type { Country, CountryDetail, Plan } from '../lib/types'
-import { dataLabel, formatPrice } from '../lib/format'
+import { dataLabel } from '../lib/format'
 import { useCart } from '../context/CartContext'
+import { useCurrency } from '../context/CurrencyContext'
 import Flag from '../components/Flag'
 import Counter from '../components/Counter'
 import Reveal from '../components/Reveal'
@@ -42,6 +43,7 @@ function recommend(plans: Plan[], neededMB: number, days: number) {
 export default function Calculator() {
   const { t } = useTranslation()
   const { add } = useCart()
+  const { formatPrice } = useCurrency()
   const [countries, setCountries] = useState<Country[]>([])
   const [slug, setSlug] = useState<string>('')
   const [detail, setDetail] = useState<CountryDetail | null>(null)

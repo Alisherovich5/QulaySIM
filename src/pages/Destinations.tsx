@@ -45,9 +45,9 @@ export default function Destinations() {
   }, [search, region, regions, t])
 
   return (
-    <div className="container-page py-12">
-      <h1 className="text-3xl font-700">{t('destinations.title')}</h1>
-      <p className="mt-2 text-slate-soft">{t('destinations.subtitle')}</p>
+    <div className="container-page py-8 sm:py-12">
+      <h1 className="text-2xl font-700 sm:text-3xl">{t('destinations.title')}</h1>
+      <p className="mt-2 leading-6 text-slate-soft">{t('destinations.subtitle')}</p>
 
       <div className="mt-7 flex items-center gap-2 rounded-2xl bg-surface p-2 ring-1 ring-line">
         <div className="flex flex-1 items-center gap-2 pl-3">
@@ -61,13 +61,13 @@ export default function Destinations() {
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        <span className="flex items-center gap-1.5 pr-1 text-sm font-600 text-slate-soft">
+      <div className="-mx-5 mt-5 flex items-center gap-2 overflow-x-auto px-5 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 sm:pb-0">
+        <span className="flex shrink-0 items-center gap-1.5 pr-1 text-sm font-600 text-slate-soft">
           <SlidersHorizontal size={15} /> {t('destinations.region')}
         </span>
         <button
           onClick={() => updateParam('region', '')}
-          className={`chip ring-1 transition ${
+          className={`chip shrink-0 ring-1 transition ${
             !region ? 'bg-brand-500 text-white ring-brand-500' : 'bg-surface text-slate-soft ring-line hover:ring-brand-300'
           }`}
         >
@@ -77,7 +77,7 @@ export default function Destinations() {
           <button
             key={r.id}
             onClick={() => updateParam('region', r.slug)}
-            className={`chip ring-1 transition ${
+            className={`chip shrink-0 ring-1 transition ${
               region === r.slug
                 ? 'bg-brand-500 text-white ring-brand-500'
                 : 'bg-surface text-slate-soft ring-line hover:ring-brand-300'

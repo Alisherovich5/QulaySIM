@@ -10,7 +10,7 @@ function getInitial(): 'light' | 'dark' {
   return 'light'
 }
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ embedded = false }: { embedded?: boolean }) {
   const [theme, setTheme] = useState<'light' | 'dark'>(getInitial)
 
   useEffect(() => {
@@ -25,7 +25,9 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="grid h-10 w-10 place-items-center rounded-xl text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300"
+      className={`grid place-items-center rounded-xl text-slate-soft transition hover:bg-surface hover:text-brand-600 ${
+        embedded ? 'h-9 w-9' : 'h-10 w-10 ring-1 ring-line hover:ring-brand-300'
+      }`}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Light mode' : 'Dark mode'}
     >

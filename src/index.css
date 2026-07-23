@@ -69,6 +69,7 @@
   }
   body {
     @apply bg-canvas text-ink font-sans antialiased;
+    overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   h1, h2, h3, h4 {
@@ -167,6 +168,14 @@
   50% { box-shadow: 0 8px 34px rgba(52, 227, 176, 0.38); }
 }
 .hero-globe { animation: hero-globe-breathe 5s ease-in-out infinite; }
+.hero-background-globe {
+  filter: saturate(0.9) contrast(1.05);
+  animation: fs-float 9s ease-in-out infinite;
+}
+.hero-mobile-background-globe {
+  filter: saturate(1.05) contrast(1.18);
+  animation: fs-float 8s ease-in-out infinite;
+}
 .hero-scan-line { animation: hero-scan 2.6s ease-in-out infinite; }
 .group:hover .hero-scan-line { animation-duration: 1.35s; }
 .hero-scan-line-six { animation: hero-scan-six 2.8s ease-in-out infinite; }

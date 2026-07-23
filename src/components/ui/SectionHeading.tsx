@@ -20,8 +20,8 @@ export default function SectionHeading({
   if (align === 'center') {
     return (
       <div className={`text-center ${className}`}>
-        <h2 className="text-2xl font-700 sm:text-3xl">{title}</h2>
-        {subtitle && <p className="mx-auto mt-2 max-w-lg text-slate-soft">{subtitle}</p>}
+        <h2 className="text-balance text-2xl font-700 sm:text-3xl">{title}</h2>
+        {subtitle && <p className="mx-auto mt-2 max-w-lg break-words leading-6 text-slate-soft">{subtitle}</p>}
       </div>
     )
   }
@@ -29,8 +29,8 @@ export default function SectionHeading({
   return (
     <div className={`flex items-end justify-between ${className}`}>
       <div>
-        <h2 className="text-2xl font-700 sm:text-3xl">{title}</h2>
-        {subtitle && <p className="mt-2 text-slate-soft">{subtitle}</p>}
+        <h2 className="text-balance text-2xl font-700 sm:text-3xl">{title}</h2>
+        {subtitle && <p className="mt-2 break-words leading-6 text-slate-soft">{subtitle}</p>}
       </div>
       {action}
     </div>

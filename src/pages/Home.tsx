@@ -1,5 +1,4 @@
 import HeroSection from '../components/home/HeroSection'
-import PromoBanner from '../components/home/PromoBanner'
 import DestinationsExplorer from '../components/home/DestinationsExplorer'
 import HowItWorks from '../components/home/HowItWorks'
 import Compatibility from '../components/home/Compatibility'
@@ -20,13 +19,12 @@ export default function Home() {
   return (
     <div>
       <HeroSection />
-      <PromoBanner promo={content?.promo ?? undefined} />
-      <DestinationsExplorer />
+      <div className="border-t border-line/70"><DestinationsExplorer /></div>
       <HowItWorks />
       <Compatibility devices={content?.devices.map((d) => d.name)} />
-      <Benefits items={content?.benefits} />
-      <Testimonials items={content?.testimonials} />
-      <HomeFaq faqs={content?.faqs} />
+      <div className="border-t border-line/70"><Benefits items={content?.benefits} /></div>
+      <div className="border-t border-line/70"><Testimonials items={content?.testimonials} /></div>
+      <div className="border-t border-line/70"><HomeFaq faqs={content?.faqs} /></div>
       <FinalCta />
     </div>
   )

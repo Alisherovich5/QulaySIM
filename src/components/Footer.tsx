@@ -2,12 +2,14 @@ import { Link } from 'react-router-dom'
 import { Globe2, Shield, Headphones } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Logo from './Logo'
+import CurrencySwitcher from './CurrencySwitcher'
+import PaymentMethodBadges from './PaymentMethodBadges'
 
 export default function Footer() {
   const { t } = useTranslation()
 
   return (
-    <footer className="mt-24 border-t border-line bg-surface">
+    <footer className="mt-24 border-t border-line bg-surface pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-0">
       <div className="container-page py-14">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-1">
@@ -45,8 +47,16 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-12 border-t border-line pt-6 text-center text-xs text-slate-soft sm:text-left">
-          <p>{t('footer.rights')}</p>
+        <div className="mt-12 flex flex-col gap-5 border-t border-line pt-6 text-center text-xs text-slate-soft sm:flex-row sm:items-end sm:justify-between sm:text-left">
+          <div>
+            <p>{t('footer.rights')}</p>
+            <p className="mt-1">{t('footer.paymentNote')}</p>
+          </div>
+          <div className="flex flex-col items-center gap-2 sm:items-end">
+            <p className="font-600 text-ink">{t('footer.paymentMethods')}</p>
+            <PaymentMethodBadges />
+            <CurrencySwitcher />
+          </div>
         </div>
       </div>
     </footer>

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { LANGUAGES } from '../i18n'
 import { flagUrl, flagSrcSet } from '../lib/format'
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ embedded = false }: { embedded?: boolean }) {
   const { i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -24,7 +24,9 @@ export default function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="inline-flex h-10 items-center gap-1.5 rounded-xl px-2.5 text-sm font-600 text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300"
+        className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 text-sm font-600 text-slate-soft transition hover:bg-surface hover:text-brand-600 ${
+          embedded ? 'h-9' : 'h-10 ring-1 ring-line hover:ring-brand-300'
+        }`}
         aria-label="Language"
       >
         <img

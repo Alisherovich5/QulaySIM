@@ -1,7 +1,8 @@
 import { QrCode, Receipt } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Order } from '../../lib/types'
-import { formatDate, formatPrice } from '../../lib/format'
+import { formatDate } from '../../lib/format'
+import { useCurrency } from '../../context/CurrencyContext'
 import Card from '../ui/Card'
 import IconBadge from '../ui/IconBadge'
 
@@ -14,8 +15,9 @@ const STATUS_STYLE: Record<string, string> = {
 
 export default function OrderRow({ order }: { order: Order }) {
   const { t } = useTranslation()
+  const { formatPrice } = useCurrency()
   return (
-    <Card className="flex items-center gap-4 p-4">
+    <Card className="flex flex-wrap items-center gap-3 p-4 sm:flex-nowrap sm:gap-4">
       <IconBadge icon={Receipt} tone="brand" size="md" />
       <div className="min-w-0 flex-1">
         <p className="font-600 text-ink">
@@ -28,12 +30,12 @@ export default function OrderRow({ order }: { order: Order }) {
           </span>
         </p>
       </div>
-      <span className={`chip ${STATUS_STYLE[order.status] || STATUS_STYLE.pending}`}>
+      <span className={`chip ml-auto ${STATUS_STYLE[order.status] || STATUS_STYLE.pending}`}>
         {t(`account.status${order.status.charAt(0).toUpperCase()}${order.status.slice(1)}`, {
           defaultValue: order.status,
         })}
       </span>
-      <p className="w-20 text-right font-700 text-ink">{formatPrice(order.total)}</p>
+      <p className="basis-full text-right font-700 text-ink sm:ml-2 sm:basis-auto">{formatPrice(order.total)}</p>
     </Card>
   )
 }

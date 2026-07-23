@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import type { Country, Region } from '../../lib/types'
 import CountryCard from '../CountryCard'
+import Flag from '../Flag'
 import Reveal from '../Reveal'
 import { Button, SectionHeading, ToggleChip } from '../ui'
 
@@ -26,6 +28,10 @@ export default function DestinationsExplorer() {
       .sort((a, b) => Number(b.is_popular) - Number(a.is_popular) || a.name.localeCompare(b.name))
       .slice(0, 8)
   }, [countries, region])
+  const mobileSuggestions = useMemo(() => {
+    const popular = shown.filter((country) => country.is_popular)
+    return (popular.length ? popular : shown).slice(0, 6)
+  }, [shown])
 
   return (
     <section className="container-page py-16">
@@ -45,16 +51,34 @@ export default function DestinationsExplorer() {
       {shown.length === 0 ? (
         <p className="mt-10 text-center text-slate-soft">{t('home.exploreEmpty')}</p>
       ) : (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {shown.map((c, i) => (
-            <Reveal key={c.id} delay={i * 40}>
-              <CountryCard country={c} />
-            </Reveal>
-          ))}
-        </div>
+        <>
+          <div className="mt-7 sm:hidden">
+            <p className="mb-3 text-sm font-700 text-ink">{t('home.popularTitle')}</p>
+            <div className="-mx-5 flex snap-x gap-3 overflow-x-auto px-5 pb-2 [scrollbar-width:none]">
+              {mobileSuggestions.map((country) => (
+                <Link
+                  key={country.id}
+                  to={`/destinations/${country.slug}`}
+                  className="flex min-w-40 snap-start items-center gap-2.5 rounded-2xl bg-surface px-3 py-3 shadow-sm ring-1 ring-line transition active:scale-[0.98]"
+                >
+                  <Flag iso2={country.iso2} alt="" className="h-6 w-9 rounded object-cover ring-1 ring-line" />
+                  <span className="min-w-0 flex-1 truncate text-sm font-700 text-ink">{country.name}</span>
+                  <ChevronRight size={16} className="shrink-0 text-brand-600" />
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="mt-8 hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+            {shown.map((c, i) => (
+              <Reveal key={c.id} delay={i * 40}>
+                <CountryCard country={c} />
+              </Reveal>
+            ))}
+          </div>
+        </>
       )}
 
-      <div className="mt-10 flex justify-center">
+      <div className="mt-8 flex justify-center sm:mt-10">
         <Button to="/destinations" variant="ghost" className="px-6 py-3">
           {t('home.exploreMore')} <ArrowRight size={18} />
         </Button>

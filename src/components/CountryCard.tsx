@@ -2,15 +2,16 @@ import { Link } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Country } from '../lib/types'
-import { formatPrice } from '../lib/format'
+import { useCurrency } from '../context/CurrencyContext'
 import Flag from './Flag'
 
 export default function CountryCard({ country }: { country: Country }) {
   const { t } = useTranslation()
+  const { formatPrice } = useCurrency()
   return (
     <Link
       to={`/destinations/${country.slug}`}
-      className="card group flex items-center gap-4 p-4 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-500/5 hover:ring-brand-200"
+      className="card group flex items-center gap-4 p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-500/8 hover:ring-brand-200"
     >
       <Flag
         iso2={country.iso2}
