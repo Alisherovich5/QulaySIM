@@ -15,6 +15,7 @@ const uz: Translation = {
   mobileNav: {
     home: 'Bosh sahifa',
     tariffs: 'Tariflar',
+    support: 'Yordam',
     profile: 'Profil',
   },
   common: {
@@ -317,6 +318,16 @@ const uz: Translation = {
       '2018-yildan keyingi aksariyat telefonlar eSIM‘ni qo‘llab-quvvatlaydi. Qurilmangiz operatorga bog‘lanmagan bo‘lishi kerak.',
     liveChat: '24/7 jonli chat',
     liveChatText: 'Yordam jamoamiz istalgan vaqtda, bir necha tilda xizmatingizda.',
+    messageTitle: 'Yordamga yozing',
+    messageText: 'Xabaringiz bevosita yordam jamoamizning Telegram botiga yuboriladi.',
+    name: 'Ismingiz',
+    email: 'Email manzilingiz',
+    phone: 'Telefon raqamingiz',
+    phoneError: 'Raqamni +998 XX XXX XX XX formatida kiriting.',
+    message: 'Xabaringiz',
+    send: 'Xabarni yuborish',
+    sent: 'Xabaringiz yuborildi. Tez orada javob beramiz.',
+    sendError: 'Xabar yuborilmadi. Iltimos, birozdan keyin yana urinib ko‘ring.',
     faqs: [
       {
         q: 'eSIM nima?',

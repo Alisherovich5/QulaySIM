@@ -79,9 +79,9 @@ export default function Benefits({ items }: { items?: BenefitItem[] }) {
   return (
     <section className="container-page relative z-0 py-16">
       <SectionHeading align="center" title={t('home.benefitsTitle')} subtitle={t('home.benefitsSubtitle')} />
-      <div className="mt-10 space-y-5">
+      <div className="mobile-scroll-gutter mt-10 flex snap-x gap-4 md:mx-0 md:block md:space-y-5 md:overflow-visible md:px-0 md:py-0">
         {benefits.map((b, i) => (
-          <Reveal key={b.title}>
+          <Reveal key={b.title} className="min-w-[290px] snap-start md:min-w-0">
             <BenefitRow icon={b.icon} title={b.title} text={b.text} reverse={i % 2 === 1} index={i} />
           </Reveal>
         ))}

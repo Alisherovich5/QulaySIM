@@ -1,4 +1,4 @@
-import { Globe2, House, UserRound } from 'lucide-react'
+import { Globe2, House, LifeBuoy, UserRound } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
@@ -10,18 +10,19 @@ export default function MobileNav() {
   const items = [
     { to: '/', label: t('mobileNav.home'), icon: House, end: true },
     { to: '/destinations', label: t('mobileNav.tariffs'), icon: Globe2, end: false },
+    { to: '/support', label: t('mobileNav.support'), icon: LifeBuoy, end: false },
     { to: customer ? '/account' : '/login', label: t('mobileNav.profile'), icon: UserRound, end: false },
   ]
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-[70] border-t border-line bg-surface/95 shadow-[0_-10px_28px_rgba(0,40,35,0.10)] backdrop-blur-xl md:hidden" aria-label="Mobile navigation">
-      <div className="container-page grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-3 pb-[env(safe-area-inset-bottom)]">
+      <div className="container-page grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-4 max-[359px]:px-3 pb-[env(safe-area-inset-bottom)]">
         {items.map((item) => (
           <NavLink
             key={item.label}
             to={item.to}
             end={item.end}
-            className={({ isActive }) => `relative flex flex-col items-center justify-center gap-1 text-[11px] font-700 transition ${
+            className={({ isActive }) => `relative flex min-w-0 flex-col items-center justify-center gap-1 text-[11px] font-700 transition max-[359px]:gap-0.5 max-[359px]:text-[10px] ${
               isActive ? 'text-brand-600' : 'text-slate-soft'
             }`}
           >
@@ -29,7 +30,7 @@ export default function MobileNav() {
               <>
                 {isActive && <span className="absolute top-0 h-0.5 w-9 rounded-full bg-brand-500" />}
                 <item.icon size={20} strokeWidth={isActive ? 2.4 : 2} />
-                <span>{item.label}</span>
+                <span className="max-w-full truncate">{item.label}</span>
               </>
             )}
           </NavLink>

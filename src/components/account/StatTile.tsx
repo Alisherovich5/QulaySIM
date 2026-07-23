@@ -23,9 +23,9 @@ export default function StatTile({
   tone = 'brand',
 }: Props) {
   return (
-    <Card className="lift p-5">
+    <Card className="lift p-4 sm:p-5">
       <IconBadge icon={icon} tone={tone} size="md" />
-      <p className="mt-4 font-display text-2xl font-700 text-ink">
+      <p className="mt-3 font-display text-xl font-700 text-ink sm:mt-4 sm:text-2xl">
         <Counter to={value} prefix={prefix} suffix={suffix} decimals={decimals} />
       </p>
       <p className="mt-0.5 text-sm text-slate-soft">{label}</p>

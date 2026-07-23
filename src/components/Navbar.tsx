@@ -21,9 +21,9 @@ export default function Navbar() {
     }`
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md md:sticky">
       <PromoStrip />
-      <div className="container-page flex h-14 items-center justify-between sm:h-16">
+      <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
         <Logo />
         <nav className="hidden items-center gap-7 xl:flex">
           <NavLink to="/destinations" className={linkClass}>
@@ -80,18 +80,22 @@ export default function Navbar() {
             )}
           </div>
         </div>
-        <Link
-          to="/checkout"
-          className="relative grid h-10 w-10 place-items-center rounded-xl text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300 md:hidden"
-          aria-label="Cart"
-        >
-          <ShoppingBag size={18} />
-          {count > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-accent-500 px-1 text-[11px] font-700 text-white">
-              {count}
-            </span>
-          )}
-        </Link>
+        <div className="flex items-center gap-1 max-[359px]:gap-0.5 md:hidden">
+          <ThemeToggle />
+          <LanguageSwitcher compact />
+          <Link
+            to="/checkout"
+            className="relative grid h-10 w-10 place-items-center rounded-xl text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300"
+            aria-label="Cart"
+          >
+            <ShoppingBag size={18} />
+            {count > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-accent-500 px-1 text-[11px] font-700 text-white">
+                {count}
+              </span>
+            )}
+          </Link>
+        </div>
       </div>
     </header>
   )

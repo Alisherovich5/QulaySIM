@@ -81,6 +81,22 @@
 @utility container-page {
   @apply mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8;
 }
+/* Horizontal rails reserve vertical room for card shadows and touch feedback.
+   `overflow-x: auto` otherwise clips the top edge of lifted cards on mobile. */
+@utility mobile-scroll-gutter {
+  margin-inline: -1.25rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding: 0.5rem 1.25rem 1rem;
+  scroll-padding-inline: 1.25rem;
+  scrollbar-width: none;
+}
+.mobile-scroll-gutter::-webkit-scrollbar {
+  display: none;
+}
+.account-tab-rail::-webkit-scrollbar {
+  display: none;
+}
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-xl font-600 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
 }
@@ -108,6 +124,10 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes fs-sheet-in {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .rise {
   animation: fs-rise 0.45s ease both;
 }
@@ -118,16 +138,7 @@
 
 /* Scroll reveal (paired with the <Reveal> component) */
 .reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
-}
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 /* Animated aurora background for the hero */
@@ -286,5 +297,6 @@
   .reveal { opacity: 1; transform: none; transition: none; }
   .aurora, .float, .text-gradient, .pulse-dot, .page-in, .rise,
   .hero-globe, .hero-scan-line, .hero-scan-line-six, .hero-status-check,
-  .hero-ready-pill, .hero-map-point, .hero-map-point-delay { animation: none; }
+  .hero-ready-pill, .hero-map-point, .hero-map-point-delay,
+  .hero-background-globe, .hero-mobile-background-globe { animation: none; }
 }

@@ -111,19 +111,19 @@ export default function WorldMap({ passport }: Props) {
     <div className="card overflow-hidden">
       <button
         onClick={() => setOpen(true)}
-        className="group flex w-full items-center justify-between border-b border-line px-6 py-4 text-left transition hover:bg-mist"
+        className="group flex w-full items-center justify-between gap-3 border-b border-line px-4 py-4 text-left transition hover:bg-mist sm:px-6"
       >
-        <div className="flex items-center gap-2.5">
+        <div className="flex min-w-0 items-center gap-2.5">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand-50 text-brand-600">
             <Globe2 size={18} />
           </span>
-          <div>
-            <h2 className="font-700 leading-tight">{t('account.mapTitle')}</h2>
-            <p className="text-xs text-slate-soft">{t('account.globeOpenHint')}</p>
+          <div className="min-w-0">
+            <h2 className="truncate font-700 leading-tight">{t('account.mapTitle')}</h2>
+            <p className="truncate text-xs text-slate-soft">{t('account.globeOpenHint')}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="chip bg-brand-500 text-white shadow-sm shadow-brand-500/30">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <span className="hidden min-[380px]:inline-flex chip bg-brand-500 text-white shadow-sm shadow-brand-500/30">
             {t('account.countriesConnected', { count: visited.size })}
           </span>
           <span className="grid h-9 w-9 place-items-center rounded-lg text-slate-soft ring-1 ring-line transition group-hover:text-brand-600 group-hover:ring-brand-300">
@@ -166,7 +166,7 @@ export default function WorldMap({ passport }: Props) {
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-6 py-3 text-xs text-slate-soft">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3 text-xs text-slate-soft sm:px-6">
         <div className="flex flex-wrap items-center gap-4">{legend}</div>
         <span className="text-slate-soft/80">{t('account.mapHint')}</span>
       </div>

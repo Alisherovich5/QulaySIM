@@ -135,13 +135,13 @@ export default function Account() {
   ]
 
   return (
-    <div className="container-page py-10">
+    <div className="container-page py-6 sm:py-10">
       <Reveal>
         <ProfileHeader summary={summary} onLogout={handleLogout} />
       </Reveal>
 
       {/* Stat tiles */}
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-6 sm:gap-4 lg:grid-cols-4">
         <Reveal delay={0}>
           <StatTile icon={SignalHigh} value={summary.active_esims} label={t('account.statActive')} tone="accent" />
         </Reveal>
@@ -164,23 +164,24 @@ export default function Account() {
       </div>
 
       {/* Tabs */}
-      <div className="mt-8 flex gap-1 overflow-x-auto rounded-xl bg-mist p-1 ring-1 ring-line">
+      <div className="account-tab-rail mt-3 -mx-5 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-5 pb-4 pt-4 [scrollbar-width:none] md:mt-7 md:mx-0 md:rounded-xl md:bg-mist md:p-1 md:ring-1 md:ring-line">
         {tabs.map((tb) => (
           <button
             key={tb.key}
             onClick={() => setTab(tb.key)}
-            className={`flex min-w-max flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-600 transition ${
+            aria-pressed={tab === tb.key}
+            className={`flex min-w-[112px] snap-start items-center justify-center gap-2 rounded-xl px-3 py-3 text-xs font-700 transition md:min-w-0 md:flex-1 md:rounded-lg md:text-sm md:font-600 ${
               tab === tb.key
-                ? 'bg-surface text-brand-600 shadow-sm'
-                : 'text-slate-soft hover:text-ink'
+                ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20 md:bg-surface md:text-brand-600 md:shadow-sm'
+                : 'bg-surface text-slate-soft ring-1 ring-line hover:text-ink md:bg-transparent md:ring-0'
             }`}
           >
-            <tb.icon size={16} /> {tb.label}
+            <tb.icon size={16} className="shrink-0" /> <span className="min-w-0 truncate">{tb.label}</span>
           </button>
         ))}
       </div>
 
-      <div className="mt-6">
+      <div className="mt-5 sm:mt-6">
         {tab === 'map' && (
           <div className="space-y-6">
             <WorldMap passport={summary.passport} />
@@ -243,14 +244,32 @@ export default function Account() {
       </div>
 
       {showLogoutConfirm && (
-        <div className="fixed inset-0 z-[120] grid place-items-center bg-slate-950/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="logout-title" onMouseDown={(e) => { if (e.target === e.currentTarget) setShowLogoutConfirm(false) }}>
-          <Card className="w-full max-w-sm p-6 shadow-2xl">
-            <span className="grid h-12 w-12 place-items-center rounded-full bg-red-500/10 text-red-500"><AlertTriangle size={23} /></span>
-            <h2 id="logout-title" className="mt-4 text-xl font-700">{t('account.logoutConfirmTitle')}</h2>
-            <p className="mt-2 text-sm text-slate-soft">{t('account.logoutConfirmText')}</p>
-            <div className="mt-6 flex justify-end gap-3">
-              <Button variant="ghost" onClick={() => setShowLogoutConfirm(false)}>{t('account.logoutCancel')}</Button>
-              <Button onClick={confirmLogout} className="bg-red-500 hover:bg-red-600">{t('account.logoutConfirm')}</Button>
+        <div
+          className="fixed inset-0 z-[120] flex items-end bg-slate-950/60 backdrop-blur-sm sm:grid sm:place-items-center sm:p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="logout-title"
+          aria-describedby="logout-description"
+          onMouseDown={(event) => { if (event.target === event.currentTarget) setShowLogoutConfirm(false) }}
+        >
+          <Card className="logout-sheet motion-safe:animate-[fs-sheet-in_280ms_cubic-bezier(0.22,1,0.36,1)_both] w-full rounded-b-none rounded-t-[1.75rem] border-x-0 border-b-0 p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-2xl sm:max-w-sm sm:rounded-3xl sm:border sm:p-6">
+            <span aria-hidden className="mx-auto mb-5 block h-1.5 w-11 rounded-full bg-line sm:hidden" />
+            <div className="flex items-start gap-3 sm:block">
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-red-500/10 text-red-500 ring-1 ring-red-500/15 sm:h-14 sm:w-14">
+                <AlertTriangle size={24} />
+              </span>
+              <div>
+                <h2 id="logout-title" className="text-xl font-700 sm:mt-4">{t('account.logoutConfirmTitle')}</h2>
+                <p id="logout-description" className="mt-1.5 text-sm leading-6 text-slate-soft sm:mt-2">{t('account.logoutConfirmText')}</p>
+              </div>
+            </div>
+            <div className="mt-6 grid gap-3 sm:flex sm:flex-row-reverse sm:justify-end">
+              <Button onClick={confirmLogout} className="min-h-12 w-full bg-red-500 px-5 hover:bg-red-600 sm:w-auto">
+                {t('account.logoutConfirm')}
+              </Button>
+              <Button variant="ghost" onClick={() => setShowLogoutConfirm(false)} className="min-h-12 w-full px-5 sm:w-auto">
+                {t('account.logoutCancel')}
+              </Button>
             </div>
           </Card>
         </div>

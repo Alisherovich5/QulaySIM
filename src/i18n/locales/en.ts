@@ -13,6 +13,7 @@ const en = {
   mobileNav: {
     home: 'Home',
     tariffs: 'Plans',
+    support: 'Support',
     profile: 'Profile',
   },
   common: {
@@ -315,6 +316,16 @@ const en = {
       'Most phones since 2018 support eSIM. Your device must be carrier-unlocked.',
     liveChat: '24/7 live chat',
     liveChatText: 'Our support team is available any time, in multiple languages.',
+    messageTitle: 'Send us a message',
+    messageText: 'Your message is sent directly to our support team through Telegram.',
+    name: 'Your name',
+    email: 'Email address',
+    phone: 'Phone number',
+    phoneError: 'Enter your number in the +998 XX XXX XX XX format.',
+    message: 'Your message',
+    send: 'Send message',
+    sent: 'Your message has been sent. We will reply shortly.',
+    sendError: 'Your message could not be sent. Please try again shortly.',
     faqs: [
       {
         q: 'What is an eSIM?',

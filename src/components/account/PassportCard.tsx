@@ -15,16 +15,16 @@ export default function PassportCard({ passport }: Props) {
   const { t } = useTranslation()
 
   return (
-    <Card className="overflow-hidden">
-      <div className="flex items-center justify-between border-b border-line px-6 py-4">
-        <div className="flex items-center gap-2.5">
+    <Card className="overflow-visible">
+      <div className="flex items-center justify-between gap-3 overflow-hidden rounded-t-2xl border-b border-line px-4 py-4 sm:px-6">
+        <div className="flex min-w-0 items-center gap-2.5">
           <IconBadge icon={Stamp} tone="brand" size="sm" />
-          <div>
-            <h2 className="font-700 leading-tight">{t('account.passportTitle')}</h2>
-            <p className="text-xs text-slate-soft">{t('account.passportSubtitle')}</p>
+          <div className="min-w-0">
+            <h2 className="truncate font-700 leading-tight">{t('account.passportTitle')}</h2>
+            <p className="truncate text-xs text-slate-soft">{t('account.passportSubtitle')}</p>
           </div>
         </div>
-        <Badge tone="muted">{passport.length}</Badge>
+        <Badge tone="muted" className="shrink-0">{passport.length}</Badge>
       </div>
 
       {passport.length === 0 ? (
@@ -33,7 +33,7 @@ export default function PassportCard({ passport }: Props) {
         </p>
       ) : (
         <div
-          className="grid grid-cols-2 gap-4 p-6 sm:grid-cols-3 lg:grid-cols-4"
+          className="grid grid-cols-2 gap-4 rounded-b-2xl px-6 py-7 sm:grid-cols-3 sm:p-6 lg:grid-cols-4"
           style={{
             backgroundImage:
               'radial-gradient(var(--color-line) 1px, transparent 1px)',

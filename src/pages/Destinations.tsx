@@ -61,7 +61,7 @@ export default function Destinations() {
         </div>
       </div>
 
-      <div className="-mx-5 mt-5 flex items-center gap-2 overflow-x-auto px-5 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 sm:pb-0">
+      <div className="mobile-scroll-gutter mt-5 flex items-center gap-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:py-0">
         <span className="flex shrink-0 items-center gap-1.5 pr-1 text-sm font-600 text-slate-soft">
           <SlidersHorizontal size={15} /> {t('destinations.region')}
         </span>

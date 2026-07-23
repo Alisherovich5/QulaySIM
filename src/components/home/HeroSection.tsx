@@ -15,22 +15,34 @@ function supportsWebGL() {
   }
 }
 
+function getHeroGlobeState() {
+  if (typeof window === 'undefined') return { isDesktop: false, interactive: false }
+
+  return {
+    isDesktop: window.matchMedia('(min-width: 1024px)').matches,
+    interactive: supportsWebGL() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  }
+}
+
 function useHeroGlobe() {
-  const [isDesktop, setIsDesktop] = useState(false)
-  const [interactive, setInteractive] = useState(false)
+  // Derive the initial value synchronously on the client so desktop users do
+  // not briefly see an empty second column before the first effect runs.
+  const [globeState, setGlobeState] = useState(getHeroGlobeState)
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 1024px)')
     const update = () => {
-      setIsDesktop(media.matches)
-      setInteractive(supportsWebGL() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      setGlobeState({
+        isDesktop: media.matches,
+        interactive: supportsWebGL() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      })
     }
     update()
     media.addEventListener('change', update)
     return () => media.removeEventListener('change', update)
   }, [])
 
-  return { isDesktop, interactive }
+  return globeState
 }
 
 function GlobeFallback({ size }: { size: number }) {
@@ -95,7 +107,7 @@ export default function HeroSection() {
       />
       {/* On phones the globe stays behind the copy; desktop keeps its dedicated visual card. */}
       {!isDesktop && (
-        <div aria-hidden className="pointer-events-none absolute right-4 top-10 opacity-[0.25] sm:right-10 sm:top-8 sm:opacity-[0.28] lg:hidden dark:opacity-[0.32]">
+        <div aria-hidden className="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 opacity-[0.25] sm:top-8 sm:opacity-[0.28] lg:hidden dark:opacity-[0.32]">
           <div className="hero-mobile-background-globe">
             <HeroGlobeVisual interactive={showInteractiveGlobe} size={250} />
           </div>

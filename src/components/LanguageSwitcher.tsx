@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { LANGUAGES } from '../i18n'
 import { flagUrl, flagSrcSet } from '../lib/format'
 
-export default function LanguageSwitcher({ embedded = false }: { embedded?: boolean }) {
+export default function LanguageSwitcher({ embedded = false, compact = false }: { embedded?: boolean; compact?: boolean }) {
   const { i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -25,7 +25,7 @@ export default function LanguageSwitcher({ embedded = false }: { embedded?: bool
       <button
         onClick={() => setOpen((o) => !o)}
         className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 text-sm font-600 text-slate-soft transition hover:bg-surface hover:text-brand-600 ${
-          embedded ? 'h-9' : 'h-10 ring-1 ring-line hover:ring-brand-300'
+          compact ? 'h-10 w-10 justify-center p-0 ring-1 ring-line hover:ring-brand-300' : embedded ? 'h-9' : 'h-10 ring-1 ring-line hover:ring-brand-300'
         }`}
         aria-label="Language"
       >
@@ -35,8 +35,8 @@ export default function LanguageSwitcher({ embedded = false }: { embedded?: bool
           alt=""
           className="h-4 w-6 rounded-[3px] object-cover ring-1 ring-line"
         />
-        {current.short}
-        <ChevronDown size={14} className={`transition ${open ? 'rotate-180' : ''}`} />
+        {!compact && current.short}
+        {!compact && <ChevronDown size={14} className={`transition ${open ? 'rotate-180' : ''}`} />}
       </button>
       {open && (
         <div className="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl bg-surface p-1 shadow-xl shadow-brand-900/10 ring-1 ring-line">

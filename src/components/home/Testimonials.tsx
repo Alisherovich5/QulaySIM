@@ -37,9 +37,9 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
         <strong className="text-ink">{averageRating}/5</strong>
         <span>{t('home.testimonialsRating')}</span>
       </div>
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
+      <div className="mobile-scroll-gutter mt-10 flex snap-x gap-4 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:py-0">
         {reviews.map((r, i) => (
-          <Reveal key={`${r.name}-${i}`} delay={i * 70}>
+          <Reveal key={`${r.name}-${i}`} delay={i * 70} className="min-w-[286px] snap-start md:min-w-0">
             <Testimonial name={r.name} location={r.location} text={r.text} rating={r.rating} />
           </Reveal>
         ))}
