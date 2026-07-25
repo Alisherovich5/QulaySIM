@@ -85,16 +85,24 @@ export default function Support() {
             <p className="mt-1 text-sm text-slate-soft">{t('support.checkCompatText')}</p>
           </div>
         </Card>
-        <Card hover className="flex items-start gap-3 p-5">
+        <a
+          href="https://t.me/qulaysim_support"
+          target="_blank"
+          rel="noreferrer"
+          className="rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+        >
+          <Card hover className="h-full flex items-start gap-3 p-5">
           <IconBadge icon={MessageCircle} tone="brand" size="sm" />
           <div>
-            <h3 className="font-700">{t('support.liveChat')}</h3>
-            <p className="mt-1 text-sm text-slate-soft">{t('support.liveChatText')}</p>
+            <h3 className="font-700">{t('support.contactAdmin')}</h3>
+            <p className="mt-1 text-sm text-slate-soft">{t('support.contactAdminText')}</p>
+            <p className="mt-2 text-sm font-700 text-brand-600">{t('support.adminUsername')}</p>
           </div>
-        </Card>
+          </Card>
+        </a>
       </div>
 
-      <Card className="order-1 mx-auto mt-6 max-w-2xl p-5 sm:p-7 md:order-3">
+      <Card className="order-1 mx-auto mt-6 hidden max-w-2xl p-5 sm:p-7 md:order-3">
         <div className="flex items-start gap-3">
           <IconBadge icon={Send} tone="brand" size="sm" />
           <div>

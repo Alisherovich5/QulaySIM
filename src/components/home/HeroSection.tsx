@@ -1,8 +1,8 @@
 import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, Globe2, MapPin, Search, ShieldCheck, Sparkles, Zap } from 'lucide-react'
+import { ArrowRight, Globe2, MapPin, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Badge, Button } from '../ui'
+import { Button } from '../ui'
 
 const HeroGlobe = lazy(() => import('./HeroGlobe'))
 
@@ -117,11 +117,8 @@ export default function HeroSection() {
       <div className="container-page relative z-10 grid items-center gap-10 py-10 sm:py-14 lg:min-h-[590px] lg:grid-cols-2 lg:gap-12 lg:py-24">
         {/* Left — copy + search */}
         <div className="max-w-2xl">
-          <Badge tone="muted" className="rise">
-            <Sparkles size={13} /> {t('home.heroEyebrow')}
-          </Badge>
           <h1
-            className="mt-5 max-w-full text-balance break-words font-display text-[2rem] font-700 leading-[1.12] text-ink sm:max-w-2xl sm:text-5xl lg:text-6xl rise"
+            className="max-w-full text-balance break-words font-display text-[2rem] font-700 leading-[1.12] text-ink sm:max-w-2xl sm:text-5xl lg:text-6xl rise"
             style={{ animationDelay: '80ms' }}
           >
             {t('home.title1')} <span className="text-gradient">{t('home.title2')}</span>
@@ -157,21 +154,6 @@ export default function HeroSection() {
               {t('home.findPlans')} <ArrowRight size={18} />
             </Button>
           </form>
-
-          <div
-            className="mt-5 grid grid-cols-1 gap-x-5 gap-y-2 text-sm text-slate-soft sm:flex sm:flex-wrap sm:items-center rise"
-            style={{ animationDelay: '320ms' }}
-          >
-            <span className="flex items-center gap-1.5">
-              <Zap size={15} className="text-accent-500" /> {t('home.instantDelivery')}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck size={15} className="text-accent-500" /> {t('home.secureCheckout')}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Globe2 size={15} className="text-accent-500" /> {t('home.coverage')}
-            </span>
-          </div>
         </div>
 
         {/* Desktop keeps the original separate globe panel, preserving the text layout. */}

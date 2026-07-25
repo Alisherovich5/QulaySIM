@@ -40,7 +40,7 @@ const VISUALS = [
 
 function BenefitRow({ icon: Icon, title, text, reverse, index }: BenefitView & { reverse: boolean; index: number }) {
   return (
-    <div className={`group grid items-center gap-7 rounded-3xl border border-line bg-surface p-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:p-6 lg:grid-cols-[0.82fr_1.18fr] ${reverse ? 'lg:[&>*:first-child]:order-2 lg:grid-cols-[1.18fr_0.82fr]' : ''}`}>
+    <div className={`group grid h-full items-center gap-7 rounded-3xl border border-line bg-surface p-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:p-6 lg:grid-cols-[0.82fr_1.18fr] ${reverse ? 'lg:[&>*:first-child]:order-2 lg:grid-cols-[1.18fr_0.82fr]' : ''}`}>
       <div className={`relative grid h-48 place-items-center overflow-hidden rounded-[1.35rem] bg-gradient-to-br ${VISUALS[index % VISUALS.length]} bg-surface-2 ring-1 ring-line`}>
         <div aria-hidden className="absolute inset-0 opacity-40 [background-image:radial-gradient(circle_at_center,var(--color-line)_1px,transparent_1px)] [background-size:18px_18px]" />
         <div
@@ -81,7 +81,7 @@ export default function Benefits({ items }: { items?: BenefitItem[] }) {
       <SectionHeading align="center" title={t('home.benefitsTitle')} subtitle={t('home.benefitsSubtitle')} />
       <div className="mobile-scroll-gutter mt-10 flex snap-x gap-4 md:mx-0 md:block md:space-y-5 md:overflow-visible md:px-0 md:py-0">
         {benefits.map((b, i) => (
-          <Reveal key={b.title} className="min-w-[290px] snap-start md:min-w-0">
+          <Reveal key={b.title} className="w-[290px] shrink-0 snap-start self-stretch md:w-auto md:min-w-0 md:self-auto">
             <BenefitRow icon={b.icon} title={b.title} text={b.text} reverse={i % 2 === 1} index={i} />
           </Reveal>
         ))}

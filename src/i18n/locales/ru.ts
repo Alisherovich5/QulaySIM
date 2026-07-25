@@ -318,6 +318,9 @@ const ru: Translation = {
       'Большинство телефонов с 2018 года поддерживают eSIM. Устройство должно быть разблокировано.',
     liveChat: 'Чат 24/7',
     liveChatText: 'Наша поддержка доступна в любое время на нескольких языках.',
+    contactAdmin: 'Связаться с администратором',
+    contactAdminText: 'Напишите администратору напрямую в Telegram.',
+    adminUsername: '@qulaysim_support',
     messageTitle: 'Напишите нам',
     messageText: 'Сообщение будет отправлено команде поддержки через Telegram.',
     name: 'Ваше имя',
@@ -353,6 +356,7 @@ const ru: Translation = {
   },
   footer: {
     tagline: 'Удобные тарифы eSIM для путешествий. Выберите тариф, получите QR-код и подключайтесь.',
+    contacts: 'Контакты',
     product: 'Продукт',
     company: 'Компания',
     howItWorks: 'Как это работает',

@@ -21,7 +21,7 @@ export default function Navbar() {
     }`
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md md:sticky">
+    <header className="sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md">
       <PromoStrip />
       <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
         <Logo />

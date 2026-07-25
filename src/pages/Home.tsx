@@ -2,10 +2,8 @@ import HeroSection from '../components/home/HeroSection'
 import DestinationsExplorer from '../components/home/DestinationsExplorer'
 import HowItWorks from '../components/home/HowItWorks'
 import Compatibility from '../components/home/Compatibility'
-import Benefits from '../components/home/Benefits'
 import Testimonials from '../components/home/Testimonials'
 import HomeFaq from '../components/home/HomeFaq'
-import FinalCta from '../components/home/FinalCta'
 import { useLandingContent } from '../lib/useLandingContent'
 
 /**
@@ -21,11 +19,9 @@ export default function Home() {
       <HeroSection />
       <div className="border-t border-line/70"><DestinationsExplorer /></div>
       <HowItWorks />
-      <Compatibility devices={content?.devices.map((d) => d.name)} />
-      <div className="border-t border-line/70"><Benefits items={content?.benefits} /></div>
+      <Compatibility />
       <div className="border-t border-line/70"><Testimonials items={content?.testimonials} /></div>
       <div className="border-t border-line/70"><HomeFaq faqs={content?.faqs} /></div>
-      <FinalCta />
     </div>
   )
 }

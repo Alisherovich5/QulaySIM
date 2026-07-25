@@ -7,7 +7,7 @@ import { Button } from '../ui'
 export default function FinalCta() {
   const { t } = useTranslation()
   return (
-    <section className="container-page py-16">
+    <section className="container-page hidden py-16 md:block">
       <Reveal>
         <div className="relative overflow-hidden rounded-3xl bg-brand-900 px-8 py-14 text-center">
           <div className="aurora" style={{ opacity: 0.7 }} />

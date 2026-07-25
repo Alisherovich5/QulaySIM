@@ -13,15 +13,15 @@ export default function HowItWorks() {
   ]
 
   return (
-    <section id="how" className="border-y border-line bg-surface py-16">
+    <section id="how" className="border-y border-line bg-surface py-10 sm:py-16">
       <div className="container-page">
         <Reveal>
-          <SectionHeading align="center" title={t('home.howTitle')} subtitle={t('home.howSubtitle')} />
+          <SectionHeading align="center" title={t('home.howTitle')} />
         </Reveal>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-6 grid gap-3 sm:mt-10 sm:gap-6 md:grid-cols-3">
           {steps.map((s, i) => (
             <Reveal key={s.title} delay={i * 90}>
-              <FeatureCard icon={s.icon} title={s.title} text={s.text} layout="stacked" />
+              <FeatureCard icon={s.icon} title={s.title} text={s.text} layout="stacked" compact />
             </Reveal>
           ))}
         </div>

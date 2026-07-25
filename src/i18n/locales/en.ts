@@ -316,6 +316,9 @@ const en = {
       'Most phones since 2018 support eSIM. Your device must be carrier-unlocked.',
     liveChat: '24/7 live chat',
     liveChatText: 'Our support team is available any time, in multiple languages.',
+    contactAdmin: 'Contact an admin',
+    contactAdminText: 'Message our admin directly on Telegram.',
+    adminUsername: '@qulaysim_support',
     messageTitle: 'Send us a message',
     messageText: 'Your message is sent directly to our support team through Telegram.',
     name: 'Your name',
@@ -351,6 +354,7 @@ const en = {
   },
   footer: {
     tagline: 'Convenient eSIM data plans for travel. Choose a plan, receive your QR code, and connect.',
+    contacts: 'Contacts',
     product: 'Product',
     company: 'Company',
     howItWorks: 'How it works',

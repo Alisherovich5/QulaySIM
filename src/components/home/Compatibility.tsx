@@ -3,38 +3,14 @@ import { CheckCircle2, CircleX, Search, Smartphone } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { deviceLabel, ESIM_DEVICES, normalizeDeviceSearch, type EsimDevice } from '../../data/esimDevices'
 import Reveal from '../Reveal'
-import { Button, Card } from '../ui'
+import { Button } from '../ui'
 
-// Default device names (proper nouns) used when the CMS list is empty.
-const DEFAULT_DEVICES = [
-  'iPhone XS / 11 / 12 / 13 / 14 / 15',
-  'Google Pixel 3 and newer',
-  'Samsung Galaxy S20 / S21 / S22 / S23',
-  'Samsung Galaxy Z Flip / Fold',
-  'iPad Pro / Air (2018+)',
-  'Huawei P40 / Mate 40 Pro',
-]
-
-function deviceBrand(name: string) {
-  const value = name.toLowerCase()
-  if (value.includes('iphone') || value.includes('ipad')) return 'Apple'
-  if (value.includes('galaxy') || value.includes('samsung')) return 'Samsung'
-  if (value.includes('pixel') || value.includes('google')) return 'Google'
-  if (value.includes('huawei')) return 'Huawei'
-  return 'Other'
-}
-
-/** "Is your phone eSIM compatible?" — copy + admin-managed device list. */
-export default function Compatibility({ devices }: { devices?: string[] }) {
+/** "Is your phone eSIM compatible?" — searchable local device catalogue. */
+export default function Compatibility() {
   const { t } = useTranslation()
-  const list = devices && devices.length > 0 ? devices : DEFAULT_DEVICES
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<EsimDevice | null>(null)
   const [open, setOpen] = useState(false)
-  const [brand, setBrand] = useState('All')
-  const brands = useMemo(() => ['All', ...Array.from(new Set(list.map(deviceBrand)))], [list])
-  const activeBrand = brands.includes(brand) ? brand : 'All'
-  const visibleDevices = activeBrand === 'All' ? list : list.filter((device) => deviceBrand(device) === activeBrand)
   const suggestions = useMemo(() => {
     const search = normalizeDeviceSearch(query)
     if (!search) return ESIM_DEVICES.slice(0, 8)
@@ -58,17 +34,15 @@ export default function Compatibility({ devices }: { devices?: string[] }) {
     setOpen(false)
   }
   return (
-    <section className="container-page relative z-30 py-16">
-      <div className="relative overflow-visible rounded-[2rem] bg-gradient-to-br from-brand-950 via-brand-900 to-brand-800 px-5 py-8 shadow-xl sm:px-8 sm:py-10 lg:px-12">
-        <div className="pointer-events-none absolute right-0 top-0 h-64 w-64 rounded-full bg-accent-400/10 blur-3xl" />
-        <div className="relative grid items-stretch gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
+    <section className="border-y border-line bg-surface py-12 sm:py-16">
+      <div className="container-page relative z-30">
         <Reveal>
-          <div className="flex h-full flex-col">
-            <div className="inline-flex rounded-2xl bg-white/10 p-3 text-white"><Smartphone size={24} /></div>
-            <h2 className="mt-5 text-2xl font-700 text-white sm:text-3xl">{t('home.compatTitle')}</h2>
-            <p className="mt-3 max-w-md leading-6 text-white/80">{t('home.compatText')}</p>
-            <div className="relative mt-7 max-w-md">
-              <label htmlFor="device-search" className="mb-2 block text-[15px] font-600 text-white">
+          <div className="relative mx-auto flex max-w-3xl flex-col overflow-visible">
+            <div className="relative inline-flex w-fit rounded-2xl bg-brand-50 p-3 text-brand-600 ring-1 ring-line dark:bg-surface-2 dark:text-brand-300"><Smartphone size={24} /></div>
+            <h2 className="relative mt-5 text-2xl font-700 text-ink sm:text-3xl">{t('home.compatTitle')}</h2>
+            <p className="relative mt-2 max-w-md text-sm leading-6 text-slate-soft sm:text-base">{t('home.compatText')}</p>
+            <div className="relative mt-6 max-w-xl">
+              <label htmlFor="device-search" className="mb-2 block text-[15px] font-600 text-ink">
                 {t('home.compatInputLabel')}
               </label>
               <div className="relative">
@@ -87,7 +61,7 @@ export default function Compatibility({ devices }: { devices?: string[] }) {
                   role="combobox"
                   aria-expanded={open && !exactMatch}
                   aria-controls="device-suggestions"
-                  className="w-full rounded-2xl border border-white/20 bg-white py-4 pl-11 pr-11 text-[15px] text-slate-900 shadow-lg outline-none transition placeholder:text-slate-400 focus:border-accent-400 focus:ring-4 focus:ring-accent-400/20 dark:border-line dark:bg-surface dark:text-ink dark:placeholder:text-slate-soft"
+                  className="w-full rounded-2xl border border-line bg-surface py-4 pl-11 pr-11 text-[15px] text-ink outline-none transition placeholder:text-slate-soft/70 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15"
                 />
                 {activeDevice && (
                   activeDevice.compatible
@@ -97,7 +71,7 @@ export default function Compatibility({ devices }: { devices?: string[] }) {
               </div>
 
               {open && query.trim() && !exactMatch && (
-                <div id="device-suggestions" role="listbox" className="absolute z-30 mt-2 max-h-72 w-full overflow-auto rounded-2xl border border-slate-100 bg-white p-2 text-slate-900 shadow-2xl dark:border-line dark:bg-surface dark:text-ink">
+                <div id="device-suggestions" role="listbox" className="absolute z-30 mt-2 max-h-72 w-full overflow-auto rounded-2xl border border-slate-100 bg-white p-2 text-slate-900 dark:border-line dark:bg-surface dark:text-ink">
                   {suggestions.length ? suggestions.map((device) => (
                     <button
                       key={deviceLabel(device)}
@@ -123,9 +97,9 @@ export default function Compatibility({ devices }: { devices?: string[] }) {
               )}
             </div>
 
-            <div className="mt-4 min-h-34 max-w-md">
+            <div className="relative mt-4 max-w-xl">
               {activeDevice ? (
-                <div aria-live="polite" className={`h-full rounded-2xl border p-4 shadow-lg ${activeDevice.compatible ? 'border-emerald-300/50 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-950/60' : 'border-red-300/50 bg-red-50 dark:border-red-500/30 dark:bg-red-950/60'}`}>
+                <div aria-live="polite" className={`h-full rounded-2xl border p-4 ${activeDevice.compatible ? 'border-emerald-300/50 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-950/60' : 'border-red-300/50 bg-red-50 dark:border-red-500/30 dark:bg-red-950/60'}`}>
                   <div className="flex items-start gap-3">
                     {activeDevice.compatible ? <CheckCircle2 className="mt-0.5 shrink-0 text-accent-600" /> : <CircleX className="mt-0.5 shrink-0 text-red-600" />}
                     <div>
@@ -136,60 +110,26 @@ export default function Compatibility({ devices }: { devices?: string[] }) {
                   </div>
                 </div>
               ) : (
-                <div className="h-full rounded-2xl border border-white/12 bg-white/7 p-4 text-white/80">
-                  <p className="text-sm leading-5">{t('home.compatLiveHint')}</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {['iPhone 13', 'Galaxy S24', 'Pixel 9'].map((model) => (
-                      <button
-                        key={model}
-                        type="button"
-                        onClick={() => { setQuery(model); setSelected(null); setOpen(false) }}
-                        className="rounded-full bg-white/10 px-3 py-1.5 text-xs font-600 text-white transition hover:-translate-y-0.5 hover:bg-white/18 focus:outline-none focus:ring-2 focus:ring-accent-400"
-                      >
-                        {model}
-                      </button>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap items-center gap-2 text-slate-soft">
+                  <span className="mr-1 text-xs">{t('home.compatLiveHint')}</span>
+                  {['iPhone 13', 'Galaxy S24', 'Pixel 9'].map((model) => (
+                    <button
+                      key={model}
+                      type="button"
+                      onClick={() => { setQuery(model); setSelected(null); setOpen(false) }}
+                      className="rounded-full bg-surface-2 px-3 py-1.5 text-xs font-600 text-ink transition hover:-translate-y-0.5 hover:text-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    >
+                      {model}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
-            {!activeDevice && query.trim() && !open && <Button to="/support" variant="ghost" className="mt-4 px-6 py-3">{t('home.compatAskSupport')}</Button>}
+            <div className="relative mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+              {!activeDevice && query.trim() && !open && <Button to="/support" variant="ghost" className="w-full px-5 py-2.5 sm:w-fit">{t('home.compatAskSupport')}</Button>}
+            </div>
           </div>
         </Reveal>
-
-        <Reveal delay={80}>
-          <Card className="border-0 bg-white/95 p-6 shadow-2xl backdrop-blur dark:bg-surface/95 sm:p-7">
-            <p className="text-xs font-600 uppercase tracking-wide text-slate-soft">
-              {t('home.compatListTitle')}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label={t('home.compatListTitle')}>
-              {brands.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setBrand(item)}
-                  aria-pressed={activeBrand === item}
-                  className={`rounded-full px-3 py-1.5 text-xs font-700 transition ${
-                    activeBrand === item
-                      ? 'bg-brand-600 text-white shadow-sm'
-                      : 'bg-mist text-slate-soft ring-1 ring-line hover:text-brand-600 hover:ring-brand-300'
-                  }`}
-                >
-                  {item === 'All' ? t('home.exploreAll') : item}
-                </button>
-              ))}
-            </div>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-              {visibleDevices.map((d) => (
-                <li key={d} className="flex items-start gap-2 text-sm text-ink">
-                  <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-accent-500" />
-                  {d}
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </Reveal>
-        </div>
       </div>
     </section>
   )

@@ -318,6 +318,9 @@ const uz: Translation = {
       '2018-yildan keyingi aksariyat telefonlar eSIM‘ni qo‘llab-quvvatlaydi. Qurilmangiz operatorga bog‘lanmagan bo‘lishi kerak.',
     liveChat: '24/7 jonli chat',
     liveChatText: 'Yordam jamoamiz istalgan vaqtda, bir necha tilda xizmatingizda.',
+    contactAdmin: 'Admin bilan aloqaga chiqish',
+    contactAdminText: 'Admin bilan Telegram orqali bevosita bog‘laning.',
+    adminUsername: '@qulaysim_support',
     messageTitle: 'Yordamga yozing',
     messageText: 'Xabaringiz bevosita yordam jamoamizning Telegram botiga yuboriladi.',
     name: 'Ismingiz',
@@ -353,6 +356,7 @@ const uz: Translation = {
   },
   footer: {
     tagline: 'Sayohat uchun qulay eSIM internet tariflari. Tarifni tanlang, QR-kodni oling va ulaning.',
+    contacts: 'Kontaktlar',
     product: 'Mahsulot',
     company: 'Kompaniya',
     howItWorks: 'Qanday ishlaydi',

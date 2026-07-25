@@ -114,7 +114,7 @@ export default function WorldMap({ passport }: Props) {
         className="group flex w-full items-center justify-between gap-3 border-b border-line px-4 py-4 text-left transition hover:bg-mist sm:px-6"
       >
         <div className="flex min-w-0 items-center gap-2.5">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand-50 text-brand-600">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-600">
             <Globe2 size={18} />
           </span>
           <div className="min-w-0">

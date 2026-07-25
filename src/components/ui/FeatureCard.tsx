@@ -9,6 +9,8 @@ interface FeatureCardProps {
   tone?: IconBadgeTone
   /** 'stacked' = boxed card (steps); 'row' = inline icon beside text (why) */
   layout?: 'stacked' | 'row'
+  /** Reduces spacing on small screens while preserving the desktop card size. */
+  compact?: boolean
 }
 
 /** Icon + title + text feature block, in either a boxed or inline layout. */
@@ -18,6 +20,7 @@ export default function FeatureCard({
   text,
   tone = 'brand',
   layout = 'stacked',
+  compact = false,
 }: FeatureCardProps) {
   if (layout === 'row') {
     return (
@@ -32,9 +35,9 @@ export default function FeatureCard({
   }
 
   return (
-    <Card hover className="group p-7">
-      <IconBadge icon={icon} tone={tone} size="lg" className="transition group-hover:scale-110" />
-      <h3 className="mt-5 text-lg font-700">{title}</h3>
+    <Card hover className={`group ${compact ? 'p-5 sm:p-7' : 'p-7'}`}>
+      <IconBadge icon={icon} tone={tone} size={compact ? 'md' : 'lg'} className="transition group-hover:scale-110" />
+      <h3 className={`${compact ? 'mt-3 sm:mt-5' : 'mt-5'} text-lg font-700`}>{title}</h3>
       <p className="mt-2 text-sm text-slate-soft">{text}</p>
     </Card>
   )
