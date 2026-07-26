@@ -17,6 +17,7 @@ const en = {
     profile: 'Profile',
   },
   common: {
+    rateUnavailable: 'Converted at an indicative rate — the central bank rate is temporarily unavailable.',
     from: 'from',
     viewAll: 'View all',
     browseDestinations: 'Browse destinations',
@@ -179,6 +180,7 @@ const en = {
     emptyTitle: 'Your cart is empty',
     emptySubtitle: 'Browse destinations and add a data plan to get started.',
     summary: 'Order summary',
+    priceUpdated: 'Some prices have been updated since you added these items. The totals below are current.',
     promoCode: 'Promo code',
     apply: 'Apply',
     subtotal: 'Subtotal',

@@ -34,6 +34,15 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+/**
+ * The API sets a readable companion cookie next to the httpOnly refresh token.
+ * It carries no credential — only the fact that a session exists — so an
+ * anonymous visitor does not start every page load with a failing refresh.
+ */
+export function hasSessionCookie(): boolean {
+  return document.cookie.split('; ').some((c) => c.startsWith('qs_session='))
+}
+
 /** Set by AuthProvider so a failed refresh can clear the in-memory session. */
 let onAuthFailure: (() => void) | null = null
 

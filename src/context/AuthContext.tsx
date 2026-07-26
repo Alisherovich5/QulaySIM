@@ -5,7 +5,13 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { api, refreshSession, setAuthFailureHandler, tokenStore } from '../lib/api'
+import {
+  api,
+  hasSessionCookie,
+  refreshSession,
+  setAuthFailureHandler,
+  tokenStore,
+} from '../lib/api'
 import type { Customer } from '../lib/types'
 
 interface AuthState {
@@ -32,6 +38,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // httpOnly refresh cookie is what actually carries the session across
   // reloads: exchange it once on boot, then load the customer.
   const loadMe = async () => {
+    // No session cookie means nobody is signed in; skip the round trip that
+    // would only ever come back 401.
+    if (!hasSessionCookie()) {
+      setLoading(false)
+      return
+    }
     try {
       await refreshSession()
       const { data } = await api.get<Customer>('/auth/me')

@@ -58,12 +58,22 @@ export interface Order {
   esims: ESIM[]
 }
 
+export interface QuoteLine {
+  plan_id: number
+  title: string
+  unit_price: number
+  quantity: number
+  line_total: number
+}
+
 export interface Quote {
   subtotal: number
   discount: number
   total: number
   promo_applied: boolean
   promo_message: string | null
+  /** Server-side prices. The cart in localStorage can be hours out of date. */
+  lines: QuoteLine[]
 }
 
 export interface Customer {

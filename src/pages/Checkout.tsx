@@ -27,6 +27,19 @@ export default function Checkout() {
   const [quote, setQuote] = useState<Quote | null>(null)
   const [promoError, setPromoError] = useState<string | null>(null)
 
+  /**
+   * The cart is stored in the browser, so its prices can be stale by the time
+   * checkout loads. The quote is the server's answer — prefer it, and fall
+   * back to the stored copy only while the quote is still in flight.
+   */
+  const serverLineTotal = (planId: number) =>
+    quote?.lines?.find((line) => line.plan_id === planId)?.line_total
+
+  const priceChanged = items.some((item) => {
+    const server = serverLineTotal(item.plan.id)
+    return server != null && Math.abs(server - item.plan.price_usd * item.quantity) > 0.001
+  })
+
   const payload = () => ({
     items: items.map((i) => ({ plan_id: i.plan.id, quantity: i.quantity })),
     promo_code: appliedPromo,
@@ -83,6 +96,11 @@ export default function Checkout() {
   return (
     <div className="container-page py-8 sm:py-12">
       <h1 className="text-2xl font-700 sm:text-3xl">{t('checkout.title')}</h1>
+      {priceChanged && (
+        <p className="mt-3 rounded-xl bg-gold-500/10 px-4 py-3 text-sm text-gold-700 ring-1 ring-gold-500/20 dark:text-gold-300">
+          {t('checkout.priceUpdated')}
+        </p>
+      )}
       <div className="mt-6 grid gap-6 sm:mt-8 sm:gap-8 lg:grid-cols-[1fr_380px]">
         {/* Items */}
         <div className="space-y-4">
@@ -116,7 +134,7 @@ export default function Checkout() {
                 </button>
                 </div>
                 <PriceTag
-                  usd={item.plan.price_usd * item.quantity}
+                  usd={serverLineTotal(item.plan.id) ?? item.plan.price_usd * item.quantity}
                   size="sm"
                   className="items-end text-right"
                 />

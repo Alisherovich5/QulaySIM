@@ -19,6 +19,7 @@ const uz: Translation = {
     profile: 'Profil',
   },
   common: {
+    rateUnavailable: 'Taxminiy kurs bo‘yicha hisoblandi — Markaziy bank kursi vaqtincha mavjud emas.',
     from: 'dan',
     viewAll: 'Barchasi',
     browseDestinations: 'Yo‘nalishlarni ko‘rish',
@@ -181,6 +182,7 @@ const uz: Translation = {
     emptyTitle: 'Savatingiz bo‘sh',
     emptySubtitle: 'Boshlash uchun yo‘nalish tanlab, tarif qo‘shing.',
     summary: 'Buyurtma xulosasi',
+    priceUpdated: 'Ba’zi narxlar savatga qo‘shganingizdan beri o‘zgardi. Quyidagi jami — dolzarb.',
     promoCode: 'Promo-kod',
     apply: 'Qo‘llash',
     subtotal: 'Jami',

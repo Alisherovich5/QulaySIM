@@ -19,6 +19,7 @@ const ru: Translation = {
     profile: 'Профиль',
   },
   common: {
+    rateUnavailable: 'Пересчёт по ориентировочному курсу — курс ЦБ временно недоступен.',
     from: 'от',
     viewAll: 'Все',
     browseDestinations: 'Смотреть направления',
@@ -181,6 +182,7 @@ const ru: Translation = {
     emptyTitle: 'Корзина пуста',
     emptySubtitle: 'Выберите направление и добавьте тариф, чтобы начать.',
     summary: 'Итог заказа',
+    priceUpdated: 'Некоторые цены изменились с момента добавления товаров. Итог ниже — актуальный.',
     promoCode: 'Промокод',
     apply: 'Применить',
     subtotal: 'Сумма',
