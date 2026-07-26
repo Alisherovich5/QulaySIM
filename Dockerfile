@@ -13,6 +13,7 @@ FROM nginx:1.27-alpine AS runtime
 
 COPY --from=builder /build/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx-security-headers.conf /etc/nginx/snippets/security-headers.conf
 
 # nginx:alpine ships an unprivileged `nginx` user; port 8080 so it can bind
 # without root.
