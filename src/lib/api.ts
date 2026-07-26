@@ -1,44 +1,38 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios'
 
-const TOKEN_KEY = 'fastsim_token'
-const REFRESH_KEY = 'fastsim_refresh'
-
 export const api = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
+  // The refresh token lives in an httpOnly cookie, so it has to ride along.
+  withCredentials: true,
 })
 
+/**
+ * The access token is held in memory, never in localStorage.
+ *
+ * Anything in localStorage is readable by any script that manages to run on
+ * the page, and it survives the tab. A variable does neither: a reload simply
+ * re-mints the token from the httpOnly refresh cookie, which JavaScript cannot
+ * read at all.
+ */
+let accessToken: string | null = null
+
 export const tokenStore = {
-  get: () => localStorage.getItem(TOKEN_KEY),
-  set: (t: string) => localStorage.setItem(TOKEN_KEY, t),
-  getRefresh: () => localStorage.getItem(REFRESH_KEY),
-  setRefresh: (t: string) => localStorage.setItem(REFRESH_KEY, t),
+  get: () => accessToken,
+  set: (t: string) => {
+    accessToken = t
+  },
   clear: () => {
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(REFRESH_KEY)
+    accessToken = null
   },
 }
 
 api.interceptors.request.use((config) => {
-  const token = tokenStore.get()
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
   }
   return config
 })
-
-/**
- * Access tokens are short-lived (30 minutes). Without this, every request
- * after that window fails with 401 while the UI still looks signed in.
- *
- * On the first 401 we swap the refresh token for a new pair and replay the
- * original request once. Refresh tokens are single-use server-side, so
- * concurrent 401s must share one refresh call rather than each spending the
- * token — otherwise the second is rejected as replay and logs the user out.
- */
-type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean }
-
-let refreshInFlight: Promise<string> | null = null
 
 /** Set by AuthProvider so a failed refresh can clear the in-memory session. */
 let onAuthFailure: (() => void) | null = null
@@ -47,17 +41,32 @@ export function setAuthFailureHandler(handler: (() => void) | null) {
   onAuthFailure = handler
 }
 
-async function refreshAccessToken(): Promise<string> {
-  const refreshToken = tokenStore.getRefresh()
-  if (!refreshToken) throw new Error('no refresh token')
+let refreshInFlight: Promise<string> | null = null
 
-  // A bare axios call: going through `api` would re-enter this interceptor.
-  const { data } = await axios.post('/api/auth/refresh', { refresh_token: refreshToken })
-  tokenStore.set(data.access_token)
-  if (data.refresh_token) tokenStore.setRefresh(data.refresh_token)
-  return data.access_token
+/**
+ * Exchange the refresh cookie for a new access token.
+ *
+ * Concurrent callers share one in-flight request: refresh tokens are
+ * single-use server-side, so two parallel refreshes would spend the same
+ * token and the second would be rejected as replay.
+ */
+export function refreshSession(): Promise<string> {
+  refreshInFlight ??= axios
+    .post('/api/auth/refresh', {}, { withCredentials: true })
+    .then(({ data }) => {
+      accessToken = data.access_token
+      return data.access_token as string
+    })
+    .finally(() => {
+      refreshInFlight = null
+    })
+  return refreshInFlight
 }
 
+type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean }
+
+// Access tokens last 30 minutes. Without this, every request after that window
+// would fail with 401 while the UI still looked signed in.
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -71,10 +80,7 @@ api.interceptors.response.use(
     original._retried = true
 
     try {
-      refreshInFlight ??= refreshAccessToken().finally(() => {
-        refreshInFlight = null
-      })
-      const token = await refreshInFlight
+      const token = await refreshSession()
       original.headers.Authorization = `Bearer ${token}`
       return api(original)
     } catch {
