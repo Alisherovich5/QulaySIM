@@ -8,6 +8,10 @@ import LanguageSwitcher from '../components/LanguageSwitcher'
 import ThemeToggle from '../components/ThemeToggle'
 import { Button, Card } from '../components/ui'
 
+// Must match MIN_PASSWORD_LENGTH in the API (app/schemas/auth.py); a lower
+// value here just turns a clear message into an opaque 422 from the server.
+const MIN_PASSWORD_LENGTH = 8
+
 export default function Register() {
   const { register, customer } = useAuth()
   const { t } = useTranslation()
@@ -30,7 +34,7 @@ export default function Register() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    if (password.length < 6) {
+    if (password.length < MIN_PASSWORD_LENGTH) {
       setError(t('auth.shortPassword'))
       return
     }
@@ -39,12 +43,17 @@ export default function Register() {
       await register(email, fullName, password, referralCode)
       navigate(from, { replace: true })
     } catch (err: unknown) {
-      const detail =
-        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
-      if (detail && detail.toLowerCase().includes('already')) {
+      // Match on the machine-readable code, not the message text: the API
+      // deliberately keeps that wording vague so it cannot confirm which
+      // e-mails are registered.
+      const response = (err as { response?: { status?: number; data?: { code?: string } } })
+        ?.response
+      if (response?.status === 409 || response?.data?.code === 'conflict') {
         setError(t('auth.emailTaken'))
+      } else if (response?.status === 429) {
+        setError(t('auth.tooManyAttempts'))
       } else {
-        setError(detail || t('auth.createFailed'))
+        setError(t('auth.createFailed'))
       }
     } finally {
       setLoading(false)

@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { api, tokenStore } from '../lib/api'
+import { api, setAuthFailureHandler, tokenStore } from '../lib/api'
 import type { Customer } from '../lib/types'
 
 interface AuthState {
@@ -23,6 +23,16 @@ interface AuthState {
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined)
+
+interface TokenResponse {
+  access_token: string
+  refresh_token?: string
+}
+
+function storeTokens(data: TokenResponse) {
+  tokenStore.set(data.access_token)
+  if (data.refresh_token) tokenStore.setRefresh(data.refresh_token)
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [customer, setCustomer] = useState<Customer | null>(null)
@@ -47,6 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loadMe()
   }, [])
 
+  // When a refresh fails the interceptor has already cleared storage; this
+  // drops the stale customer so the UI stops pretending to be signed in.
+  useEffect(() => {
+    setAuthFailureHandler(() => setCustomer(null))
+    return () => setAuthFailureHandler(null)
+  }, [])
+
   const login = async (email: string, password: string) => {
     const form = new URLSearchParams()
     form.append('username', email)
@@ -54,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await api.post('/auth/login', form, {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     })
-    tokenStore.set(data.access_token)
+    storeTokens(data)
     const me = await api.get<Customer>('/auth/me')
     setCustomer(me.data)
   }
@@ -71,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       referral_code: referralCode || null,
     })
-    tokenStore.set(data.access_token)
+    storeTokens(data)
     const me = await api.get<Customer>('/auth/me')
     setCustomer(me.data)
   }

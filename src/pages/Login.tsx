@@ -31,8 +31,11 @@ export default function Login() {
     try {
       await login(email, password)
       navigate(from, { replace: true })
-    } catch {
-      setError(t('auth.invalidLogin'))
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response?.status
+      // A rate-limited attempt is not a wrong password; saying so sends the
+      // customer off resetting a password that was fine.
+      setError(status === 429 ? t('auth.tooManyAttempts') : t('auth.invalidLogin'))
     } finally {
       setLoading(false)
     }
