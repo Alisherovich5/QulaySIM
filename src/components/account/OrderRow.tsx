@@ -1,8 +1,8 @@
 import { QrCode, Receipt } from 'lucide-react'
+import { PriceTag } from '../ui'
 import { useTranslation } from 'react-i18next'
 import type { Order } from '../../lib/types'
 import { formatDate } from '../../lib/format'
-import { useCurrency } from '../../context/CurrencyContext'
 import Card from '../ui/Card'
 import IconBadge from '../ui/IconBadge'
 
@@ -15,7 +15,6 @@ const STATUS_STYLE: Record<string, string> = {
 
 export default function OrderRow({ order }: { order: Order }) {
   const { t } = useTranslation()
-  const { formatPrice } = useCurrency()
   return (
     <Card className="flex flex-wrap items-center gap-3 p-4 sm:flex-nowrap sm:gap-4">
       <IconBadge icon={Receipt} tone="brand" size="md" />
@@ -35,7 +34,9 @@ export default function OrderRow({ order }: { order: Order }) {
           defaultValue: order.status,
         })}
       </span>
-      <p className="basis-full text-right font-700 text-ink sm:ml-2 sm:basis-auto">{formatPrice(order.total)}</p>
+      <div className="basis-full text-right sm:ml-2 sm:basis-auto">
+        <PriceTag usd={order.total} size="sm" className="items-end text-ink" />
+      </div>
     </Card>
   )
 }

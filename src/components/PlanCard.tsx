@@ -1,7 +1,7 @@
 import { Check, Clock, Signal, Wifi, Zap } from 'lucide-react'
+import { PriceTag } from './ui'
 import { useTranslation } from 'react-i18next'
 import type { Plan } from '../lib/types'
-import { useCurrency } from '../context/CurrencyContext'
 import { Badge, Button, Card } from './ui'
 
 interface Props {
@@ -12,7 +12,6 @@ interface Props {
 
 export default function PlanCard({ plan, onAdd, added }: Props) {
   const { t } = useTranslation()
-  const { formatPrice } = useCurrency()
   return (
     <Card hover className={`relative flex flex-col p-5 sm:p-6 ${plan.is_popular ? 'ring-2 ring-gold-500' : ''}`}>
       {plan.is_popular && (
@@ -49,7 +48,7 @@ export default function PlanCard({ plan, onAdd, added }: Props) {
 
       <div className="mt-6 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="font-display text-2xl font-700 text-ink">{formatPrice(plan.price_usd)}</p>
+          <PriceTag usd={plan.price_usd} size="lg" className="text-ink" />
           <p className="text-xs text-slate-soft">{t('plan.oneTime')}</p>
         </div>
         <Button

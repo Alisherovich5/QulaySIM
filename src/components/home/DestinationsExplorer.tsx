@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { PriceTag } from '../ui'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -7,12 +8,10 @@ import type { Country, Region } from '../../lib/types'
 import Flag from '../Flag'
 import Reveal from '../Reveal'
 import { Button, SectionHeading, ToggleChip } from '../ui'
-import { useCurrency } from '../../context/CurrencyContext'
 
 /** "Which country is calling you?" — region tabs + popular destination grid. */
 export default function DestinationsExplorer() {
   const { t } = useTranslation()
-  const { formatPrice } = useCurrency()
   const [countries, setCountries] = useState<Country[]>([])
   const [regions, setRegions] = useState<Region[]>([])
   const [region, setRegion] = useState<string>('')
@@ -80,7 +79,7 @@ export default function DestinationsExplorer() {
                   <div className="mt-4 flex items-end justify-between border-t border-line pt-3 sm:mt-5 sm:pt-4">
                     <span>
                       <small className="block text-xs text-slate-soft">{t('common.from')}</small>
-                      <b className="text-sm text-brand-600 sm:text-base dark:text-accent-300">{formatPrice(c.starting_price)}</b>
+                      <PriceTag usd={c.starting_price} size="sm" className="text-brand-600 dark:text-accent-300" />
                     </span>
                     <span className="grid h-8 w-8 place-items-center rounded-xl bg-brand-50 text-brand-600 transition duration-200 group-hover:bg-brand-600 group-hover:text-white sm:h-9 sm:w-9 dark:bg-white/10 dark:text-accent-300 dark:group-hover:bg-accent-400 dark:group-hover:text-brand-950">
                       <ArrowUpRight size={16} className="sm:hidden" />

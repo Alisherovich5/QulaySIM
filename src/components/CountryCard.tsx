@@ -1,13 +1,12 @@
 import { Link } from 'react-router-dom'
+import { PriceTag } from './ui'
 import { ArrowUpRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Country } from '../lib/types'
-import { useCurrency } from '../context/CurrencyContext'
 import Flag from './Flag'
 
 export default function CountryCard({ country }: { country: Country }) {
   const { t } = useTranslation()
-  const { formatPrice } = useCurrency()
   return (
     <Link
       to={`/destinations/${country.slug}`}
@@ -22,7 +21,7 @@ export default function CountryCard({ country }: { country: Country }) {
         <p className="truncate font-600 text-ink">{country.name}</p>
         <p className="text-sm text-slate-soft">
           {t('common.from')}{' '}
-          <span className="font-600 text-brand-600">{formatPrice(country.starting_price)}</span>
+          <PriceTag usd={country.starting_price} size="sm" inline className="text-brand-600" />
         </p>
       </div>
       <ArrowUpRight

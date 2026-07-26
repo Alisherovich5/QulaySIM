@@ -14,7 +14,12 @@ export type Currency = 'USD' | 'UZS'
 interface CurrencyState {
   currency: Currency
   setCurrency: (currency: Currency) => void
+  /** Single string in the currently selected currency. */
   formatPrice: (usd: number | null | undefined) => string
+  /** Both currencies, for the dual display used on price tags. */
+  formatDual: (usd: number | null | undefined) => { primary: string; secondary: string }
+  formatUzs: (usd: number | null | undefined) => string
+  formatUsd: (usd: number | null | undefined) => string
   usdToUzs: number
   isRateFallback: boolean
 }
@@ -59,26 +64,58 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       .catch(() => undefined)
   }, [])
 
-  const formatPrice = useCallback(
+  const formatUsd = useCallback((usd: number | null | undefined) => {
+    if (usd == null) return '—'
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      currencyDisplay: 'narrowSymbol',
+    }).format(usd)
+  }, [])
+
+  const formatUzs = useCallback(
     (usd: number | null | undefined) => {
       if (usd == null) return '—'
-      if (currency === 'USD') {
-        return new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          currencyDisplay: 'narrowSymbol',
-        }).format(usd)
-      }
       return `${new Intl.NumberFormat('uz-UZ', {
         maximumFractionDigits: 0,
       }).format(Math.round(usd * usdToUzs))} so‘m`
     },
-    [currency, usdToUzs],
+    [usdToUzs],
+  )
+
+  const formatPrice = useCallback(
+    (usd: number | null | undefined) =>
+      currency === 'USD' ? formatUsd(usd) : formatUzs(usd),
+    [currency, formatUsd, formatUzs],
+  )
+
+  /**
+   * Both currencies at once. Customers pay in som but the catalogue is priced
+   * in USD, so showing only one leaves someone converting in their head. The
+   * selected currency leads; the other follows as an approximation.
+   */
+  const formatDual = useCallback(
+    (usd: number | null | undefined) => {
+      if (usd == null) return { primary: '—', secondary: '' }
+      return currency === 'USD'
+        ? { primary: formatUsd(usd), secondary: `≈ ${formatUzs(usd)}` }
+        : { primary: formatUzs(usd), secondary: `≈ ${formatUsd(usd)}` }
+    },
+    [currency, formatUsd, formatUzs],
   )
 
   const value = useMemo(
-    () => ({ currency, setCurrency, formatPrice, usdToUzs, isRateFallback }),
-    [currency, formatPrice, isRateFallback, usdToUzs],
+    () => ({
+      currency,
+      setCurrency,
+      formatPrice,
+      formatDual,
+      formatUsd,
+      formatUzs,
+      usdToUzs,
+      isRateFallback,
+    }),
+    [currency, formatDual, formatPrice, formatUsd, formatUzs, isRateFallback, usdToUzs],
   )
 
   return <CurrencyContext.Provider value={value}>{children}</CurrencyContext.Provider>

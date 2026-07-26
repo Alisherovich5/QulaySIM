@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { PriceTag } from '../components/ui'
 import {
   CreditCard,
   Lock,
@@ -114,9 +115,11 @@ export default function Checkout() {
                   <Plus size={14} />
                 </button>
                 </div>
-                <p className="text-right text-sm font-700 sm:text-base">
-                  {formatPrice(item.plan.price_usd * item.quantity)}
-                </p>
+                <PriceTag
+                  usd={item.plan.price_usd * item.quantity}
+                  size="sm"
+                  className="items-end text-right"
+                />
               </div>
               <button
                 onClick={() => remove(item.plan.id)}
@@ -171,8 +174,8 @@ export default function Checkout() {
               )}
               <div className="flex justify-between border-t border-line pt-3 text-base">
                 <dt className="font-700">{t('checkout.total')}</dt>
-                <dd className="font-display text-xl font-700">
-                  {formatPrice(quote?.total ?? subtotal)}
+                <dd>
+                  <PriceTag usd={quote?.total ?? subtotal} size="md" className="items-end" />
                 </dd>
               </div>
             </dl>
