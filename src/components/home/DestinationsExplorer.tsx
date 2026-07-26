@@ -68,7 +68,7 @@ export default function DestinationsExplorer() {
                     <Flag iso2={c.iso2} alt="" className="h-9 w-14 rounded-lg object-cover shadow-sm ring-1 ring-line" />
                     {c.is_popular && (
                       <span className="hidden rounded-full bg-accent-400/15 px-2.5 py-1 text-[11px] font-700 text-brand-700 sm:inline-flex dark:text-accent-300">
-                        {t('destinations.mostPopular')}
+                        {t('plan.mostPopular')}
                       </span>
                     )}
                   </div>

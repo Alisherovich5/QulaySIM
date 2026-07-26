@@ -1,5 +1,4 @@
 import { useLayoutEffect, useRef, type ReactNode } from 'react'
-import { gsap } from 'gsap'
 
 interface Props {
   children: ReactNode
@@ -8,6 +7,13 @@ interface Props {
   delay?: number
 }
 
+/**
+ * Fades a section in as it scrolls into view.
+ *
+ * This used to run on GSAP, which cost 232 kB in the entry bundle for one fade
+ * and one translate. The same effect is two CSS transitions, so the animation
+ * now runs on the compositor and the library is gone.
+ */
 export default function Reveal({ children, className = '', delay = 0 }: Props) {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -16,32 +22,37 @@ export default function Reveal({ children, className = '', delay = 0 }: Props) {
     if (!el) return
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
+    const show = () => {
+      el.style.opacity = '1'
+      el.style.transform = 'none'
+      el.style.visibility = 'visible'
+    }
+
     // Keep the CSS baseline visible. This is deliberate progressive enhancement:
     // a failed script, unsupported observer, or a cancelled animation should
     // never leave a section permanently invisible.
     if (reduceMotion.matches || typeof IntersectionObserver === 'undefined') {
-      gsap.set(el, { autoAlpha: 1, y: 0 })
+      show()
       return
     }
 
-    gsap.set(el, { autoAlpha: 0, y: 20 })
+    el.style.opacity = '0'
+    el.style.transform = 'translateY(20px)'
+    el.style.visibility = 'hidden'
+    el.style.transition =
+      `opacity 650ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms,` +
+      `transform 650ms cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`
+
     let revealed = false
     const reveal = () => {
       if (revealed) return
       revealed = true
-      gsap.to(el, {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.65,
-        delay: delay / 1000,
-        ease: 'power3.out',
-        overwrite: 'auto',
-      })
+      show()
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry?.isIntersecting) {
           reveal()
           observer.unobserve(el)
         }
@@ -60,15 +71,11 @@ export default function Reveal({ children, className = '', delay = 0 }: Props) {
     return () => {
       observer.disconnect()
       window.clearTimeout(fallbackTimer)
-      gsap.killTweensOf(el)
     }
   }, [delay])
 
   return (
-    <div
-      ref={ref}
-      className={`reveal ${className}`}
-    >
+    <div ref={ref} className={`reveal ${className}`}>
       {children}
     </div>
   )
