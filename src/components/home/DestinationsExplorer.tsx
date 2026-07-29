@@ -50,38 +50,40 @@ export default function DestinationsExplorer() {
         <>
           <div className="mt-7">
             <p className="mb-3 text-sm font-700 text-ink">{t('home.popularTitle')}</p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2.5 min-[360px]:grid-cols-3 sm:gap-4 lg:grid-cols-4">
             {shown.map((c, i) => (
               <Reveal key={c.id} delay={i * 40}>
                 <Link
                   to={`/destinations/${c.slug}`}
-                  className="group relative isolate flex min-h-[164px] flex-col justify-between overflow-hidden rounded-[1.35rem] border border-line bg-surface p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:bg-brand-50/45 hover:shadow-xl hover:shadow-brand-900/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 sm:min-h-[188px] sm:rounded-[1.5rem] sm:p-5 dark:border-white/10 dark:bg-[#0c2831] dark:shadow-black/20 dark:hover:border-accent-400/45 dark:hover:bg-white/[0.04] dark:hover:shadow-black/35 dark:focus-visible:ring-accent-400 dark:focus-visible:ring-offset-[#06141a]"
+                  className="group relative isolate flex min-h-[118px] flex-col justify-between overflow-hidden rounded-2xl border border-line bg-surface p-2.5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:bg-brand-50/45 hover:shadow-xl hover:shadow-brand-900/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 sm:min-h-[170px] sm:rounded-[1.5rem] sm:p-4 lg:min-h-[188px] lg:p-5 dark:border-white/10 dark:bg-[#0c2831] dark:shadow-black/20 dark:hover:border-accent-400/45 dark:hover:bg-white/[0.04] dark:hover:shadow-black/35 dark:focus-visible:ring-accent-400 dark:focus-visible:ring-offset-[#06141a]"
                 >
                   <span
                     aria-hidden
-                    className={`absolute right-4 top-4 -z-10 h-32 w-32 rounded-full transition duration-300 group-hover:scale-110 ${i % 3 === 1
+                    className={`absolute right-2 top-2 -z-10 h-20 w-20 rounded-full sm:right-4 sm:top-4 sm:h-32 sm:w-32 transition duration-300 group-hover:scale-110 ${i % 3 === 1
                       ? 'bg-[radial-gradient(circle,rgba(241,217,138,.30)_0%,transparent_68%)]'
                       : 'bg-[radial-gradient(circle,rgba(52,227,176,.28)_0%,transparent_68%)]'
                       }`}
                   />
-                  <div className="flex items-start justify-between gap-3">
-                    <Flag iso2={c.iso2} alt="" className="h-9 w-14 rounded-lg object-cover shadow-sm ring-1 ring-line" />
+                  <div className="flex items-start justify-between gap-2 sm:gap-3">
+                    <Flag iso2={c.iso2} alt="" className="h-6 w-9 rounded-md object-cover shadow-sm ring-1 ring-line sm:h-8 sm:w-12 sm:rounded-lg lg:h-9 lg:w-14" />
                     {c.is_popular && (
                       <span className="hidden rounded-full bg-accent-400/15 px-2.5 py-1 text-[11px] font-700 text-brand-700 sm:inline-flex dark:text-accent-300">
                         {t('plan.mostPopular')}
                       </span>
                     )}
                   </div>
-                  <div className="mt-4 sm:mt-5">
-                    <p className="truncate font-display text-base font-700 text-ink sm:text-xl">{c.name}</p>
-                    <p className="mt-1 truncate text-xs text-slate-soft sm:text-sm">{c.region?.name}</p>
+                  <div className="mt-2.5 sm:mt-5">
+                    <p className="truncate font-display text-[13px] font-700 leading-tight text-ink sm:text-lg lg:text-xl">{c.name}</p>
+                    {/* The region is the first thing to go at three-up: the flag
+                        and the name already identify the destination. */}
+                    <p className="mt-1 hidden truncate text-xs text-slate-soft sm:block sm:text-sm">{c.region?.name}</p>
                   </div>
-                  <div className="mt-4 flex items-end justify-between border-t border-line pt-3 sm:mt-5 sm:pt-4">
-                    <span>
-                      <small className="block text-xs text-slate-soft">{t('common.from')}</small>
-                      <PriceTag usd={c.starting_price} size="sm" className="text-brand-600 dark:text-accent-300" />
+                  <div className="mt-2.5 flex items-end justify-between border-t border-line pt-2 sm:mt-5 sm:pt-4">
+                    <span className="min-w-0">
+                      <small className="hidden text-xs text-slate-soft sm:block">{t('common.from')}</small>
+                      <PriceTag usd={c.starting_price} size="xs" className="text-brand-600 dark:text-accent-300" />
                     </span>
-                    <span className="grid h-8 w-8 place-items-center rounded-xl bg-brand-50 text-brand-600 transition duration-200 group-hover:bg-brand-600 group-hover:text-white sm:h-9 sm:w-9 dark:bg-white/10 dark:text-accent-300 dark:group-hover:bg-accent-400 dark:group-hover:text-brand-950">
+                    <span className="hidden h-8 w-8 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600 transition duration-200 group-hover:bg-brand-600 group-hover:text-white sm:grid lg:h-9 lg:w-9 dark:bg-white/10 dark:text-accent-300 dark:group-hover:bg-accent-400 dark:group-hover:text-brand-950">
                       <ArrowUpRight size={16} className="sm:hidden" />
                       <ArrowUpRight size={18} className="hidden sm:block" />
                     </span>

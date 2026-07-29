@@ -2,15 +2,24 @@ import { useTranslation } from 'react-i18next'
 
 import { useCurrency } from '../../context/CurrencyContext'
 
-type Size = 'sm' | 'md' | 'lg'
+type Size = 'xs' | 'sm' | 'md' | 'lg'
 
 const PRIMARY: Record<Size, string> = {
+  // xs exists for the destination tiles, which are ~110px wide on a phone.
+  // A long amount like "118,800 so'm" wrapped there and stretched its card
+  // taller than the rest of the row.
+  // Grows to the sm step from the sm breakpoint up, so one instance covers
+  // both. Two instances toggled with `hidden` cannot work here: the wrapper
+  // hardcodes `inline-flex`, and which of the two display utilities wins is
+  // decided by stylesheet order, not by the class attribute.
+  xs: 'whitespace-nowrap text-[13px] font-700 tracking-tight sm:text-sm sm:tracking-normal',
   sm: 'text-sm font-700',
   md: 'font-display text-xl font-700',
   lg: 'font-display text-2xl font-700 sm:text-3xl',
 }
 
 const SECONDARY: Record<Size, string> = {
+  xs: 'whitespace-nowrap text-[10px] sm:text-[11px]',
   sm: 'text-[11px]',
   md: 'text-xs',
   lg: 'text-sm',

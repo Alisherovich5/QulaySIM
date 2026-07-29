@@ -19,8 +19,8 @@ export default function Login() {
     if (customer) navigate('/account', { replace: true })
   }, [customer, navigate])
 
-  const [email, setEmail] = useState('demo@fastsim.dev')
-  const [password, setPassword] = useState('demo12345')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -62,6 +62,8 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder={t('auth.emailPlaceholder')}
+                autoComplete="email"
                 className="input mt-1.5"
                 required
               />
@@ -72,6 +74,8 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('auth.passwordPlaceholder')}
+                autoComplete="current-password"
                 className="input mt-1.5"
                 required
               />
@@ -87,9 +91,6 @@ export default function Login() {
             <Link to="/register" className="font-600 text-brand-600">
               {t('auth.createAccount')}
             </Link>
-          </p>
-          <p className="mt-3 rounded-lg bg-mist p-3 text-center text-xs text-slate-soft">
-            {t('auth.demoHint')}
           </p>
         </Card>
         <Link

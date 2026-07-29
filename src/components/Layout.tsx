@@ -11,7 +11,10 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen min-w-0 flex-col">
       <Navbar />
-      <main key={pathname} className="page-in flex-1 pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-0">
+      {/* No bottom padding for the fixed mobile nav here: the footer sits
+          below this and already reserves that space, so reserving it twice
+          left 68px of dead air above the footer. */}
+      <main key={pathname} className="page-in flex-1">
         <Outlet />
       </main>
       <Footer />

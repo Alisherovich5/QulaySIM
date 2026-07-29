@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ShoppingBag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
@@ -17,6 +17,7 @@ export default function CountryDetail() {
   const [added, setAdded] = useState<number | null>(null)
   const { add } = useCart()
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     setLoading(true)
@@ -30,7 +31,10 @@ export default function CountryDetail() {
     if (!country) return
     add(plan, country.name, country.iso2)
     setAdded(plan.id)
-    setTimeout(() => setAdded(null), 1500)
+    // Straight to checkout rather than leaving the customer on the plan list
+    // wondering what happened. The brief flash of the "added" state is kept so
+    // the tap is acknowledged before the page changes.
+    setTimeout(() => navigate('/checkout'), 350)
   }
 
   if (loading) {

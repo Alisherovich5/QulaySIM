@@ -6,8 +6,10 @@ import CurrencySwitcher from './CurrencySwitcher'
 export default function Footer() {
   const { t } = useTranslation()
 
+  // No mt-24: on top of the last section's own py-16 it read as an unfinished
+  // page. The border and this footer's own padding are the separation.
   return (
-    <footer className="mt-24 border-t border-line bg-surface pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-0">
+    <footer className="border-t border-line bg-surface pb-[calc(4.25rem+env(safe-area-inset-bottom))] md:pb-0">
       <div className="container-page py-8 sm:py-10">
         <div className="grid gap-7 text-center sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center sm:text-left">
           <div>

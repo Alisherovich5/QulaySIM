@@ -19,6 +19,8 @@ interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'cla
   loading?: boolean
   /** when set, renders a react-router <Link> instead of a <button> */
   to?: string
+  /** router state to carry along with `to` — e.g. where to return after login */
+  state?: unknown
   className?: string
   children: ReactNode
 }
@@ -33,6 +35,7 @@ export default function Button({
   fullWidth = false,
   loading = false,
   to,
+  state,
   className = '',
   children,
   disabled,
@@ -44,7 +47,7 @@ export default function Button({
 
   if (to) {
     return (
-      <Link to={to} className={cls} onClick={rest.onClick as never}>
+      <Link to={to} state={state} className={cls} onClick={rest.onClick as never}>
         {children}
       </Link>
     )

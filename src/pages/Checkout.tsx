@@ -3,6 +3,7 @@ import { PriceTag } from '../components/ui'
 import {
   CreditCard,
   Lock,
+  LogIn,
   Minus,
   Plus,
   ShoppingBag,
@@ -11,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
+import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
 import Flag from '../components/Flag'
@@ -19,6 +21,7 @@ import type { Quote } from '../lib/types'
 
 export default function Checkout() {
   const { items, setQuantity, remove, subtotal } = useCart()
+  const { customer } = useAuth()
   const { t } = useTranslation()
   const { formatPrice } = useCurrency()
 
@@ -198,13 +201,31 @@ export default function Checkout() {
               </div>
             </dl>
 
-            <Button disabled fullWidth className="mt-5 py-3.5">
-              <CreditCard size={18} />
-              {t('checkout.paymentSetup')}
-            </Button>
-            <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-soft">
-              <Lock size={12} /> {t('checkout.paymentSetupNote')}
-            </p>
+            {/* An eSIM is delivered to an account, so payment cannot happen
+                anonymously — the QR would have nowhere to go. Signing in is
+                asked for here rather than on the way into the cart, so nobody
+                is stopped from seeing what they are about to pay. */}
+            {customer ? (
+              <>
+                <Button disabled fullWidth className="mt-5 py-3.5">
+                  <CreditCard size={18} />
+                  {t('checkout.paymentSetup')}
+                </Button>
+                <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-soft">
+                  <Lock size={12} /> {t('checkout.paymentSetupNote')}
+                </p>
+              </>
+            ) : (
+              <>
+                <Button to="/login" state={{ from: '/checkout' }} fullWidth className="mt-5 py-3.5">
+                  <LogIn size={18} />
+                  {t('checkout.signInToPay')}
+                </Button>
+                <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-soft">
+                  <Lock size={12} /> {t('checkout.signInNote')}
+                </p>
+              </>
+            )}
           </Card>
         </div>
       </div>
