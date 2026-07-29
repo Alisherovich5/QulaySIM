@@ -69,7 +69,15 @@
   }
   body {
     @apply bg-canvas text-ink font-sans antialiased;
+    /* `hidden` turns body into a scroll container, which makes every
+       `position: sticky` descendant stick to body instead of the viewport — so
+       the pinned header scrolled away with the page. `clip` does the same
+       clipping without creating that scroll container.
+       The pair is deliberate: browsers without `clip` keep `hidden`, trading
+       the pinned header for no horizontal scrollbar rather than getting both
+       wrong. */
     overflow-x: hidden;
+    overflow-x: clip;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   h1, h2, h3, h4 {

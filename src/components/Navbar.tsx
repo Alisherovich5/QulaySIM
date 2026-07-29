@@ -21,8 +21,12 @@ export default function Navbar() {
     }`
 
   return (
-    <header className="sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md">
+    <>
+      {/* Outside the sticky header on purpose. Pinned, the promo strip would
+          hold ~40px of every screen for a discount the visitor has already
+          read; scrolling it away leaves the pinned bar as just the nav. */}
       <PromoStrip />
+      <header className="sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md">
       <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
         <Logo />
         <nav className="hidden items-center gap-7 xl:flex">
@@ -97,6 +101,7 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
-    </header>
+      </header>
+    </>
   )
 }
