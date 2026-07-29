@@ -49,7 +49,11 @@ export default function PlanCard({ plan, onAdd, added }: Props) {
       <div className="mt-6 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <PriceTag usd={plan.price_usd} size="lg" className="text-ink" />
-          <p className="text-xs text-slate-soft">{t('plan.oneTime')}</p>
+          {/* The note replaces the generic "one-time" line rather than sitting
+              under it: two captions below one price read as a contradiction. */}
+          <p className="text-xs text-slate-soft">
+            {plan.price_note || t('plan.oneTime')}
+          </p>
         </div>
         <Button
           onClick={() => onAdd(plan)}

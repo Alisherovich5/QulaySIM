@@ -13,6 +13,8 @@ export interface Plan {
   data_label: string
   validity_days: number
   price_usd: number
+  /** Free text beside the price, e.g. "+ deposit". Empty for most plans. */
+  price_note: string
   network_type: string
   supports_hotspot: boolean
   is_popular: boolean
