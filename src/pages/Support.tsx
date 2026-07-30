@@ -24,11 +24,14 @@ export default function Support() {
   const [submitState, setSubmitState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [phoneError, setPhoneError] = useState(false)
 
+  // /api/faqs does not exist — it never did, so this silently 404'd on every
+  // visit and the page always showed the i18n fallback. Admin-managed FAQs live
+  // in the landing content payload, which is already cached per language.
   useEffect(() => {
     let alive = true
     api
-      .get<Faq[]>('/faqs', { params: { lang } })
-      .then((r) => alive && setRemote(r.data))
+      .get<{ faqs?: Faq[] }>('/content/landing', { params: { lang } })
+      .then((r) => alive && setRemote(r.data?.faqs ?? null))
       .catch(() => alive && setRemote(null))
     return () => {
       alive = false
