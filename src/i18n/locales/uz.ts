@@ -49,6 +49,8 @@ const uz: Translation = {
     statRating: 'O‘rtacha reyting',
     statActivation: 'O‘rtacha faollashuv',
     popularTitle: 'Mashhur yo‘nalishlar',
+    popularPlansTitle: 'Mashhur tariflar',
+    popularPlansSubtitle: 'Sayohatchilar eng ko‘p tanlaydigan tariflar va ularning narxi.',
     popularSubtitle: 'Sayohatchilar hozir eng ko‘p ulanayotgan yo‘nalishlar.',
     howTitle: 'QulaySIM qanday ishlaydi',
     howSubtitle: 'Tanlashdan ulanishgacha — uchta oddiy qadam.',

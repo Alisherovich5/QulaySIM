@@ -47,6 +47,8 @@ const en = {
     statRating: 'Average rating',
     statActivation: 'Avg. activation',
     popularTitle: 'Popular destinations',
+    popularPlansTitle: 'Popular plans',
+    popularPlansSubtitle: 'The tariffs travellers choose most, and what they cost.',
     popularSubtitle: 'Top picks travellers are connecting to right now.',
     howTitle: 'How QulaySIM works',
     howSubtitle: 'From browsing to connected in three simple steps.',

@@ -20,6 +20,13 @@ export interface Plan {
   is_popular: boolean
 }
 
+/** A popular plan carries its destination so a landing-page card can stand alone. */
+export interface PopularPlan extends Plan {
+  country_name: string
+  country_slug: string
+  country_iso2: string
+}
+
 export interface Country {
   id: number
   name: string

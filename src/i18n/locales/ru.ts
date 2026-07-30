@@ -49,6 +49,8 @@ const ru: Translation = {
     statRating: 'Средний рейтинг',
     statActivation: 'Ср. активация',
     popularTitle: 'Популярные направления',
+    popularPlansTitle: 'Популярные тарифы',
+    popularPlansSubtitle: 'Тарифы, которые путешественники выбирают чаще всего, и их цена.',
     popularSubtitle: 'Куда путешественники подключаются прямо сейчас.',
     howTitle: 'Как работает QulaySIM',
     howSubtitle: 'От выбора до подключения — три простых шага.',
