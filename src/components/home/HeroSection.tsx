@@ -105,11 +105,18 @@ export default function HeroSection() {
         aria-hidden
         className="pointer-events-none absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-brand-300/20 blur-3xl"
       />
-      {/* On phones the globe stays behind the copy; desktop keeps its dedicated visual card. */}
+      {/* On phones the globe stays behind the copy; desktop keeps its dedicated
+          visual card.
+
+          The phone version is the static fallback, never the live globe. It sits
+          at 25% opacity, aria-hidden and pointer-events-none — a background
+          texture — and the live one costs 1.85 MB of JavaScript plus a running
+          WebGL canvas to draw it. That is not a trade worth making on a phone,
+          and the fallback is what non-WebGL devices already see. */}
       {!isDesktop && (
         <div aria-hidden className="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 opacity-[0.25] sm:top-8 sm:opacity-[0.28] lg:hidden dark:opacity-[0.32]">
           <div className="hero-mobile-background-globe">
-            <HeroGlobeVisual interactive={showInteractiveGlobe} size={250} />
+            <GlobeFallback size={250} />
           </div>
         </div>
       )}
@@ -169,13 +176,13 @@ export default function HeroSection() {
                 </div>
                 <div className="absolute bottom-7 left-7 right-7 flex items-center justify-between rounded-2xl border border-white/70 bg-white/72 p-4 text-ink shadow-xl shadow-brand-900/10 backdrop-blur-xl dark:border-white/10 dark:bg-white/10 dark:text-white dark:shadow-black/20">
                   <span>
-                    <small className="text-slate-soft dark:text-white/50">Boshlanish</small>
-                    <b className="mt-1 flex items-center gap-1"><MapPin size={14} /> Siz turgan joy</b>
+                    <small className="text-slate-soft dark:text-white/50">{t('home.routeFromLabel')}</small>
+                    <b className="mt-1 flex items-center gap-1"><MapPin size={14} /> {t('home.routeFrom')}</b>
                   </span>
                   <span className="mx-4 h-px flex-1 bg-brand-300/60 dark:bg-white/20" />
                   <span className="text-right">
-                    <small className="text-slate-soft dark:text-white/50">Manzil</small>
-                    <b className="mt-1 block">Safar manzilingiz</b>
+                    <small className="text-slate-soft dark:text-white/50">{t('home.routeToLabel')}</small>
+                    <b className="mt-1 block">{t('home.routeTo')}</b>
                   </span>
                 </div>
               </div>

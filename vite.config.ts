@@ -14,6 +14,24 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), tailwindcss()],
+    build: {
+      modulePreload: {
+        // The hero globe is lazy() *and* gated to desktops with WebGL — yet
+        // every visitor downloaded it, because Vite emits a modulepreload link
+        // for the chunk and the browser fetches that regardless of whether the
+        // component ever renders. On a 390px phone that was 1.85 MB of code for
+        // an element the page never shows.
+        //
+        // Preloading stays on for everything else; only the globe and the
+        // things only it needs are dropped, so they download when the desktop
+        // hero actually asks for them.
+        resolveDependencies: (_url, deps) =>
+          deps.filter(
+            (dep) =>
+              !/(react-globe\.gl|HeroGlobe|three|topojson|d3-geo|feature-)/.test(dep),
+          ),
+      },
+    },
     // These deps ship CommonJS — pre-bundle them for the dev server.
     optimizeDeps: {
       include: ['prop-types', 'd3-geo', 'topojson-client', 'react-globe.gl', 'three'],
