@@ -51,6 +51,7 @@ const uz: Translation = {
     popularTitle: 'Mashhur yo‘nalishlar',
     popularPlansTitle: 'Mashhur tariflar',
     popularPlansSubtitle: 'Sayohatchilar eng ko‘p tanlaydigan tariflar va ularning narxi.',
+    popularPlansFrom: 'eSIM internet tarifi',
     popularSubtitle: 'Sayohatchilar hozir eng ko‘p ulanayotgan yo‘nalishlar.',
     howTitle: 'QulaySIM qanday ishlaydi',
     howSubtitle: 'Tanlashdan ulanishgacha — uchta oddiy qadam.',

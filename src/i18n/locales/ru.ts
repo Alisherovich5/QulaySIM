@@ -51,6 +51,7 @@ const ru: Translation = {
     popularTitle: 'Популярные направления',
     popularPlansTitle: 'Популярные тарифы',
     popularPlansSubtitle: 'Тарифы, которые путешественники выбирают чаще всего, и их цена.',
+    popularPlansFrom: 'eSIM интернет-тариф',
     popularSubtitle: 'Куда путешественники подключаются прямо сейчас.',
     howTitle: 'Как работает QulaySIM',
     howSubtitle: 'От выбора до подключения — три простых шага.',

@@ -56,9 +56,15 @@ export default function PopularPlans() {
                     alt=""
                     className="h-8 w-12 shrink-0 rounded-md object-cover ring-1 ring-line"
                   />
+                  {/* The plan title is deliberately not shown: it reads
+                      "Japan 3 GB · 15 days", which repeats the heading above it
+                      and the spec row below it. Three copies of one fact is
+                      noise, not emphasis. */}
                   <span className="min-w-0">
                     <p className="truncate font-700 text-ink">{plan.country_name}</p>
-                    <p className="truncate text-xs text-slate-soft">{plan.title}</p>
+                    <p className="truncate text-xs text-slate-soft">
+                      {t('home.popularPlansFrom')}
+                    </p>
                   </span>
                 </div>
 
