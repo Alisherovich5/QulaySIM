@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, UserPlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { tooManyAttemptsMessage } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import LanguageSwitcher from '../components/LanguageSwitcher'
@@ -51,7 +52,7 @@ export default function Register() {
       if (response?.status === 409 || response?.data?.code === 'conflict') {
         setError(t('auth.emailTaken'))
       } else if (response?.status === 429) {
-        setError(t('auth.tooManyAttempts'))
+        setError(tooManyAttemptsMessage(err, t))
       } else {
         setError(t('auth.createFailed'))
       }

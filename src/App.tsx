@@ -19,6 +19,7 @@ const Account = lazy(() => import('./pages/Account'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const Support = lazy(() => import('./pages/Support'))
+const DeviceCheck = lazy(() => import('./pages/DeviceCheck'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 function ScrollToTop() {
@@ -52,6 +53,7 @@ export default function App() {
                   <Route path="/destinations/:slug" element={<CountryDetail />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/support" element={<Support />} />
+                  <Route path="/device-check" element={<DeviceCheck />} />
                   <Route
                     path="/account"
                     element={

@@ -99,3 +99,23 @@ api.interceptors.response.use(
     }
   },
 )
+
+/**
+ * Turn a 429 into a message that says how long to wait.
+ *
+ * The API returns Retry-After in seconds. Without it the customer only learns
+ * that something is wrong, not that waiting fixes it — which reads as a broken
+ * signup form rather than a limit.
+ */
+export function tooManyAttemptsMessage(
+  err: unknown,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+): string {
+  const headers = (err as { response?: { headers?: Record<string, string> } })?.response?.headers
+  const raw = Number(headers?.['retry-after'])
+  if (!Number.isFinite(raw) || raw <= 0) return t('auth.tooManyAttempts')
+  const minutes = Math.ceil(raw / 60)
+  return minutes <= 1
+    ? t('auth.tooManyAttemptsSoon')
+    : t('auth.tooManyAttemptsIn', { minutes })
+}

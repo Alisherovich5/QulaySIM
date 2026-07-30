@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, LogIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { tooManyAttemptsMessage } from '../lib/api'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import LanguageSwitcher from '../components/LanguageSwitcher'
@@ -35,7 +36,7 @@ export default function Login() {
       const status = (err as { response?: { status?: number } })?.response?.status
       // A rate-limited attempt is not a wrong password; saying so sends the
       // customer off resetting a password that was fine.
-      setError(status === 429 ? t('auth.tooManyAttempts') : t('auth.invalidLogin'))
+      setError(status === 429 ? tooManyAttemptsMessage(err, t) : t('auth.invalidLogin'))
     } finally {
       setLoading(false)
     }

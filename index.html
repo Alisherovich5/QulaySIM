@@ -12,16 +12,9 @@
       rel="stylesheet"
     />
     <title>QulaySIM — sayohat uchun qulay eSIM</title>
-    <script>
-      // Apply theme before paint to avoid a flash of the wrong theme.
-      (function () {
-        try {
-          var t = localStorage.getItem('fastsim_theme');
-          if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-          if (t === 'dark') document.documentElement.classList.add('dark');
-        } catch (e) {}
-      })();
-    </script>
+    <!-- Blocking on purpose: it must run before paint. Kept in its own file
+         because the site's CSP (script-src 'self') blocks inline scripts. -->
+    <script src="/theme-init.js"></script>
   </head>
   <body>
     <div id="root"></div>

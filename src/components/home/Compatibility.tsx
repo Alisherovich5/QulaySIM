@@ -126,6 +126,12 @@ export default function Compatibility() {
               )}
             </div>
             <div className="relative mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+              {/* The device list can only ever be a list. Checking the phone
+                  itself is the definitive answer, so it is offered regardless
+                  of whether the search found a match. */}
+              <Button to="/device-check" variant="ghost" className="w-full px-5 py-2.5 sm:w-fit">
+                {t('home.compatCheckMyPhone')}
+              </Button>
               {!activeDevice && query.trim() && !open && <Button to="/support" variant="ghost" className="w-full px-5 py-2.5 sm:w-fit">{t('home.compatAskSupport')}</Button>}
             </div>
           </div>
