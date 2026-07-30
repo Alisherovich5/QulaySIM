@@ -24,6 +24,7 @@ interface AuthState {
     password: string,
     referralCode?: string,
   ) => Promise<void>
+  loginWithGoogle: (credential: string) => Promise<void>
   logout: () => void
   refresh: () => Promise<void>
 }
@@ -66,6 +67,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthFailureHandler(() => setCustomer(null))
     return () => setAuthFailureHandler(null)
   }, [])
+
+  /**
+   * Exchange a Google ID token for our own session.
+   *
+   * The token is never trusted here — the API verifies its signature, audience
+   * and that Google has confirmed the address. This only carries it across.
+   */
+  const loginWithGoogle = async (credential: string) => {
+    const { data } = await api.post('/auth/google', { credential })
+    tokenStore.set(data.access_token)
+    const me = await api.get<Customer>('/auth/me')
+    setCustomer(me.data)
+  }
 
   const login = async (email: string, password: string) => {
     const form = new URLSearchParams()
@@ -110,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ customer, loading, login, register, logout, refresh }}>
+    <AuthContext.Provider value={{ customer, loading, login, register, loginWithGoogle, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   )

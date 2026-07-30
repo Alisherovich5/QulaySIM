@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { ArrowLeft, UserPlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { tooManyAttemptsMessage } from '../lib/api'
+import GoogleSignIn from '../components/GoogleSignIn'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import LanguageSwitcher from '../components/LanguageSwitcher'
@@ -116,6 +117,11 @@ export default function Register() {
               {!loading && <UserPlus size={18} />} {loading ? t('auth.creating') : t('auth.create')}
             </Button>
           </form>
+
+          <GoogleSignIn
+            onSuccess={() => navigate(from, { replace: true })}
+            onError={setError}
+          />
 
           <p className="mt-5 text-center text-sm text-slate-soft">
             {t('auth.haveAccount')}{' '}

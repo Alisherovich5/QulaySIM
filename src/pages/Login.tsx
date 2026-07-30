@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, LogIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { tooManyAttemptsMessage } from '../lib/api'
+import GoogleSignIn from '../components/GoogleSignIn'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import LanguageSwitcher from '../components/LanguageSwitcher'
@@ -86,6 +87,11 @@ export default function Login() {
               {!loading && <LogIn size={18} />} {loading ? t('auth.signingIn') : t('auth.signIn')}
             </Button>
           </form>
+
+          <GoogleSignIn
+            onSuccess={() => navigate(from, { replace: true })}
+            onError={setError}
+          />
 
           <p className="mt-5 text-center text-sm text-slate-soft">
             {t('auth.noAccount')}{' '}
