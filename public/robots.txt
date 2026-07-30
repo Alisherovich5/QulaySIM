@@ -1,0 +1,12 @@
+# Everything on this site is public catalogue and marketing; nothing here needs
+# hiding from crawlers. The account, checkout and admin paths are disallowed
+# because they are useless to index — they require a session and produce no
+# content — not because they are secret.
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /checkout
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://qulaysim.uz/sitemap.xml

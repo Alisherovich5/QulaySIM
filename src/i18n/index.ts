@@ -32,3 +32,13 @@ i18n
   })
 
 export default i18n
+
+// Keep <html lang> in step with the active language. The served value is `uz`
+// for crawlers that never run this; a visitor who switches language should not
+// be left with a document that claims to be in another one — screen readers
+// pick their pronunciation from it.
+i18n.on('languageChanged', (lng) => {
+  if (typeof document !== 'undefined') {
+    document.documentElement.lang = lng.split('-')[0]
+  }
+})
