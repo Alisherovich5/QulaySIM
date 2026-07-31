@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, UserPlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { tooManyAttemptsMessage } from '../lib/api'
+import { tooManyAttemptsMessage, validationMessage } from '../lib/api'
 import GoogleSignIn from '../components/GoogleSignIn'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
@@ -55,7 +55,9 @@ export default function Register() {
       } else if (response?.status === 429) {
         setError(tooManyAttemptsMessage(err, t))
       } else {
-        setError(t('auth.createFailed'))
+        // A 422 says exactly which rule the password broke; showing the generic
+        // message instead is what made a working form look broken.
+        setError(validationMessage(err, t) ?? t('auth.createFailed'))
       }
     } finally {
       setLoading(false)

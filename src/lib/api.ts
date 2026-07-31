@@ -119,3 +119,38 @@ export function tooManyAttemptsMessage(
     ? t('auth.tooManyAttemptsSoon')
     : t('auth.tooManyAttemptsIn', { minutes })
 }
+
+/**
+ * Turn a 422 from the auth endpoints into a message in the customer's language.
+ *
+ * The API attaches a stable code to each password rule, so the reason can be
+ * translated rather than shown as English prose or swallowed into a generic
+ * failure. The generic version is what made registration look broken: someone
+ * typing "parol123" was told only that it did not work.
+ *
+ * An unrecognised code falls back to the server's own text — wrong language but
+ * still an actual reason, which beats "something went wrong".
+ */
+const PASSWORD_CODES: Record<string, string> = {
+  password_too_short: 'auth.pwTooShort',
+  string_too_short: 'auth.pwTooShort',
+  password_too_long: 'auth.pwTooLong',
+  string_too_long: 'auth.pwTooLong',
+  password_too_common: 'auth.pwTooCommon',
+  password_too_repetitive: 'auth.pwTooRepetitive',
+  password_contains_personal: 'auth.pwPersonal',
+}
+
+export function validationMessage(
+  err: unknown,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+): string | null {
+  const errors = (err as { response?: { data?: { errors?: { type?: string; msg?: string }[] } } })
+    ?.response?.data?.errors
+  if (!Array.isArray(errors) || errors.length === 0) return null
+  const first = errors[0]
+  const key = first.type ? PASSWORD_CODES[first.type] : undefined
+  if (key) return t(key, { min: 8, max: 128 })
+  // Strip Pydantic's "Value error, " prefix before showing server text.
+  return first.msg?.replace(/^Value error,\s*/, '') ?? null
+}
