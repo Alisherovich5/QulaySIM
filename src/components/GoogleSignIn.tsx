@@ -58,7 +58,7 @@ interface Props {
  * cannot work.
  */
 export default function GoogleSignIn({ onSuccess, onError }: Props) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { loginWithGoogle } = useAuth()
   const [clientId, setClientId] = useState<string | null>(null)
   const [failed, setFailed] = useState(false)
@@ -113,6 +113,10 @@ export default function GoogleSignIn({ onSuccess, onError }: Props) {
           size: 'large',
           shape: 'pill',
           text: 'continue_with',
+          // Google takes its button language from the browser unless told
+          // otherwise, so an English page showed an Uzbek button and vice versa.
+          // This is the language the visitor actually chose.
+          locale: i18n.language.split('-')[0],
           // Google clamps to 200–400 itself, but doing it here keeps a narrow
           // slot from producing a button wider than its container.
           width: Math.round(Math.min(400, Math.max(200, available))),
@@ -124,7 +128,7 @@ export default function GoogleSignIn({ onSuccess, onError }: Props) {
       alive = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientId])
+  }, [clientId, i18n.language])
 
   // Nothing at all until the server confirms a client id: an empty slot is
   // better than a placeholder that never becomes a button.

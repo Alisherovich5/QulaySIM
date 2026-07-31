@@ -89,6 +89,7 @@ export default function Register() {
               <input
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                autoComplete="name"
                 className="input mt-1.5"
                 placeholder={t('auth.fullNamePlaceholder')}
               />
@@ -99,16 +100,22 @@ export default function Register() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder={t('auth.emailPlaceholder')}
+                autoComplete="email"
                 className="input mt-1.5"
                 required
               />
             </div>
             <div>
               <label className="text-xs font-600 text-slate-soft">{t('auth.password')}</label>
+              {/* autoComplete is "new-password", not "current-password": it tells a
+                  password manager to offer a generated one rather than autofilling
+                  the password the customer already uses somewhere else. */}
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
                 className="input mt-1.5"
                 placeholder={t('auth.passwordPlaceholder')}
                 required

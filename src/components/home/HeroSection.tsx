@@ -1,6 +1,6 @@
 import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, Globe2, MapPin, Search } from 'lucide-react'
+import { ArrowRight, MapPin, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../ui'
 
@@ -47,14 +47,30 @@ function useHeroGlobe() {
 
 function GlobeFallback({ size }: { size: number }) {
   return (
-    <div
-      className="relative grid place-items-center overflow-hidden rounded-full border border-accent-400/25 bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,.2),transparent_25%),radial-gradient(circle_at_64%_70%,rgba(16,185,129,.38),transparent_36%),linear-gradient(145deg,#073743,#002823)] shadow-[0_0_55px_rgba(52,227,176,.18)]"
-      style={{ width: size, height: size }}
-    >
-      <span aria-hidden className="absolute inset-[11%] rounded-full border border-accent-400/25" />
-      <span aria-hidden className="absolute inset-[25%] rounded-full border border-white/10" />
-      <Globe2 size={size * 0.36} strokeWidth={1.2} className="relative text-accent-400/85" />
-      <span aria-hidden className="absolute bottom-[24%] right-[22%] h-2.5 w-2.5 rounded-full bg-accent-400 shadow-[0_0_0_6px_rgba(52,227,176,.14)]" />
+    <div className="relative grid place-items-center" style={{ width: size, height: size }}>
+      {/* A picture of the real globe, not a stylised badge.
+
+          This used to be a circle with a Globe2 icon in it, which is a different
+          shape from the WebGL globe it stands in for — so a phone showed one
+          Earth and a desktop showed another. The image is a capture of the
+          actual globe, so the two match, and at 18 kB it costs a thousandth of
+          the 1.85 MB the live one does. The mobile hero draws it at 25% opacity
+          as a background texture, where running WebGL for it is not a trade
+          worth making. */}
+      <img
+        src="/hero-globe.webp"
+        srcSet="/hero-globe.webp 384w, /hero-globe@2x.webp 512w"
+        sizes={`${size}px`}
+        alt=""
+        aria-hidden
+        width={size}
+        height={size}
+        // Decorative and above the fold, so it must not be lazy — a hero that
+        // pops in after paint reads as a broken page.
+        decoding="async"
+        className="h-full w-full select-none object-contain"
+        draggable={false}
+      />
     </div>
   )
 }
