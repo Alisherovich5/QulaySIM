@@ -308,3 +308,40 @@
   .hero-ready-pill, .hero-map-point, .hero-map-point-delay,
   .hero-background-globe, .hero-mobile-background-globe { animation: none; }
 }
+
+/* Testimonial marquee ------------------------------------------------------
+   The track holds the reviews twice and slides exactly half its width, so the
+   second copy lands where the first began and the loop has no visible seam.
+
+   Paused on hover and on keyboard focus: a review that slides away mid-sentence
+   is unreadable, and a moving link is hard to click. `animation-play-state` is
+   used rather than removing the animation, so it resumes from where it stopped
+   instead of jumping back to the start.
+
+   Under prefers-reduced-motion the track does not animate at all and becomes a
+   normal horizontal scroller — motion is the accessibility problem here, not
+   the layout. */
+.marquee {
+  overflow: hidden;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-slide var(--marquee-duration, 42s) linear infinite;
+}
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee-slide {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .marquee::-webkit-scrollbar { display: none; }
+  .marquee-track { animation: none; }
+}
