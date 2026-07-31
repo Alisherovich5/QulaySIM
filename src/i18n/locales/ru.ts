@@ -13,6 +13,7 @@ const ru: Translation = {
     copyPromo: 'Копировать код',
     copiedPromo: 'Скопировано',
     promoCta: 'Выбрать тариф',
+    deviceCheck: 'Проверка устройства',
   },
   mobileNav: {
     home: 'Главная',
@@ -48,9 +49,6 @@ const ru: Translation = {
     statRating: 'Средний рейтинг',
     statActivation: 'Ср. активация',
     popularTitle: 'Популярные направления',
-    popularPlansTitle: 'Популярные тарифы',
-    popularPlansSubtitle: 'Тарифы, которые путешественники выбирают чаще всего, и их цена.',
-    popularPlansFrom: 'eSIM интернет-тариф',
     popularSubtitle: 'Куда путешественники подключаются прямо сейчас.',
     howTitle: 'Как работает QulaySIM',
     howSubtitle: 'От выбора до подключения — три простых шага.',
@@ -340,6 +338,8 @@ const ru: Translation = {
     noText: 'В этом устройстве нет eSIM — понадобится физическая SIM. Если сомневаетесь, напишите нам модель, мы проверим.',
     noCta: 'Написать в поддержку',
     privacyNote: 'EID и IMEI — идентификаторы вашего устройства. Их видите только вы, отправлять их нам не нужно. Числа выше — придуманный пример.',
+    copyCode: 'Скопировать код',
+    copied: 'Скопировано',
   },
 
   auth: {
@@ -421,6 +421,16 @@ const ru: Translation = {
       },
     ],
   },
+  region: {
+    'europe': 'Европа',
+    'asia': 'Азия',
+    'middle-east': 'Ближний Восток',
+    'north-america': 'Северная Америка',
+    'africa': 'Африка',
+    'oceania': 'Океания',
+    'latin-america': 'Латинская Америка',
+  },
+
   footer: {
     tagline: 'Удобные тарифы eSIM для путешествий. Выберите тариф, получите QR-код и подключайтесь.',
     contacts: 'Контакты',
@@ -437,6 +447,9 @@ const ru: Translation = {
     paymentMethods: 'Способы оплаты',
     paymentNote: 'Подключаются способы оплаты Visa, Mastercard, Uzcard и Humo.',
     rights: '© 2026 QulaySIM. Все права защищены.',
+    social: 'Мы в соцсетях',
+    telegramChannelAria: 'QulaySIM в Telegram',
+    instagramAria: 'QulaySIM в Instagram',
   },
   referral: {
     tab: 'Пригласить',

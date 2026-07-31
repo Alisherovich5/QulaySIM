@@ -13,6 +13,7 @@ const uz: Translation = {
     copyPromo: 'Kodni nusxalash',
     copiedPromo: 'Nusxalandi',
     promoCta: 'Tarifni tanlash',
+    deviceCheck: 'Qurilma tekshiruvi',
   },
   mobileNav: {
     home: 'Bosh sahifa',
@@ -48,9 +49,6 @@ const uz: Translation = {
     statRating: 'O‘rtacha reyting',
     statActivation: 'O‘rtacha faollashuv',
     popularTitle: 'Mashhur yo‘nalishlar',
-    popularPlansTitle: 'Mashhur tariflar',
-    popularPlansSubtitle: 'Sayohatchilar eng ko‘p tanlaydigan tariflar va ularning narxi.',
-    popularPlansFrom: 'eSIM internet tarifi',
     popularSubtitle: 'Sayohatchilar hozir eng ko‘p ulanayotgan yo‘nalishlar.',
     howTitle: 'QulaySIM qanday ishlaydi',
     howSubtitle: 'Tanlashdan ulanishgacha — uchta oddiy qadam.',
@@ -340,6 +338,8 @@ const uz: Translation = {
     noText: 'Bu qurilmada eSIM moduli yo‘q — jismoniy SIM kerak bo‘ladi. Ishonchingiz komil bo‘lmasa, modelni bizga yozing, tekshirib beramiz.',
     noCta: 'Yordamga yozish',
     privacyNote: 'EID va IMEI — qurilmangizning identifikatorlari. Ularni faqat o‘zingiz ko‘rasiz, bizga yuborish shart emas. Yuqoridagi raqamlar namuna uchun o‘ylab topilgan.',
+    copyCode: 'Kodni nusxalash',
+    copied: 'Nusxalandi',
   },
 
   auth: {
@@ -421,6 +421,16 @@ const uz: Translation = {
       },
     ],
   },
+  region: {
+    'europe': 'Yevropa',
+    'asia': 'Osiyo',
+    'middle-east': 'Yaqin Sharq',
+    'north-america': 'Shimoliy Amerika',
+    'africa': 'Afrika',
+    'oceania': 'Okeaniya',
+    'latin-america': 'Lotin Amerikasi',
+  },
+
   footer: {
     tagline: 'Sayohat uchun qulay eSIM internet tariflari. Tarifni tanlang, QR-kodni oling va ulaning.',
     contacts: 'Kontaktlar',
@@ -437,6 +447,9 @@ const uz: Translation = {
     paymentMethods: 'To‘lov usullari',
     paymentNote: 'Visa, Mastercard, Uzcard va Humo to‘lovlari ulanmoqda.',
     rights: '© 2026 QulaySIM. Barcha huquqlar himoyalangan.',
+    social: 'Biz ijtimoiy tarmoqlarda',
+    telegramChannelAria: 'QulaySIM Telegramda',
+    instagramAria: 'QulaySIM Instagramda',
   },
   referral: {
     tab: 'Taklif',

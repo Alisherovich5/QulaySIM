@@ -27,10 +27,29 @@ export const tokenStore = {
   },
 }
 
+/**
+ * The language the visitor chose, for every request.
+ *
+ * The API localises country, region and plan names server-side and reads the
+ * language from Accept-Language. The browser sends its own, which is not what
+ * the visitor picked — i18next stores that in localStorage and overrides the
+ * browser. Without this header the catalogue came back in whatever language the
+ * browser was set to while the interface was in another one.
+ *
+ * Set here rather than as a `lang` param at each call site so a request added
+ * later is localised by default instead of by remembering.
+ */
+let language = 'uz'
+
+export function setApiLanguage(next: string): void {
+  language = next.split('-')[0] || 'uz'
+}
+
 api.interceptors.request.use((config) => {
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`
   }
+  config.headers['Accept-Language'] = language
   return config
 })
 

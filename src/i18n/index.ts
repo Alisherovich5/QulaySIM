@@ -2,6 +2,7 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
+import { setApiLanguage } from '../lib/api'
 import en from './locales/en'
 import ru from './locales/ru'
 import uz from './locales/uz'
@@ -41,4 +42,12 @@ i18n.on('languageChanged', (lng) => {
   if (typeof document !== 'undefined') {
     document.documentElement.lang = lng.split('-')[0]
   }
+  // The API localises country, region and plan names itself, so it has to be
+  // told too — otherwise the interface switches language and the catalogue
+  // does not.
+  setApiLanguage(lng)
 })
+
+// The detector has already run by this point, so the first request carries the
+// stored choice rather than the default.
+setApiLanguage(i18n.language || 'uz')

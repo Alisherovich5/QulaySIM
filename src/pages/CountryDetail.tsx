@@ -16,7 +16,7 @@ export default function CountryDetail() {
   const [loading, setLoading] = useState(true)
   const [added, setAdded] = useState<number | null>(null)
   const { add } = useCart()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function CountryDetail() {
       .get<CountryDetailType>(`/countries/${slug}`)
       .then((r) => setCountry(r.data))
       .finally(() => setLoading(false))
-  }, [slug])
+  }, [slug, i18n.language])
 
   const handleAdd = (plan: Plan) => {
     if (!country) return

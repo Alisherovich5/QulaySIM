@@ -1,6 +1,5 @@
 import HeroSection from '../components/home/HeroSection'
 import DestinationsExplorer from '../components/home/DestinationsExplorer'
-import PopularPlans from '../components/home/PopularPlans'
 import HowItWorks from '../components/home/HowItWorks'
 import Compatibility from '../components/home/Compatibility'
 import Testimonials from '../components/home/Testimonials'
@@ -19,9 +18,8 @@ export default function Home() {
     <div>
       <HeroSection />
       <div className="border-t border-line/70"><DestinationsExplorer /></div>
-      {/* Right after the destinations grid: that section answers "where", this
-          answers "how much", which is the question that starts a purchase. */}
-      <PopularPlans />
+      {/* HowItWorks carries its own border-y, so it supplies the divider the
+          destinations grid needs below it — no wrapper here. */}
       <HowItWorks />
       <Compatibility />
       <div className="border-t border-line/70"><Testimonials items={content?.testimonials} /></div>

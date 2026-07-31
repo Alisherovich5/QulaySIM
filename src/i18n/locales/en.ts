@@ -11,6 +11,7 @@ const en = {
     copyPromo: 'Copy code',
     copiedPromo: 'Copied',
     promoCta: 'Choose a plan',
+    deviceCheck: 'Device check',
   },
   mobileNav: {
     home: 'Home',
@@ -46,9 +47,6 @@ const en = {
     statRating: 'Average rating',
     statActivation: 'Avg. activation',
     popularTitle: 'Popular destinations',
-    popularPlansTitle: 'Popular plans',
-    popularPlansSubtitle: 'The tariffs travellers choose most, and what they cost.',
-    popularPlansFrom: 'eSIM data plan',
     popularSubtitle: 'Top picks travellers are connecting to right now.',
     howTitle: 'How QulaySIM works',
     howSubtitle: 'From browsing to connected in three simple steps.',
@@ -338,6 +336,8 @@ const en = {
     noText: 'This device has no eSIM — you will need a physical SIM. If you are unsure, send us the model and we will check it for you.',
     noCta: 'Contact support',
     privacyNote: 'Your EID and IMEI identify your device. Only you see them; you do not need to send them to us. The numbers shown above are invented examples.',
+    copyCode: 'Copy code',
+    copied: 'Copied',
   },
 
   auth: {
@@ -419,6 +419,16 @@ const en = {
       },
     ],
   },
+  region: {
+    'europe': 'Europe',
+    'asia': 'Asia',
+    'middle-east': 'Middle East',
+    'north-america': 'North America',
+    'africa': 'Africa',
+    'oceania': 'Oceania',
+    'latin-america': 'Latin America',
+  },
+
   footer: {
     tagline: 'Convenient eSIM data plans for travel. Choose a plan, receive your QR code, and connect.',
     contacts: 'Contacts',
@@ -435,6 +445,9 @@ const en = {
     paymentMethods: 'Payment methods',
     paymentNote: 'Visa, Mastercard, Uzcard and Humo payment options are being connected.',
     rights: '© 2026 QulaySIM. All rights reserved.',
+    social: 'Follow us',
+    telegramChannelAria: 'QulaySIM on Telegram',
+    instagramAria: 'QulaySIM on Instagram',
   },
   referral: {
     tab: 'Invite',

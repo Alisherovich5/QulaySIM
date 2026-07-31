@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowLeft,
   ArrowRight,
   Check,
+  Copy,
   Phone,
   Settings,
   Smartphone,
@@ -10,6 +12,8 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button, Card, IconBadge } from '../components/ui'
+
+const DIAL_CODE = '*#06#'
 
 /**
  * Illustration of the dialler code, drawn rather than screenshotted.
@@ -23,9 +27,12 @@ function DiallerMock() {
   return (
     <div className="mx-auto w-full max-w-[220px] rounded-[2rem] bg-[#111] p-4 shadow-xl ring-1 ring-black/20">
       <p className="py-4 text-center font-display text-2xl font-600 tracking-wider text-white">
-        *#06#
+        {DIAL_CODE}
       </p>
-      <div className="grid grid-cols-3 gap-2.5">
+      {/* The keypad and the call button are the drawing, not information: a
+          screen reader announcing "1 2 3 4 5 6 7 8 9 star 0 hash" adds nothing
+          the heading above has not already said. */}
+      <div aria-hidden className="grid grid-cols-3 gap-2.5">
         {keys.map((k) => (
           <span
             key={k}
@@ -39,10 +46,48 @@ function DiallerMock() {
           </span>
         ))}
       </div>
-      <span className="mx-auto mt-3 grid h-11 w-11 place-items-center rounded-full bg-[#31c554] text-white">
+      <span
+        aria-hidden
+        /* Not a brand token on purpose: this imitates the phone's own dialler,
+           and the call button is green on both iOS and Android. Painting it in
+           our brand colour would stop it reading as the thing being copied. */
+        className="mx-auto mt-3 grid h-11 w-11 place-items-center rounded-full bg-[#31c554] text-white"
+      >
         <Phone size={18} className="fill-white" />
       </span>
     </div>
+  )
+}
+
+/**
+ * Typing `*` and `#` means switching keyboards on most phones, and a mistyped
+ * code silently does nothing — so the code is offered as something to paste
+ * into the dialler rather than something to transcribe.
+ */
+function CopyCode() {
+  const { t } = useTranslation()
+  const [copied, setCopied] = useState(false)
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(DIAL_CODE)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard denied (insecure origin, or the user said no). The code is
+      // printed right above, so there is nothing to recover from.
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={copy}
+      className="inline-flex min-h-11 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-600 text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+    >
+      {copied ? <Check size={15} className="text-brand-600" /> : <Copy size={15} />}
+      {copied ? t('device.copied') : t('device.copyCode')}
+    </button>
   )
 }
 
@@ -102,9 +147,11 @@ export default function DeviceCheck() {
 
   return (
     <div className="container-page py-8 sm:py-12">
+      {/* Pulled out of the text flow with -ml/-mt so the 44px thumb target does
+          not push the heading down on a phone. */}
       <Link
         to="/"
-        className="inline-flex items-center gap-1.5 text-sm font-600 text-slate-soft transition hover:text-brand-600"
+        className="-ml-2 -mt-2 inline-flex min-h-11 items-center gap-1.5 px-2 py-2 text-sm font-600 text-slate-soft transition hover:text-brand-600"
       >
         <ArrowLeft size={15} /> {t('device.back')}
       </Link>
@@ -163,7 +210,14 @@ export default function DeviceCheck() {
         </Card>
 
         <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-center lg:flex-col">
-          <DiallerMock />
+          {/* A fixed 220px from sm up, not `w-auto`: the dialler sizes itself
+              with `w-full max-w-[220px]`, and inside a shrink-to-fit parent a
+              percentage width stops contributing, so the column collapsed to
+              the width of the Copy button and squashed the keypad. */}
+          <div className="flex w-full flex-col items-center gap-3 sm:w-[220px]">
+            <DiallerMock />
+            <CopyCode />
+          </div>
           <ArrowRight
             size={22}
             className="hidden shrink-0 text-slate-soft sm:block lg:rotate-90"

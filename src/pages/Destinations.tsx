@@ -13,13 +13,13 @@ export default function Destinations() {
   const [countries, setCountries] = useState<Country[]>([])
   const [regions, setRegions] = useState<Region[]>([])
   const [loading, setLoading] = useState(true)
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const search = params.get('search') || ''
   const region = params.get('region') || ''
 
   useEffect(() => {
     api.get<Region[]>('/regions').then((r) => setRegions(r.data))
-  }, [])
+  }, [i18n.language])
 
   useEffect(() => {
     setLoading(true)
@@ -29,7 +29,7 @@ export default function Destinations() {
       })
       .then((r) => setCountries(r.data))
       .finally(() => setLoading(false))
-  }, [search, region])
+  }, [search, region, i18n.language])
 
   const updateParam = (key: string, value: string) => {
     const next = new URLSearchParams(params)

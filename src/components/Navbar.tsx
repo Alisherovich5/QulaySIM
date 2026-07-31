@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Globe, LifeBuoy, LogOut, ShoppingBag, UserRound } from 'lucide-react'
+import { Globe, LifeBuoy, LogOut, ShoppingBag, Smartphone, UserRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Logo from './Logo'
 import CurrencySwitcher from './CurrencySwitcher'
@@ -33,6 +33,12 @@ export default function Navbar() {
         <nav className="hidden items-center gap-7 xl:flex">
           <NavLink to="/destinations" className={linkClass}>
             <Globe size={16} /> {t('nav.destinations')}
+          </NavLink>
+          {/* "Will my phone work?" is the objection that stops the sale, so it
+              gets a top-level link rather than living only in a section of the
+              landing page that a visitor has to scroll to. */}
+          <NavLink to="/device-check" className={linkClass}>
+            <Smartphone size={16} /> {t('nav.deviceCheck')}
           </NavLink>
           <NavLink to="/support" className={linkClass}>
             <LifeBuoy size={16} /> {t('nav.support')}
