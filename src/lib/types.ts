@@ -126,6 +126,12 @@ export interface Promo {
   text: string
   code: string
   cta_link: string
+  /** Short line for the bar above the nav; empty means use the built-in wording. */
+  strip_text: string
+  /** From the promo code that actually applies the discount, so the advertised
+   *  figure and the one checkout takes off cannot differ. Null if no code linked. */
+  discount_type: 'percent' | 'fixed' | null
+  discount_value: number | null
 }
 
 export interface LandingContent {

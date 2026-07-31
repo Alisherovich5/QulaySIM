@@ -22,11 +22,12 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Outside the sticky header on purpose. Pinned, the promo strip would
-          hold ~40px of every screen for a discount the visitor has already
-          read; scrolling it away leaves the pinned bar as just the nav. */}
-      <PromoStrip />
+      {/* Inside the sticky header, so the offer stays on screen while someone
+          browses. I had moved it out to reclaim ~40px per screen; that was the
+          wrong call for a storefront whose main lever is the discount code —
+          a promotion nobody can see while choosing a plan is not a promotion. */}
       <header className="sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md">
+      <PromoStrip />
       <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
         <Logo />
         <nav className="hidden items-center gap-7 xl:flex">

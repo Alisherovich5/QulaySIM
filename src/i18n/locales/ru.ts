@@ -8,6 +8,8 @@ const ru: Translation = {
     signIn: 'Войти',
     promoMessage: 'Скидка 10% на первый eSIM по коду WELCOME10',
     promoShort: 'Скидка 10%',
+    promoShortPercent: 'скидка {{value}}%',
+    promoShortFixed: 'скидка {{value}}',
     copyPromo: 'Копировать код',
     copiedPromo: 'Скопировано',
     promoCta: 'Выбрать тариф',

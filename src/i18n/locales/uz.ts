@@ -8,6 +8,8 @@ const uz: Translation = {
     signIn: 'Kirish',
     promoMessage: 'WELCOME10 bilan birinchi eSIM uchun 10% chegirma',
     promoShort: '10% chegirma',
+    promoShortPercent: '{{value}}% chegirma',
+    promoShortFixed: '{{value}} chegirma',
     copyPromo: 'Kodni nusxalash',
     copiedPromo: 'Nusxalandi',
     promoCta: 'Tarifni tanlash',

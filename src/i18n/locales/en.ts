@@ -6,6 +6,8 @@ const en = {
     signIn: 'Sign in',
     promoMessage: '10% off your first eSIM with WELCOME10',
     promoShort: '10% off',
+    promoShortPercent: '{{value}}% off',
+    promoShortFixed: '{{value}} off',
     copyPromo: 'Copy code',
     copiedPromo: 'Copied',
     promoCta: 'Choose a plan',
