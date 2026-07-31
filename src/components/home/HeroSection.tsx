@@ -124,15 +124,19 @@ export default function HeroSection() {
       {/* On phones the globe stays behind the copy; desktop keeps its dedicated
           visual card.
 
-          The phone version is the static fallback, never the live globe. It sits
-          at 25% opacity, aria-hidden and pointer-events-none — a background
-          texture — and the live one costs 1.85 MB of JavaScript plus a running
-          WebGL canvas to draw it. That is not a trade worth making on a phone,
-          and the fallback is what non-WebGL devices already see. */}
+          The live globe, not a still: it turns, and that motion is the point of
+          it. I had swapped phones onto the static image to save the 1.85 MB the
+          WebGL bundle costs — but the rotation is a deliberate part of the hero,
+          and a frozen Earth is not the same thing. The chunk is still excluded
+          from modulePreload, so it loads after the page is usable rather than
+          competing with it.
+
+          The still image remains the fallback for devices without WebGL and for
+          anyone who asked for reduced motion. */}
       {!isDesktop && (
         <div aria-hidden className="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 opacity-[0.25] sm:top-8 sm:opacity-[0.28] lg:hidden dark:opacity-[0.32]">
           <div className="hero-mobile-background-globe">
-            <GlobeFallback size={250} />
+            <HeroGlobeVisual interactive={showInteractiveGlobe} size={250} />
           </div>
         </div>
       )}
