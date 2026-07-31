@@ -103,12 +103,19 @@ export default function GoogleSignIn({ onSuccess, onError }: Props) {
           auto_select: false,
           cancel_on_tap_outside: true,
         })
+        // Google needs a pixel width and will not take a percentage, so it is
+        // measured from the slot it renders into. A fixed 320 overflowed the
+        // card on a 390px phone by 14px — the button is inside a max-w-md card
+        // with p-8, which leaves 286px.
+        const available = host.current.getBoundingClientRect().width
         window.google.accounts.id.renderButton(host.current, {
           theme: 'outline',
           size: 'large',
           shape: 'pill',
           text: 'continue_with',
-          width: 320,
+          // Google clamps to 200–400 itself, but doing it here keeps a narrow
+          // slot from producing a button wider than its container.
+          width: Math.round(Math.min(400, Math.max(200, available))),
         })
       })
       .catch(() => alive && setFailed(true))
@@ -140,7 +147,7 @@ export default function GoogleSignIn({ onSuccess, onError }: Props) {
       </div>
       {/* Google renders its own button in here; its markup is fixed by the
           brand guidelines, so it is centred rather than restyled. */}
-      <div ref={host} className="mt-4 flex justify-center [color-scheme:light]" />
+      <div ref={host} className="mt-4 flex w-full justify-center [color-scheme:light]" />
     </div>
   )
 }
