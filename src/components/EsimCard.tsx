@@ -24,7 +24,7 @@ function daysUntil(iso: string | null): number | null {
 }
 
 export default function EsimCard({ esim, onActivate, onTopup, activating, toppingUp }: Props) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const total = esim.data_total_mb
   const unlimited = total === 0
   const pct = unlimited ? 0 : Math.min(100, Math.round((esim.data_used_mb / total) * 100))
@@ -91,7 +91,7 @@ export default function EsimCard({ esim, onActivate, onTopup, activating, toppin
                 <CalendarClock size={13} />
                 {daysLeft !== null && esim.status !== 'expired'
                   ? t('account.daysLeft', { days: daysLeft })
-                  : t('account.expires', { date: formatDate(esim.expires_at) })}
+                  : t('account.expires', { date: formatDate(esim.expires_at, i18n.language) })}
               </p>
             </div>
           </div>

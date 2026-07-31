@@ -139,6 +139,12 @@ const PASSWORD_CODES: Record<string, string> = {
   password_too_common: 'auth.pwTooCommon',
   password_too_repetitive: 'auth.pwTooRepetitive',
   password_contains_personal: 'auth.pwPersonal',
+  avatar_empty: 'account.avatarFailed',
+  avatar_too_large: 'account.avatarTooLarge',
+  avatar_not_an_image: 'account.avatarNotImage',
+  avatar_bad_format: 'account.avatarBadFormat',
+  avatar_too_many_pixels: 'account.avatarTooBig',
+  avatar_unreadable: 'account.avatarFailed',
 }
 
 export function validationMessage(
@@ -150,7 +156,7 @@ export function validationMessage(
   if (!Array.isArray(errors) || errors.length === 0) return null
   const first = errors[0]
   const key = first.type ? PASSWORD_CODES[first.type] : undefined
-  if (key) return t(key, { min: 8, max: 128 })
+  if (key) return t(key, { min: 8, max: 128, mb: 5 })
   // Strip Pydantic's "Value error, " prefix before showing server text.
   return first.msg?.replace(/^Value error,\s*/, '') ?? null
 }

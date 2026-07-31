@@ -14,7 +14,7 @@ const STATUS_STYLE: Record<string, string> = {
 }
 
 export default function OrderRow({ order }: { order: Order }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   return (
     <Card className="flex flex-wrap items-center gap-3 p-4 sm:flex-nowrap sm:gap-4">
       <IconBadge icon={Receipt} tone="brand" size="md" />
@@ -23,7 +23,7 @@ export default function OrderRow({ order }: { order: Order }) {
           {t('account.orderNo', { id: order.id })}
         </p>
         <p className="flex items-center gap-2 text-xs text-slate-soft">
-          {formatDate(order.created_at)}
+          {formatDate(order.created_at, i18n.language)}
           <span className="inline-flex items-center gap-1">
             <QrCode size={12} /> {t('account.esimCount', { count: order.esims.length })}
           </span>

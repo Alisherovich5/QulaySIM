@@ -176,5 +176,7 @@ export interface AccountSummary {
   countries_connected: number
   total_spent: number
   orders_count: number
+  /** Inline data URI, or null when the customer has not set a photo. */
+  avatar_url: string | null
   passport: PassportCountry[]
 }

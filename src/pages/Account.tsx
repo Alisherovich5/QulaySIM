@@ -137,7 +137,7 @@ export default function Account() {
   return (
     <div className="container-page py-6 sm:py-10">
       <Reveal>
-        <ProfileHeader summary={summary} onLogout={handleLogout} />
+        <ProfileHeader summary={summary} onLogout={handleLogout} onSummaryChange={setSummary} />
       </Reveal>
 
       {/* Stat tiles */}
