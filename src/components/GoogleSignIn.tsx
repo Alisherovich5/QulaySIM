@@ -14,6 +14,20 @@ type GoogleGlobal = {
   }
 }
 
+/**
+ * Whether the rendered button is a real one.
+ *
+ * When the page's origin is not on the OAuth client's allow-list, Google still
+ * injects an iframe and logs the reason to the console — but the button does
+ * nothing when clicked. A dead control is worse than no control: it reads as a
+ * broken site rather than a feature that is not available, and the operator
+ * only finds out when someone complains.
+ */
+function buttonIsLive(host: HTMLElement): boolean {
+  const frame = host.querySelector('iframe')
+  return Boolean(frame && frame.clientWidth > 0 && frame.clientHeight > 0)
+}
+
 declare global {
   interface Window {
     google?: GoogleGlobal
@@ -78,6 +92,7 @@ export default function GoogleSignIn({ onSuccess, onError }: Props) {
   useEffect(() => {
     if (!clientId || !host.current) return
     let alive = true
+    const timers: number[] = []
 
     loadScript()
       .then(() => {
@@ -121,11 +136,34 @@ export default function GoogleSignIn({ onSuccess, onError }: Props) {
           // slot from producing a button wider than its container.
           width: Math.round(Math.min(400, Math.max(200, available))),
         })
+
+        // Google renders the iframe asynchronously and, on a rejected origin,
+        // gives up without calling anything back — so the only reliable signal
+        // is that nothing with a size ever appeared.
+        //
+        // Polled rather than checked once: a single deadline would call a slow
+        // render a failure and hide a button that was about to work. This gives
+        // up only after five seconds of nothing.
+        const deadline = Date.now() + 5000
+        const poll = window.setInterval(() => {
+          if (!alive || !host.current) {
+            window.clearInterval(poll)
+            return
+          }
+          if (buttonIsLive(host.current)) {
+            window.clearInterval(poll)
+          } else if (Date.now() > deadline) {
+            window.clearInterval(poll)
+            setFailed(true)
+          }
+        }, 300)
+        timers.push(poll)
       })
       .catch(() => alive && setFailed(true))
 
     return () => {
       alive = false
+      timers.forEach(window.clearInterval)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientId, i18n.language])
