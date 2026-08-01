@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   AlertTriangle,
@@ -30,6 +30,54 @@ import ReferralPanel from '../components/account/ReferralPanel'
 import ReviewPanel from '../components/account/ReviewPanel'
 
 type Tab = 'map' | 'esims' | 'orders' | 'review' | 'referral' | 'settings'
+
+/** Small uppercase label that opens a band of the page. */
+function Eyebrow({ children }: { children: ReactNode }) {
+  return (
+    <p className="text-[11px] font-700 uppercase leading-none tracking-[0.12em] text-slate-soft">
+      {children}
+    </p>
+  )
+}
+
+/**
+ * Heading for a tab panel.
+ *
+ * The panels used to start straight into content, so nothing told you where
+ * one section ended and the next began — the page had no rhythm below the
+ * stats. A display heading, a quiet subtitle and an optional count give each
+ * panel the same opening beat.
+ */
+function SectionHead({
+  title,
+  subtitle,
+  count,
+  action,
+}: {
+  title: string
+  subtitle?: string
+  count?: number
+  action?: ReactNode
+}) {
+  return (
+    <div className="mb-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2.5">
+          <h2 className="font-display text-lg font-700 leading-tight tracking-[-0.015em] sm:text-xl">
+            {title}
+          </h2>
+          {count !== undefined && (
+            <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-700 tabular-nums text-slate-soft ring-1 ring-line">
+              {count}
+            </span>
+          )}
+        </div>
+        {subtitle && <p className="mt-1 text-sm leading-snug text-slate-soft">{subtitle}</p>}
+      </div>
+      {action}
+    </div>
+  )
+}
 
 export default function Account() {
   const { logout } = useAuth()
@@ -95,15 +143,19 @@ export default function Account() {
   }
 
   if (loading) {
+    /* Shaped like the page it precedes — header, four tiles, rail, panel —
+       so the layout does not jump when the data lands. */
     return (
-      <div className="container-page py-10">
-        <div className="h-44 animate-pulse rounded-2xl bg-line/50" />
-        <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="container-page py-6 sm:py-10" aria-busy="true">
+        <div className="h-56 animate-pulse rounded-2xl bg-line/50 sm:h-60" />
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4 lg:grid-cols-4">
           {[0, 1, 2, 3].map((i) => (
             <div key={i} className="h-32 animate-pulse rounded-2xl bg-line/50" />
           ))}
         </div>
+        <div className="mt-7 h-14 animate-pulse rounded-2xl bg-line/50 sm:mt-9" />
         <div className="mt-6 h-64 animate-pulse rounded-2xl bg-line/50" />
+        <span className="sr-only">{t('account.loading')}</span>
       </div>
     )
   }
@@ -112,12 +164,12 @@ export default function Account() {
     return (
       <div className="container-page py-20">
         <div className="mx-auto max-w-md text-center">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-red-500/10 text-red-500">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-red-500/10 text-red-500 ring-1 ring-red-500/15">
             <AlertTriangle size={26} />
           </span>
-          <h1 className="mt-4 text-xl font-700">{t('account.errorTitle')}</h1>
+          <h1 className="mt-4 font-display text-xl font-700">{t('account.errorTitle')}</h1>
           <p className="mt-2 text-slate-soft">{t('account.errorSubtitle')}</p>
-          <Button onClick={load} className="mx-auto mt-5 w-fit px-6 py-3">
+          <Button onClick={load} className="focus-ring mx-auto mt-5 w-fit px-6 py-3">
             <RotateCw size={16} /> {t('account.retry')}
           </Button>
         </div>
@@ -134,71 +186,129 @@ export default function Account() {
     { key: 'settings', label: t('account.tabSettings'), icon: SignalHigh },
   ]
 
+  const hasQuota = summary.data_total_mb > 0
+  const gbLeft = Math.max(0, (summary.data_total_mb - summary.data_used_mb) / 1024)
+
   return (
     <div className="container-page py-6 sm:py-10">
       <Reveal>
         <ProfileHeader summary={summary} onLogout={handleLogout} onSummaryChange={setSummary} />
       </Reveal>
 
-      {/* Stat tiles */}
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:mt-6 sm:gap-4 lg:grid-cols-4">
-        <Reveal delay={0}>
-          <StatTile icon={SignalHigh} value={summary.active_esims} label={t('account.statActive')} tone="accent" />
-        </Reveal>
-        <Reveal delay={60}>
-          <StatTile
-            icon={QrCode}
-            value={summary.data_used_mb / 1024}
-            decimals={1}
-            suffix=" GB"
-            label={t('account.statData')}
-            tone="brand"
-          />
-        </Reveal>
-        <Reveal delay={120}>
-          <StatTile icon={Globe2} value={summary.countries_connected} label={t('account.statCountries')} tone="violet" />
-        </Reveal>
-        <Reveal delay={180}>
-          <StatTile icon={DollarSign} value={summary.total_spent} decimals={2} prefix="$" label={t('account.statSpent')} tone="amber" />
-        </Reveal>
+      {/* Overview -------------------------------------------------------- */}
+      <div className="mt-7 sm:mt-9">
+        <Eyebrow>{t('account.overview')}</Eyebrow>
+        <div className="mt-3 grid grid-cols-2 items-stretch gap-3 sm:gap-4 lg:grid-cols-4">
+          <Reveal delay={0} className="h-full">
+            <StatTile
+              icon={SignalHigh}
+              value={summary.active_esims}
+              label={t('account.statActive')}
+              tone="accent"
+              live={summary.active_esims > 0}
+            />
+          </Reveal>
+          <Reveal delay={60} className="h-full">
+            <StatTile
+              icon={QrCode}
+              value={summary.data_used_mb / 1024}
+              decimals={1}
+              suffix=" GB"
+              label={t('account.statData')}
+              tone="brand"
+              featured
+              meter={
+                hasQuota
+                  ? {
+                      ratio: summary.data_used_mb / summary.data_total_mb,
+                      caption: t('account.statDataLeft', { gb: gbLeft.toFixed(1) }),
+                    }
+                  : undefined
+              }
+            />
+          </Reveal>
+          <Reveal delay={120} className="h-full">
+            <StatTile
+              icon={Globe2}
+              value={summary.countries_connected}
+              label={t('account.statCountries')}
+              tone="violet"
+            />
+          </Reveal>
+          <Reveal delay={180} className="h-full">
+            <StatTile
+              icon={DollarSign}
+              value={summary.total_spent}
+              decimals={2}
+              prefix="$"
+              label={t('account.statSpent')}
+              tone="amber"
+            />
+          </Reveal>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="account-tab-rail mt-3 -mx-5 flex snap-x gap-2 overflow-x-auto overscroll-x-contain px-5 pb-4 pt-4 [scrollbar-width:none] md:mt-7 md:mx-0 md:rounded-xl md:bg-mist md:p-1 md:ring-1 md:ring-line">
-        {tabs.map((tb) => (
-          <button
-            key={tb.key}
-            onClick={() => setTab(tb.key)}
-            aria-pressed={tab === tb.key}
-            className={`flex min-w-[112px] snap-start items-center justify-center gap-2 rounded-xl px-3 py-3 text-xs font-700 transition md:min-w-0 md:flex-1 md:rounded-lg md:text-sm md:font-600 ${
-              tab === tb.key
-                ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20 md:bg-surface md:text-brand-600 md:shadow-sm'
-                : 'bg-surface text-slate-soft ring-1 ring-line hover:text-ink md:bg-transparent md:ring-0'
-            }`}
-          >
-            <tb.icon size={16} className="shrink-0" /> <span className="min-w-0 truncate">{tb.label}</span>
-          </button>
-        ))}
+      {/* Tabs ------------------------------------------------------------ */}
+      {/* Labels are no longer clipped to a fixed 112px on a phone — the rail
+          scrolls and each tab is as wide as its word. */}
+      <div className="-mx-5 mt-7 px-5 sm:mx-0 sm:px-0 md:mt-9">
+        {/* p-1.5 is load-bearing: the rail is a scroll container, so it clips
+            its children — the 2px focus outline plus its 2px offset has to fit
+            inside the padding or the first and last tab lose their ring. */}
+        <div className="account-tab-rail flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain rounded-2xl bg-surface-2 p-1.5 ring-1 ring-line [scrollbar-width:none] dark:bg-canvas">
+          {tabs.map((tb) => {
+            const active = tab === tb.key
+            return (
+              <button
+                key={tb.key}
+                type="button"
+                onClick={() => setTab(tb.key)}
+                aria-pressed={active}
+                className={`focus-ring flex min-h-11 shrink-0 snap-start items-center justify-center gap-2 rounded-xl px-3.5 text-sm font-600 whitespace-nowrap transition-[background-color,color,box-shadow] duration-200 md:min-w-0 md:flex-1 ${
+                  active
+                    ? 'elev-1 bg-surface text-brand-600 dark:bg-surface-2 dark:text-accent-400'
+                    : 'text-slate-soft hover:text-ink'
+                }`}
+              >
+                <tb.icon size={16} className="shrink-0" aria-hidden />
+                <span className="md:truncate">{tb.label}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
-      <div className="mt-5 sm:mt-6">
+      {/* Panel ----------------------------------------------------------- */}
+      <div key={tab} className="page-in mt-6 sm:mt-8">
         {tab === 'map' && (
-          <div className="space-y-6">
+          <div className="space-y-5 sm:space-y-6">
             <WorldMap passport={summary.passport} />
             <PassportCard passport={summary.passport} />
           </div>
         )}
 
         {tab === 'esims' && (
-          <div className="space-y-6">
+          <div>
+            <SectionHead
+              title={t('account.tabEsims')}
+              subtitle={t('account.esimsSubtitle')}
+              count={esims.length || undefined}
+              action={
+                esims.length > 0 ? (
+                  <Button to="/destinations" variant="ghost" className="focus-ring min-h-11 py-0 text-sm">
+                    <Plus size={16} /> {t('account.buyAnother')}
+                  </Button>
+                ) : undefined
+              }
+            />
             {esims.length === 0 ? (
-              <Card className="p-12 text-center">
-                <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-brand-50 text-brand-500">
+              <Card className="elev-1 px-6 py-12 text-center">
+                <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-500/10 text-brand-600 ring-1 ring-brand-500/15 dark:text-brand-300">
                   <QrCode size={26} />
                 </span>
-                <h2 className="mt-4 text-xl font-700">{t('account.emptyTitle')}</h2>
-                <p className="mt-2 text-slate-soft">{t('account.emptySubtitle')}</p>
-                <Button to="/destinations" className="mx-auto mt-5 w-fit px-6 py-3">
+                <h3 className="mt-4 font-display text-xl font-700">{t('account.emptyTitle')}</h3>
+                <p className="mx-auto mt-2 max-w-sm text-slate-soft">{t('account.emptySubtitle')}</p>
+                <Button to="/destinations" className="focus-ring mx-auto mt-5 w-fit px-6 py-3">
                   <Plus size={16} /> {t('account.buyAnother')}
                 </Button>
               </Card>
@@ -221,15 +331,26 @@ export default function Account() {
         )}
 
         {tab === 'orders' && (
-          <div className="space-y-3">
+          <div>
+            <SectionHead
+              title={t('account.tabOrders')}
+              subtitle={t('account.ordersSubtitle')}
+              count={orders.length || undefined}
+            />
             {orders.length === 0 ? (
-              <Card className="p-12 text-center text-slate-soft">{t('account.noOrders')}</Card>
+              <Card className="elev-1 px-6 py-12 text-center text-slate-soft">
+                {t('account.noOrders')}
+              </Card>
             ) : (
-              orders.map((o, i) => (
-                <Reveal key={o.id} delay={i * 40}>
-                  <OrderRow order={o} />
-                </Reveal>
-              ))
+              /* One card with hairline dividers instead of five detached
+                 boxes: an order history is a list, and reads as one. */
+              <Reveal>
+                <ul className="card elev-1 divide-y divide-line overflow-hidden">
+                  {orders.map((o, i) => (
+                    <OrderRow key={o.id} order={o} index={i} />
+                  ))}
+                </ul>
+              </Reveal>
             )}
           </div>
         )}
@@ -264,10 +385,10 @@ export default function Account() {
               </div>
             </div>
             <div className="mt-6 grid gap-3 sm:flex sm:flex-row-reverse sm:justify-end">
-              <Button onClick={confirmLogout} className="min-h-12 w-full bg-red-500 px-5 hover:bg-red-600 sm:w-auto">
+              <Button onClick={confirmLogout} className="focus-ring min-h-12 w-full bg-red-500 px-5 hover:bg-red-600 sm:w-auto">
                 {t('account.logoutConfirm')}
               </Button>
-              <Button variant="ghost" onClick={() => setShowLogoutConfirm(false)} className="min-h-12 w-full px-5 sm:w-auto">
+              <Button variant="ghost" onClick={() => setShowLogoutConfirm(false)} className="focus-ring min-h-12 w-full px-5 sm:w-auto">
                 {t('account.logoutCancel')}
               </Button>
             </div>

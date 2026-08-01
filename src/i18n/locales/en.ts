@@ -27,6 +27,7 @@ const en = {
     loading: 'Loading…',
     goToCart: 'Go to cart',
     currency: 'Display currency',
+    close: 'Close',
   },
   home: {
     badge: 'Trusted by travellers in 200+ destinations',
@@ -256,7 +257,14 @@ const en = {
     reviewSending: 'Submitting…',
     reviewError: 'Could not submit your review. Please try again.',
     memberSince: 'Member since {{date}}',
-    countriesConnected: '{{count}} countries connected',
+    countriesConnected_one: '{{count}} country connected',
+    statDataLeft: '{{gb}} GB left',
+    // English never selects these two; Russian does. They are declared here
+    // because the Translation type is derived from this file, and every
+    // language must be able to supply the categories it needs.
+    countriesConnected_few: '{{count}} countries connected',
+    countriesConnected_many: '{{count}} countries connected',
+    countriesConnected_other: '{{count}} countries connected',
     daysLeft: '{{days}} days left',
     topUp: 'Top up +1GB',
     toppingUp: 'Adding…',
@@ -301,6 +309,14 @@ const en = {
     saveFailed: 'Could not save changes',
     session: 'Session',
     sessionHint: 'Sign out of QulaySIM on this device.',
+    avatarAdd: 'Add photo',
+    avatarOptions: 'Photo options',
+    avatarRemoving: 'Removing photo…',
+    avatarUploading: 'Uploading photo…',
+    esimsSubtitle: 'Activate, top up and scan your QR codes.',
+    globeAria: 'Travel globe showing the countries you have connected to and where plans are available',
+    ordersSubtitle: 'Every purchase, newest first.',
+    overview: 'Overview',
   },
   device: {
     back: 'Back to home',
@@ -338,6 +354,10 @@ const en = {
     privacyNote: 'Your EID and IMEI identify your device. Only you see them; you do not need to send them to us. The numbers shown above are invented examples.',
     copyCode: 'Copy code',
     copied: 'Copied',
+    mockDialLabel: 'What you type',
+    mockDone: 'Done',
+    mockResultLabel: 'What you see',
+    mockSheetNote: 'Sample values. The bars are a drawing, not a scannable code.',
   },
 
   auth: {

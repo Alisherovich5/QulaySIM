@@ -29,13 +29,30 @@
   --color-accent-400: #34e3b0;
   --color-accent-500: #10b981;
   --color-accent-600: #059669;
+  /* Status text, one step per surface.
+     The colour ramps above are fixed — only the semantic tokens flip — so a
+     single step cannot clear both backgrounds. Measured against #ffffff and
+     the dark surface #0d2730: every pair below is >= 4.5:1 on its own side.
+     The -ink names mean "text", as opposed to the dots and fills, which stay
+     saturated because a 10px dot is a graphic and only needs 3:1. */
+  --color-status-good-ink: #0c875e;
+  --color-status-warn-ink: #9e6d14;
+  --color-status-bad-ink: #d73d3d;
+  --color-accent-700: #04875e;
+  --color-accent-800: #024a34;
 
   /* eSIMCard-style gold — used for stars, ratings and "popular" highlights */
   --color-gold-400: #f1d98a;
   --color-gold-500: #d4af37;
   --color-gold-600: #b8941f;
+  /* The first gold that carries text on white: 600 is 2.9:1. */
+  --color-gold-700: #907318;
 
   --color-amber-signal: #ffb020;
+  /* Violet accent. Existed only as a bare hex inside IconBadge, which meant it
+     could not be darkened for the dark theme — #8938fa on a near-black surface
+     is close to unreadable. Now a token with a lifted dark value. */
+  --color-violet-signal: #8938fa;
 
   --color-ink: #0e1525;
   --color-slate-soft: #5b6478;
@@ -54,6 +71,9 @@
    these CSS variables (bg-surface, bg-canvas, text-ink, text-slate-soft,
    ring-line, bg-mist …) flip automatically. */
 .dark {
+    --color-status-good-ink: #34e3b0;
+    --color-status-warn-ink: #ffb020;
+    --color-status-bad-ink: #fb4747;
   --color-canvas: #06141a;
   --color-surface: #0d2730;
   --color-surface-2: #123440;
@@ -61,6 +81,55 @@
   --color-slate-soft: #8fb0ab;
   --color-mist: #0d2730;
   --color-line: #1d3d47;
+  --color-violet-signal: #b98bff;
+}
+
+/* ------------------------------------------------------------------ */
+/* Elevation                                                           */
+/* ------------------------------------------------------------------ */
+/* Cards used to be a 1px ring on a near-white canvas, which reads as a
+   drawn rectangle rather than a surface sitting above the page. These are
+   two-part shadows — a tight contact shadow plus a wide, very soft ambient
+   one — and they are theme-aware: on a dark canvas a grey shadow is
+   invisible, so the dark values go near-black and add a 1px inset highlight
+   along the top edge, which is what actually reads as "raised" there. */
+:root {
+  --fs-e1:
+    0 1px 2px -1px rgb(14 21 37 / 0.06),
+    0 8px 24px -16px rgb(14 21 37 / 0.18);
+  --fs-e2:
+    0 2px 4px -2px rgb(14 21 37 / 0.07),
+    0 18px 40px -24px rgb(14 21 37 / 0.26);
+  --fs-focus: var(--color-brand-500);
+}
+.dark {
+  --fs-e1:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.04),
+    0 1px 2px -1px rgb(0 0 0 / 0.5),
+    0 10px 26px -18px rgb(0 0 0 / 0.7);
+  --fs-e2:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.05),
+    0 2px 6px -2px rgb(0 0 0 / 0.55),
+    0 22px 48px -26px rgb(0 0 0 / 0.8);
+  /* brand-500 has too little contrast against the dark canvas to work as a
+     focus indicator; the mint accent is the same hue family and passes. */
+  --fs-focus: var(--color-accent-400);
+}
+.elev-1 { box-shadow: var(--fs-e1); }
+.elev-2 { box-shadow: var(--fs-e2); }
+
+/* One focus indicator for every interactive element on the account page.
+   `outline` rather than `ring` so it is never clipped by an ancestor's
+   overflow and never shifts layout. */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--fs-focus);
+  outline-offset: 2px;
+}
+/* For controls that sit on the always-dark profile banner, where the brand
+   outline would disappear into the background in the light theme. */
+.focus-ring-invert:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
 }
 
 @layer base {
@@ -108,14 +177,20 @@
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-xl font-600 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
 }
+/* brand-600, not brand-500: white on 500 measures 4.07:1, under AA for the
+   14px/600 these buttons use. 600 is 5.77:1 and was already the hover step, so
+   nothing new enters the palette — the filled button starts one step down and
+   darkens to 700 on hover. */
 @utility btn-primary {
-  @apply btn bg-brand-500 text-white px-5 py-3 hover:bg-brand-600 active:scale-[0.98] shadow-sm shadow-brand-500/20;
+  @apply btn bg-brand-600 text-white px-5 py-3 hover:bg-brand-700 active:scale-[0.98] shadow-sm shadow-brand-500/20;
 }
 @utility btn-ghost {
   @apply btn bg-surface text-ink px-5 py-3 ring-1 ring-line hover:ring-brand-300 hover:text-brand-600;
 }
+/* Same measurement: white on accent-500 is 2.5:1 and on 600 is 3.8:1, so this
+   one needed a new step rather than a shuffle. */
 @utility btn-accent {
-  @apply btn bg-accent-500 text-white px-5 py-3 hover:bg-accent-600 active:scale-[0.98];
+  @apply btn bg-accent-700 text-white px-5 py-3 hover:bg-accent-800 active:scale-[0.98];
 }
 @utility card {
   @apply bg-surface ring-1 ring-line rounded-2xl;
@@ -138,6 +213,20 @@
 }
 .rise {
   animation: fs-rise 0.45s ease both;
+}
+
+/* Meter fill grows from its left edge once, on mount. Scaled rather than
+   width-animated so it runs on the compositor. */
+@keyframes fs-meter-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.meter-fill {
+  transform-origin: left center;
+  animation: fs-meter-fill 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .meter-fill { animation: none; }
 }
 
 /* ------------------------------------------------------------------ */

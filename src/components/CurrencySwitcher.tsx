@@ -8,7 +8,7 @@ export default function CurrencySwitcher({ embedded = false }: { embedded?: bool
   return (
     <div
       className={`inline-flex items-center rounded-xl p-1 ${
-        embedded ? 'h-9 bg-transparent' : 'h-10 ring-1 ring-line'
+        embedded ? 'bg-transparent' : 'ring-1 ring-line'
       }`}
       role="group"
       aria-label={t('common.currency')}
@@ -19,7 +19,7 @@ export default function CurrencySwitcher({ embedded = false }: { embedded?: bool
           type="button"
           onClick={() => setCurrency(option)}
           aria-pressed={currency === option}
-          className={`rounded-lg px-2 py-1 text-xs font-700 transition sm:px-2.5 ${
+          className={`grid min-h-11 min-w-11 place-items-center rounded-lg px-2 text-xs font-700 transition sm:px-2.5 ${
             currency === option
               ? 'bg-brand-600 text-white shadow-sm'
               : 'text-slate-soft hover:text-brand-600'

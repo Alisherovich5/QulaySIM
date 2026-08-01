@@ -1,3 +1,6 @@
+// Solution-style: this file lists no sources of its own, so a bare
+// `tsc --noEmit` here checks NOTHING and exits 0. Use `npm run typecheck`
+// (tsc -b), which is what `npm run build` runs.
 {
   "files": [],
   "references": [

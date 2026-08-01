@@ -24,6 +24,14 @@ export default function Counter({
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    // Someone who asked for less motion should get the number, not a
+    // 1.4-second count-up. CSS cannot reach a requestAnimationFrame loop, so
+    // the query is read here.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setValue(to)
+      return
+    }
+
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting && !started.current) {
         started.current = true

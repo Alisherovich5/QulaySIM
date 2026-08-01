@@ -17,6 +17,20 @@ const LANGS = ['uz', 'en', 'ru']
 const BASE = 'en'
 
 /**
+ * CLDR plural categories, and which ones each language actually uses.
+ *
+ * i18next resolves `t('a.b', { count })` to `a.b_one`, `a.b_other` and so on,
+ * so a bare reference in the code is satisfied by the suffixed keys — and the
+ * suffix SET differs per language: Russian needs four forms, English two,
+ * Uzbek one. Comparing the raw key lists across languages would report both as
+ * errors, which is how a correct plural first showed up as a bug here.
+ */
+const PLURAL_SUFFIXES = ['zero', 'one', 'two', 'few', 'many', 'other']
+const PLURAL_RE = new RegExp(`_(${PLURAL_SUFFIXES.join('|')})$`)
+const stem = (key) => key.replace(PLURAL_RE, '')
+const isPlural = (key) => PLURAL_RE.test(key)
+
+/**
  * Identical text across languages is usually an untranslated string, but not
  * always. These are the cases where sameness is correct, so they are excluded
  * rather than "fixed" into something wrong.
@@ -34,12 +48,30 @@ const SAME_IS_FINE = [
 
 function loadLocale(lang) {
   const raw = readFileSync(`src/i18n/locales/${lang}.ts`, 'utf8')
-  // The file is `const x: Translation = { … }` plus an import and an export.
-  // Slice out the object literal and evaluate it; parsing TS here would be a
-  // dependency for no gain.
+  // The file is `const x: Translation = { … }` plus an import and, in en.ts,
+  // type declarations after it. Slice the literal by matching braces from the
+  // assignment — `lastIndexOf('}')` used to work and then quietly stopped when
+  // a mapped type was added below the object, taking the audit down with it.
   const start = raw.indexOf('= {') + 2
-  const end = raw.lastIndexOf('}') + 1
-  if (start < 2 || end <= start) throw new Error(`${lang}: could not find the object literal`)
+  if (start < 2) throw new Error(`${lang}: could not find the object literal`)
+  let depth = 0
+  let end = -1
+  let inString = null
+  for (let i = start; i < raw.length; i++) {
+    const ch = raw[i]
+    if (inString) {
+      if (ch === '\\') i++
+      else if (ch === inString) inString = null
+      continue
+    }
+    if (ch === "'" || ch === '"' || ch === '`') inString = ch
+    else if (ch === '{') depth++
+    else if (ch === '}' && --depth === 0) {
+      end = i + 1
+      break
+    }
+  }
+  if (end < 0) throw new Error(`${lang}: unbalanced braces in the object literal`)
   return eval(`(${raw.slice(start, end)})`)
 }
 
@@ -57,9 +89,19 @@ const findings = []
 console.log(`keys: ${LANGS.map((l) => `${l}=${locales[l].size}`).join('  ')}`)
 
 // 1. Parity — a key missing in one language renders as the key itself there.
+//    Plural forms are compared by stem: every language must translate the same
+//    *concept*, but each supplies the categories its own grammar uses.
+const stemsOf = (lang) => new Set([...locales[lang].keys()].map(stem))
+const everyStem = new Set(LANGS.flatMap((l) => [...stemsOf(l)]))
 for (const lang of LANGS) {
-  const missing = [...everyKey].filter((k) => !locales[lang].has(k))
+  const have = stemsOf(lang)
+  const missing = [...everyStem].filter((k) => !have.has(k))
   if (missing.length) findings.push(`${lang} is missing ${missing.length}: ${missing.join(', ')}`)
+  // A plural key with no `_other` has no fallback when the count lands on a
+  // category this language did not declare.
+  const pluralStems = new Set([...locales[lang].keys()].filter(isPlural).map(stem))
+  const noOther = [...pluralStems].filter((k) => !locales[lang].has(`${k}_other`))
+  if (noOther.length) findings.push(`${lang} has plurals with no _other: ${noOther.join(', ')}`)
 }
 
 // 2. Untranslated copy.
@@ -100,7 +142,10 @@ const referenced = new Set(
     .split('\n')
     .filter(Boolean),
 )
-const undefinedKeys = [...referenced].filter((k) => k.includes('.') && !everyKey.has(k))
+const undefinedKeys = [...referenced].filter(
+  // A bare `t('a.b', { count })` is satisfied by a.b_one / a.b_other etc.
+  (k) => k.includes('.') && !everyKey.has(k) && !everyStem.has(k),
+)
 if (undefinedKeys.length) {
   findings.push(`used in code but defined nowhere: ${undefinedKeys.join(', ')}`)
 }

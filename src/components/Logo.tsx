@@ -16,7 +16,7 @@ export default function Logo({ light = false }: { light?: boolean }) {
     <Link
       to="/"
       aria-label="QulaySIM"
-      className={`inline-flex items-center transition-opacity hover:opacity-80 ${
+      className={`inline-flex min-h-11 items-center transition-opacity hover:opacity-80 ${
         light ? 'text-white' : 'text-ink'
       }`}
     >

@@ -102,7 +102,7 @@ export default function EsimCard({ esim, onActivate, onTopup, activating, toppin
                 onClick={() => onActivate(esim.id)}
                 loading={activating}
                 sheen
-                className="px-4 py-2 text-sm"
+                className="min-h-11 px-4 py-2 text-sm"
               >
                 {!activating && <Power size={15} />}{' '}
                 {activating ? t('account.activating') : t('account.activate')}
@@ -113,7 +113,7 @@ export default function EsimCard({ esim, onActivate, onTopup, activating, toppin
                 onClick={() => onTopup(esim.id)}
                 loading={toppingUp}
                 variant="ghost"
-                className="px-4 py-2 text-sm"
+                className="min-h-11 px-4 py-2 text-sm"
               >
                 {!toppingUp && <Plus size={15} />}{' '}
                 {toppingUp ? t('account.toppingUp') : t('account.topUp')}

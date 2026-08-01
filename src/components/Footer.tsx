@@ -51,7 +51,7 @@ export default function Footer() {
               href="https://t.me/qulaysim_support"
               target="_blank"
               rel="noreferrer"
-              className="mx-auto mt-4 inline-flex items-center gap-2 text-sm font-600 text-slate-soft transition hover:text-brand-600 sm:mx-0"
+              className="mx-auto mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-600 text-slate-soft transition hover:text-brand-600 sm:mx-0"
             >
               <Send size={16} className="text-brand-500" />
               {t('support.adminUsername')}

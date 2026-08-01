@@ -4,11 +4,14 @@ export type IconBadgeTone = 'brand' | 'accent' | 'gold' | 'violet' | 'amber'
 export type IconBadgeSize = 'sm' | 'md' | 'lg' | 'xl'
 
 const TONES: Record<IconBadgeTone, string> = {
-  brand: 'bg-brand-50 text-brand-600',
-  accent: 'bg-accent-500/10 text-accent-600',
-  gold: 'bg-gold-500/10 text-gold-600',
-  violet: 'bg-[#8938fa]/10 text-[#8938fa]',
-  amber: 'bg-amber-signal/10 text-amber-signal',
+  // The ramps do not flip with the theme, so each tone names its own dark
+  // value. brand-50 in particular is a near-white chip: on a dark page it read
+  // as a bright square rather than a tinted one.
+  brand: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300',
+  accent: 'bg-accent-500/10 text-status-good-ink',
+  gold: 'bg-gold-500/10 text-gold-700 dark:text-gold-400',
+  violet: 'bg-violet-signal/10 text-violet-signal',
+  amber: 'bg-amber-signal/10 text-status-warn-ink',
 }
 
 const SIZES: Record<IconBadgeSize, { box: string; icon: number }> = {
