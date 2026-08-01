@@ -24,7 +24,7 @@ export default function LanguageSwitcher({ embedded = false, compact = false }: 
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 text-sm font-600 text-slate-soft transition hover:bg-surface hover:text-brand-600 ${
+        className={`tap-44 inline-flex items-center gap-1.5 rounded-xl px-2.5 text-sm font-600 text-slate-soft transition hover:bg-surface hover:text-brand-600 ${
           compact ? 'h-10 w-10 justify-center p-0 ring-1 ring-line hover:ring-brand-300' : embedded ? 'h-9' : 'h-10 ring-1 ring-line hover:ring-brand-300'
         }`}
         aria-label="Language"

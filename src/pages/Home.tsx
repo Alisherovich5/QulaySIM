@@ -1,7 +1,6 @@
 import HeroSection from '../components/home/HeroSection'
 import DestinationsExplorer from '../components/home/DestinationsExplorer'
 import HowItWorks from '../components/home/HowItWorks'
-import Compatibility from '../components/home/Compatibility'
 import Testimonials from '../components/home/Testimonials'
 import HomeFaq from '../components/home/HomeFaq'
 import { useLandingContent } from '../lib/useLandingContent'
@@ -21,7 +20,6 @@ export default function Home() {
       {/* HowItWorks carries its own border-y, so it supplies the divider the
           destinations grid needs below it — no wrapper here. */}
       <HowItWorks />
-      <Compatibility />
       <div className="border-t border-line/70"><Testimonials items={content?.testimonials} /></div>
       <div className="border-t border-line/70"><HomeFaq faqs={content?.faqs} /></div>
     </div>

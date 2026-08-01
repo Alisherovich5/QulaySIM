@@ -67,7 +67,7 @@ export default function Destinations() {
         </span>
         <button
           onClick={() => updateParam('region', '')}
-          className={`chip shrink-0 ring-1 transition ${
+          className={`chip focus-ring min-h-11 shrink-0 ring-1 transition ${
             !region ? 'bg-brand-500 text-white ring-brand-500' : 'bg-surface text-slate-soft ring-line hover:ring-brand-300'
           }`}
         >
@@ -77,7 +77,7 @@ export default function Destinations() {
           <button
             key={r.id}
             onClick={() => updateParam('region', r.slug)}
-            className={`chip shrink-0 ring-1 transition ${
+            className={`chip focus-ring min-h-11 shrink-0 ring-1 transition ${
               region === r.slug
                 ? 'bg-brand-500 text-white ring-brand-500'
                 : 'bg-surface text-slate-soft ring-line hover:ring-brand-300'

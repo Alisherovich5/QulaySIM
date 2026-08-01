@@ -434,3 +434,25 @@
   .marquee::-webkit-scrollbar { display: none; }
   .marquee-track { animation: none; }
 }
+
+/* Grow a control's hit area to 44px without changing how big it looks.
+   For controls in tight chrome — the promo strip, the header cells — where the
+   visible box has to stay small to fit, but a thumb still needs somewhere to
+   land. The pad is centred on the control and ignores pointer events for
+   layout, so it never steals a neighbour's pixels beyond its own half-gap. */
+.tap-44 { position: relative; }
+/* A pad cannot reach past the strip it lives in — beyond that edge the navbar is
+   painted on top and takes the hit. So on touch devices the promo strip itself
+   grows to 44px; on a mouse it stays the compact 36px it was designed as. */
+@media (pointer: coarse) {
+  .promo-strip-row { min-height: 44px; }
+}
+.tap-44::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}

@@ -50,7 +50,7 @@ export default function PromoStrip() {
 
   return (
     <div className="border-b border-white/10 bg-brand-900 text-white">
-      <div className="container-page flex min-h-9 items-center justify-between gap-2 py-1 text-xs sm:text-sm">
+      <div className="promo-strip-row container-page flex min-h-9 items-center justify-between gap-2 py-1 text-xs sm:text-sm">
         <div className="flex min-w-0 items-center gap-1.5 font-600">
           <Sparkles size={13} className="shrink-0 text-gold-400" />
           <span className="hidden truncate sm:inline">{longLabel}</span>
@@ -61,13 +61,13 @@ export default function PromoStrip() {
           <button
             type="button"
             onClick={copyCode}
-            className="grid h-7 w-7 place-items-center rounded-md text-white/80 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-gold-400"
+            className="tap-44 grid h-7 w-7 place-items-center rounded-md text-white/80 transition hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-gold-400"
             aria-label={copied ? t('nav.copiedPromo') : t('nav.copyPromo')}
             title={copied ? t('nav.copiedPromo') : t('nav.copyPromo')}
           >
             {copied ? <Check size={15} className="text-gold-400" /> : <Copy size={15} />}
           </button>
-          <Link to={promo?.cta_link || '/destinations'} className="hidden rounded-md bg-accent-500 px-2.5 py-1 font-700 text-brand-950 transition hover:bg-accent-400 sm:inline">
+          <Link to={promo?.cta_link || '/destinations'} className="tap-44 hidden rounded-md bg-accent-500 px-2.5 py-1 font-700 text-brand-950 transition hover:bg-accent-400 sm:inline-block">
             {t('nav.promoCta')}
           </Link>
         </div>

@@ -16,7 +16,7 @@ export default function Navbar() {
   const navigate = useNavigate()
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `inline-flex items-center gap-1.5 text-sm font-600 transition-colors ${
+    `inline-flex min-h-11 items-center gap-1.5 text-sm font-600 transition-colors ${
       isActive ? 'text-brand-600' : 'text-slate-soft hover:text-ink'
     }`
 
@@ -45,19 +45,19 @@ export default function Navbar() {
           </NavLink>
         </nav>
         <div className="hidden items-center gap-2 md:flex">
-          <div className="hidden items-center gap-1 rounded-2xl bg-surface-2/80 p-1 ring-1 ring-line shadow-sm xl:flex">
+          {/* One settings group at every desktop width. It used to be the group
+              at xl and a loose theme+language pair below it, which meant the
+              currency — a setting like the other two — was unreachable between
+              md and xl and had to be hunted for in the footer. */}
+          <div className="flex items-center gap-1 rounded-2xl bg-surface-2/80 p-1 ring-1 ring-line shadow-sm">
             <CurrencySwitcher embedded />
             <ThemeToggle embedded />
             <LanguageSwitcher embedded />
           </div>
-          <div className="flex items-center gap-1 xl:hidden">
-            <ThemeToggle />
-            <LanguageSwitcher />
-          </div>
           <div className="ml-1 flex items-center gap-2 border-l border-line pl-3">
             <Link
               to="/checkout"
-              className="relative grid h-10 w-10 place-items-center rounded-xl text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300"
+              className="tap-44 relative grid h-10 w-10 place-items-center rounded-xl text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300"
               aria-label="Cart"
             >
               <ShoppingBag size={18} />
@@ -69,7 +69,7 @@ export default function Navbar() {
             </Link>
             {customer ? (
               <div className="flex items-center gap-2">
-                <Link to="/account" className="btn-ghost px-3 py-2 text-sm">
+                <Link to="/account" className="btn-ghost min-h-11 px-3 py-2 text-sm">
                   <UserRound size={16} />
                   <span className="hidden xl:inline">{customer.full_name || t('nav.account')}</span>
                 </Link>
@@ -85,18 +85,24 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <Link to="/login" className="btn-primary px-4 py-2 text-sm">
+              <Link to="/login" className="btn-primary min-h-11 px-4 py-2 text-sm">
                 {t('nav.signIn')}
               </Link>
             )}
           </div>
         </div>
+        {/* Settings first, then the cart, separated by a hairline — the same
+            reading order as the desktop cluster. Four 40px cells plus the
+            wordmark come to 316px of the 390px row, so the currency fits here
+            without shrinking anything. */}
         <div className="flex items-center gap-1 max-[359px]:gap-0.5 md:hidden">
+          <CurrencySwitcher compact />
           <ThemeToggle />
           <LanguageSwitcher compact />
+          <span aria-hidden="true" className="mx-0.5 h-6 w-px shrink-0 bg-line max-[359px]:mx-0" />
           <Link
             to="/checkout"
-            className="relative grid h-10 w-10 place-items-center rounded-xl text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300"
+            className="tap-44 relative grid h-10 w-10 place-items-center rounded-xl text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300"
             aria-label="Cart"
           >
             <ShoppingBag size={18} />
