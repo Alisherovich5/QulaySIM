@@ -24,6 +24,11 @@ type GoogleGlobal = {
  * only finds out when someone complains.
  */
 function buttonIsLive(host: HTMLElement): boolean {
+  // The iframe specifically, and it must have a box. Broadening this to "any
+  // descendant with a size" was tried and reverted: GSI leaves a sized wrapper
+  // behind even when it refuses the origin, so the looser test called a dead
+  // button live and switched the detection off. Measured on production, the
+  // working button IS a sized accounts.google.com iframe.
   const frame = host.querySelector('iframe')
   return Boolean(frame && frame.clientWidth > 0 && frame.clientHeight > 0)
 }
@@ -31,6 +36,55 @@ function buttonIsLive(host: HTMLElement): boolean {
 declare global {
   interface Window {
     google?: GoogleGlobal
+  }
+}
+
+/**
+ * The reasons the API accepts. It rejects anything else with a 422, so this
+ * list has to stay in step with GoogleFailureReason in the backend's
+ * app/schemas/auth.py.
+ */
+type FailureReason =
+  | 'script_blocked'
+  | 'button_not_rendered'
+  | 'popup_failed_to_open'
+  | 'popup_closed'
+  | 'credential_missing'
+  | 'unknown'
+
+/** The error_callback types GSI documents; anything else is reported as unknown. */
+const KNOWN_GSI_ERRORS: FailureReason[] = ['popup_failed_to_open', 'popup_closed']
+
+/**
+ * Reasons already reported on this page load.
+ *
+ * The render effect re-runs whenever the interface language changes, so one
+ * stuck button would otherwise file the same report several times and make the
+ * log read like repeated attempts. One line per distinct fault per page load
+ * is enough to tell the operator what happened.
+ */
+const reported = new Set<FailureReason>()
+
+/**
+ * Tell the API that Google sign-in died in the browser.
+ *
+ * Everything GSI says when it refuses goes to the console: the origin is not
+ * allow-listed, the popup would not open. None of it reaches the server, so a
+ * failed sign-in is invisible unless the person happens to report it. This
+ * turns it into a log line.
+ *
+ * Deliberately fire-and-forget — never awaited, every error swallowed. The
+ * report is worth strictly less than the page it runs on, and a diagnostic
+ * that produces a second error is worse than no diagnostic at all.
+ */
+function report(reason: FailureReason): void {
+  if (reported.has(reason)) return
+  reported.add(reason)
+  try {
+    void api.post('/auth/google/failed', { reason }).catch(() => {})
+  } catch {
+    // Also guarded synchronously: this runs inside GSI's own callback, and a
+    // throw crossing back into their code could take the button with it.
   }
 }
 
@@ -95,12 +149,20 @@ export default function GoogleSignIn({ onSuccess, onError }: Props) {
     const timers: number[] = []
 
     loadScript()
+      .catch((error: unknown) => {
+        // Only the script load itself. Reporting from the chain's tail instead
+        // would label any later fault a blocked script, which is exactly the
+        // kind of wrong evidence this endpoint exists to avoid.
+        report('script_blocked')
+        throw error
+      })
       .then(() => {
         if (!alive || !window.google || !host.current) return
         window.google.accounts.id.initialize({
           client_id: clientId,
           callback: async (response: { credential?: string }) => {
             if (!response.credential) {
+              report('credential_missing')
               onError(t('auth.googleFailed'))
               return
             }
@@ -108,10 +170,21 @@ export default function GoogleSignIn({ onSuccess, onError }: Props) {
               await loginWithGoogle(response.credential)
               onSuccess()
             } catch {
+              // Not reported: this one already reached /auth/google, so the
+              // server logged why it refused. Only the failures that never
+              // arrive need a report.
+              //
               // The API deliberately does not say which check failed, so the
               // only honest message is that it did not work.
               onError(t('auth.googleFailed'))
             }
+          },
+          // GSI's own failure channel: the popup blocked, or closed before it
+          // handed anything back. It never fires for a rejected origin — that
+          // case is caught by the liveness poll below.
+          error_callback: (error?: { type?: string }) => {
+            const type = error?.type as FailureReason | undefined
+            report(type && KNOWN_GSI_ERRORS.includes(type) ? type : 'unknown')
           },
           // One-tap is deliberately off: it pops up unprompted on first visit,
           // before the customer has any reason to trust the page.
@@ -154,6 +227,11 @@ export default function GoogleSignIn({ onSuccess, onError }: Props) {
             window.clearInterval(poll)
           } else if (Date.now() > deadline) {
             window.clearInterval(poll)
+            // Nothing with a size ever appeared, and GSI said why only in the
+            // console. Reported before the "unavailable" text goes up, so the
+            // log can tell this apart from a button that did render and then
+            // failed later — which is the distinction nobody can make today.
+            report('button_not_rendered')
             setFailed(true)
           }
         }, 300)

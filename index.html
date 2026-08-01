@@ -25,6 +25,11 @@
     <meta name="twitter:image" content="https://qulaysim.uz/og-card.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Sign in with Google loads its script from here and then opens a popup to
+         the same origin. Warming the connection takes the DNS lookup and the TLS
+         handshake off the critical path, which is the part of the sign-in delay
+         that is actually ours to remove — the account chooser itself is Google's. -->
+    <link rel="preconnect" href="https://accounts.google.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
       rel="stylesheet"
