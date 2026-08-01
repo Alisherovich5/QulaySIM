@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import Globe from 'react-globe.gl'
 import { feature } from 'topojson-client'
 import * as THREE from 'three'
@@ -127,6 +127,45 @@ function useIsDark(): boolean {
   return dark
 }
 
+/**
+ * Deletes three-render-objects' controls hint from the scene.
+ *
+ * Every react-globe.gl scene container gets a `.scene-nav-info` div holding the
+ * literal string "Left-click: rotate, Mouse-wheel/middle-click: zoom,
+ * Right-click: pan" — English, hardcoded, and addressed to someone with a
+ * three-button mouse. globe.gl builds its renderer with `.showNavInfo(false)`,
+ * so today the node ships with an inline `display:none` and is never painted;
+ * what it is not is absent. It is in `document.body.textContent` (verified on
+ * qulaysim.uz), which is what page translators, text extractors and crawlers
+ * read, and its one line of defence is a flag inside a dependency that this
+ * component neither sets nor can set: `showNavInfo` belongs to
+ * three-render-objects, and neither globe.gl nor react-globe.gl forwards it as
+ * a prop. A `display:none` we did not write and cannot control is not a fix.
+ *
+ * So the node is removed from the document instead of being styled away — no
+ * CSS, nothing left in the accessibility tree, nothing left in the page's text.
+ * The observer only covers the gap in case react-globe.gl ever builds its DOM
+ * later than this effect runs, and disconnects the moment it has fired.
+ */
+function useStripNavInfo(root: RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const container = root.current
+    if (!container) return
+    const strip = () => {
+      const node = container.querySelector('.scene-nav-info')
+      if (!node) return false
+      node.remove()
+      return true
+    }
+    if (strip()) return
+    const mo = new MutationObserver(() => {
+      if (strip()) mo.disconnect()
+    })
+    mo.observe(container, { childList: true, subtree: true })
+    return () => mo.disconnect()
+  }, [root])
+}
+
 /** Followed live, so the setting stills the planet without a reload. */
 function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(
@@ -172,6 +211,8 @@ export default function HeroGlobe({ size, countries = [], interactive = false, o
   const dark = useIsDark()
   const reduced = useReducedMotion()
   const palette = dark ? HERO_THEME.dark : HERO_THEME.light
+
+  useStripNavInfo(containerRef)
 
   const catalogByNumeric = useMemo(() => {
     const m = new Map<number, Country>()

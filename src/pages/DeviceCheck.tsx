@@ -1,9 +1,10 @@
-import { useState, type CSSProperties, type ReactNode } from 'react'
+import { useId, useState, type CSSProperties, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowLeft,
   ArrowRight,
   Check,
+  ChevronDown,
   Clock,
   Copy,
   Phone,
@@ -24,13 +25,17 @@ const DIAL_CODE = '*#06#'
 /* ------------------------------------------------------------------------ *
  * The two phone mock-ups
  *
- * Everything between here and `CopyCode` draws a *picture of an iPhone*. It is
+ * Everything between here and `DialTile` draws a *picture of an iPhone*. It is
  * not part of the product's surface, which is why it carries bare iOS hexes
  * (#000, #1c1c1e, #30d158, #0a84ff) instead of design tokens and why it does
  * not flip with the theme: the iOS dialler is black on a light page too, and
  * repainting it in brand teal would stop it reading as the thing being copied.
  * Everything *around* the phones — frame glow, captions, panels — uses tokens
  * and does flip. That split is deliberate; please keep it.
+ *
+ * The dial tile at the top of the page is the same object seen from closer up
+ * — the dialler screen with nothing on it but the code — so it borrows the
+ * same black and the same iOS font, and for the same reason.
  *
  * A real screenshot of this screen would carry the owner's actual EID and
  * IMEI, which are device identifiers. So the numbers are invented and the
@@ -42,6 +47,9 @@ const DIAL_CODE = '*#06#'
  * the whole device scales as one drawing — at the 330px cap a key comes out
  * ~73px across with a 32px numeral, exactly the proportions of the source
  * screenshot, and it stays in proportion at any smaller column width.
+ *
+ * Below `md` the drawings are folded away behind a control, and the page
+ * answers the question without them. See the note on `Fold`.
  * ------------------------------------------------------------------------ */
 
 /* The mock imitates iOS, so it borrows the platform UI font rather than the
@@ -57,7 +65,7 @@ const SCREEN_STYLE: CSSProperties = { containerType: 'inline-size', fontFamily: 
  *  light. */
 function PhoneFrame({ children }: { children: ReactNode }) {
   return (
-    <div aria-hidden className="group/phone relative w-full">
+    <div aria-hidden data-phoneframe className="group/phone relative w-full">
       {/* Ambient bounce light under the device so it sits *on* the panel
           instead of floating in front of it. Token-based, so it warms up in
           dark mode instead of turning into a grey smudge. */}
@@ -317,11 +325,16 @@ function ResultMock() {
 /* ---------------------------- end of the drawing --------------------------- */
 
 /**
+ * The code, as the first thing on the page you can act on.
+ *
  * Typing `*` and `#` means switching keyboards on most phones, and a mistyped
  * code silently does nothing — so the code is offered as something to paste
- * into the dialler rather than something to transcribe.
+ * into the dialler rather than something to transcribe. The whole plate is the
+ * control, which is how it gets a 77px target without a separate button, and
+ * it is painted as the dialler screen so that the drawing further down reads
+ * as the same object at arm's length.
  */
-function CopyCode() {
+function DialTile() {
   const { t } = useTranslation()
   const [copied, setCopied] = useState(false)
 
@@ -332,7 +345,7 @@ function CopyCode() {
       window.setTimeout(() => setCopied(false), 2000)
     } catch {
       // Clipboard denied (insecure origin, or the user said no). The code is
-      // printed right above, so there is nothing to recover from.
+      // printed on the button itself, so there is nothing to recover from.
     }
   }
 
@@ -340,28 +353,93 @@ function CopyCode() {
     <button
       type="button"
       onClick={copy}
-      className="inline-flex min-h-11 items-center gap-2 rounded-full bg-canvas px-5 py-2.5 text-sm font-600 text-slate-soft ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface dark:hover:text-brand-300"
+      className="group w-full rounded-2xl bg-[#0b0c0f] px-4 py-2.5 text-center shadow-[0_18px_36px_-24px_rgba(4,18,24,0.9)] ring-1 ring-inset ring-white/12 transition hover:ring-white/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas sm:w-auto sm:px-10 sm:py-3 dark:ring-white/20"
     >
-      {copied ? (
-        <Check size={16} className="text-brand-600 dark:text-brand-300" />
-      ) : (
-        <Copy size={16} />
-      )}
-      {copied ? t('device.copied') : t('device.copyCode')}
+      <span
+        className="block text-[30px] leading-none tracking-[0.14em] text-white [font-weight:300] sm:text-[34px]"
+        style={{ fontFamily: IOS_FONT }}
+      >
+        {DIAL_CODE}
+      </span>
+      <span className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-600 leading-none text-white/70 transition group-hover:text-white">
+        {copied ? <Check size={13} /> : <Copy size={13} />}
+        {copied ? t('device.copied') : t('device.copyCode')}
+      </span>
     </button>
   )
 }
 
-/** Caption above each mock: the phones are pictures, so the label has to carry
- *  the meaning for anyone who cannot see them. */
-function MockCaption({ n, children }: { n: number; children: ReactNode }) {
+/**
+ * A section that is folded away on small screens and simply open above the
+ * given breakpoint.
+ *
+ * Both uses here are the same judgement: the page has to answer one yes/no
+ * question, and on a 320px screen everything that is not the answer is
+ * charging rent. The phone drawings measured 1047px on a 320px iPhone SE — a
+ * quarter of the whole page — to illustrate a code that is now printed at full
+ * size at the top; the settings route is the fallback for a code that does
+ * nothing.
+ * Neither is deleted and neither is shrunk to the point of being unreadable:
+ * they open at the full column width, one tap away, and above the breakpoint
+ * the control disappears and they are always visible.
+ *
+ * The trigger carries the section's own heading, so folding costs the page no
+ * words: `settingsTitle` and the two figure captions read as button labels.
+ *
+ * No entrance animation on the panel, deliberately: `animation … both` holds
+ * its end transform, and a held transform turns the panel into the containing
+ * block for anything `position: fixed` inside it.
+ */
+function Fold({
+  label,
+  open,
+  onToggle,
+  at,
+  heading = false,
+  children,
+}: {
+  label: ReactNode
+  open: boolean
+  onToggle: () => void
+  /** breakpoint at or above which the control vanishes and the panel is open */
+  at: 'sm' | 'md'
+  /** the trigger is standing in for a section heading that the panel repeats
+   *  once it is open by default, so it takes the heading's place in the outline */
+  heading?: boolean
+  children: ReactNode
+}) {
+  const id = useId()
+  const Trigger = heading ? 'h2' : 'div'
   return (
-    <figcaption className="mb-4 flex items-center gap-2 text-[11px] font-700 uppercase tracking-[0.14em] text-slate-soft">
-      <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-500/12 text-[10px] leading-none text-brand-600 dark:text-brand-300">
-        {n}
-      </span>
-      {children}
-    </figcaption>
+    <>
+      <Trigger className={at === 'sm' ? 'sm:hidden' : 'md:hidden'}>
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={id}
+          onClick={onToggle}
+          className="flex min-h-11 w-full items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-2.5 text-left ring-1 ring-line transition hover:ring-brand-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+        >
+          <span className="min-w-0 font-display text-[13.5px] font-700 leading-snug text-ink">
+            {label}
+          </span>
+          <ChevronDown
+            size={17}
+            aria-hidden
+            className={`shrink-0 text-slate-soft motion-safe:transition-transform motion-safe:duration-200 ${
+              open ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+      </Trigger>
+
+      <div
+        id={id}
+        className={`${open ? 'block' : 'hidden'} ${at === 'sm' ? 'sm:block' : 'md:block'}`}
+      >
+        {children}
+      </div>
+    </>
   )
 }
 
@@ -370,6 +448,8 @@ const CTA_FOCUS =
 
 export default function DeviceCheck() {
   const { t } = useTranslation()
+  const [screensOpen, setScreensOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const steps = [
     { icon: Phone, key: 'dial' },
@@ -383,56 +463,87 @@ export default function DeviceCheck() {
   ]
 
   return (
-    <div className="container-page py-8 sm:py-12">
+    <div className="container-page py-4 sm:py-12">
       {/* Pulled out of the text flow with -ml/-mt so the 44px thumb target does
           not push the heading down on a phone. */}
       <Link
         to="/"
-        className="-ml-2 -mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-xl px-2 py-2 text-sm font-600 text-slate-soft transition hover:text-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 dark:hover:text-brand-300"
+        className="-ml-2 -mt-1 inline-flex min-h-11 items-center gap-1.5 rounded-xl px-2 py-2 text-sm font-600 text-slate-soft transition hover:text-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 dark:hover:text-brand-300"
       >
         <ArrowLeft size={15} /> {t('device.back')}
       </Link>
 
-      <header className="mt-6 max-w-2xl">
-        <IconBadge icon={Smartphone} size="lg" />
-        <h1 className="mt-4 font-display text-2xl font-700 leading-tight text-ink sm:text-4xl">
+      {/* ── The answer, first ────────────────────────────────────────────────
+          Someone arriving here wants to know whether their phone works, so the
+          question, the one-minute promise, the code itself and the rule that
+          decides it all sit in the first screenful. Everything below is
+          support. The badge is decoration and only appears once there is room
+          for it. */}
+      <header className="mt-1 max-w-2xl sm:mt-6">
+        <IconBadge icon={Smartphone} size="lg" className="hidden sm:grid" />
+        <h1 className="font-display text-[24px] font-700 leading-[1.15] text-ink sm:mt-4 sm:text-4xl">
           {t('device.title')}
         </h1>
-        <p className="mt-3 text-sm leading-6 text-slate-soft sm:text-lg sm:leading-8">
+        <p className="mt-2 text-[13px] leading-[1.5] text-slate-soft sm:mt-3 sm:text-lg sm:leading-8">
           {t('device.intro')}
         </p>
+
+        {/* The code and the rule that reads its answer travel together: stacked
+            on a phone, one row once there is width for it. */}
+        <div className="mt-4 sm:mt-6 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
+          <DialTile />
+          <p className="mt-2.5 inline-flex items-start gap-1.5 rounded-full bg-brand-500/10 px-3 py-1.5 text-[12.5px] font-700 leading-snug text-brand-700 ring-1 ring-brand-500/20 dark:text-brand-200 sm:mt-0 sm:text-[13px]">
+            <Check size={14} className="mt-px shrink-0" /> {t('device.eidFound')}
+          </p>
+        </div>
       </header>
 
-      {/* Steps read as a sequence, so they get numerals and equal-height cards
-          rather than a bulleted list squeezed into one column. */}
-      <section className="mt-8 sm:mt-12">
-        <h2 className="font-display text-lg font-700 text-ink sm:text-xl">
+      {/* Steps read as a sequence. On a phone that sequence is a single divided
+          list: three separate cards paid for their padding and their ring three
+          times over and made the shortest section on the page look like the
+          longest. From `md` the old three-across cards come back. */}
+      <section className="mt-6 sm:mt-12">
+        <h2 className="font-display text-base font-700 text-ink sm:text-xl">
           {t('device.stepsTitle')}
         </h2>
-        <ol className="mt-4 grid gap-3 sm:mt-5 sm:gap-4 md:grid-cols-3">
+        <ol className="mt-3 divide-y divide-line overflow-hidden rounded-2xl bg-surface ring-1 ring-line sm:mt-4 md:mt-5 md:grid md:grid-cols-3 md:gap-4 md:divide-y-0 md:overflow-visible md:rounded-none md:bg-transparent md:ring-0">
           {steps.map((step, i) => (
-            <li key={step.key} className="h-full">
-              <Card className="h-full p-5 transition-shadow duration-300 hover:shadow-lg hover:shadow-brand-500/5 sm:p-6">
-                <div className="flex items-center justify-between gap-3">
-                  <IconBadge icon={step.icon} size="md" />
+            <li
+              key={step.key}
+              className="px-4 py-3 sm:px-5 sm:py-4 md:h-full md:rounded-2xl md:bg-surface md:p-6 md:ring-1 md:ring-line md:transition-shadow md:duration-300 md:hover:shadow-lg md:hover:shadow-brand-500/5"
+            >
+              {/* Desktop: icon plus the big ghost numeral, as before. */}
+              <div className="hidden items-center justify-between gap-3 md:flex">
+                <IconBadge icon={step.icon} size="md" />
+                <span
+                  aria-hidden
+                  /* An opacity of the body colour, not `text-line`: the line
+                     token is nearly the surface colour in dark and the
+                     numeral vanished into the card. */
+                  className="font-display text-2xl font-700 leading-none text-slate-soft/30"
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+              </div>
+
+              <div className="min-w-0 md:mt-4">
+                {/* The numeral rides in the title's line box rather than in a
+                    gutter: a 36px gutter cost the body copy a line on every
+                    step, and the steps are numbered by their order anyway. */}
+                <p className="flex items-start gap-2 font-display text-[13.5px] font-700 leading-snug text-ink sm:text-[15px] md:block">
                   <span
                     aria-hidden
-                    /* An opacity of the body colour, not `text-line`: the line
-                       token is nearly the surface colour in dark and the
-                       numeral vanished into the card. */
-                    className="font-display text-2xl font-700 leading-none text-slate-soft/30"
+                    className="mt-px grid h-[19px] w-[19px] shrink-0 place-items-center rounded-full bg-brand-500/12 text-[10.5px] font-700 leading-none text-brand-700 dark:text-brand-200 md:hidden"
                   >
-                    {String(i + 1).padStart(2, '0')}
+                    {i + 1}
                   </span>
-                </div>
-                <p className="mt-4 font-display text-[15px] font-700 leading-snug text-ink">
                   <span className="sr-only">{i + 1}. </span>
-                  {t(`device.steps.${step.key}.title`)}
+                  <span className="min-w-0">{t(`device.steps.${step.key}.title`)}</span>
                 </p>
-                <p className="mt-2 text-sm leading-6 text-slate-soft">
+                <p className="mt-1 text-[12.5px] leading-[1.5] text-slate-soft sm:mt-2 sm:text-sm sm:leading-6">
                   {t(`device.steps.${step.key}.text`)}
                 </p>
-              </Card>
+              </div>
             </li>
           ))}
         </ol>
@@ -441,114 +552,159 @@ export default function DeviceCheck() {
       {/* The two mocks sit side by side because the answer is the comparison:
           you dial on the left and look for an EID on the right. They get the
           full page width — squeezed into a side column they stopped reading as
-          phones at all. */}
-      <Reveal>
-        <section className="relative mt-8 overflow-hidden rounded-3xl bg-surface p-4 ring-1 ring-line sm:mt-12 sm:p-6 lg:p-10">
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_75%_at_50%_-10%,var(--color-brand-500)_0%,transparent_62%)] opacity-[0.06] dark:opacity-20"
-          />
-          <div className="relative flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-center md:gap-6 lg:gap-10">
-            <figure className="flex w-full max-w-[330px] flex-col items-center md:w-[288px] lg:w-[330px]">
-              <MockCaption n={1}>
-                {t('device.mockDialLabel', { defaultValue: 'What you type' })}
-              </MockCaption>
-              <div data-mock="dialler-wrap" className="w-full">
-                <DiallerMock />
-              </div>
-              <div className="mt-5">
-                <CopyCode />
-              </div>
-            </figure>
+          phones at all. Below `md` they are folded; see `Fold`. */}
+      <section className="mt-4 sm:mt-12">
+        <Fold
+          at="md"
+          open={screensOpen}
+          onToggle={() => setScreensOpen((v) => !v)}
+          label={
+            <>
+              {t('device.mockDialLabel', { defaultValue: 'What you type' })}
+              <span className="px-1.5 text-slate-soft">·</span>
+              {t('device.mockResultLabel', { defaultValue: 'What you see' })}
+            </>
+          }
+        >
+          <Reveal>
+            <div className="relative mt-3 overflow-hidden rounded-3xl bg-surface p-4 ring-1 ring-line md:mt-0 md:p-6 lg:p-10">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_75%_at_50%_-10%,var(--color-brand-500)_0%,transparent_62%)] opacity-[0.06] dark:opacity-20"
+              />
+              <div className="relative flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-center md:gap-6 lg:gap-10">
+                <figure className="flex w-full max-w-[330px] flex-col items-center md:w-[288px] lg:w-[330px]">
+                  <figcaption className="mb-4 hidden items-center gap-2 text-[11px] font-700 uppercase tracking-[0.14em] text-slate-soft md:flex">
+                    <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-500/12 text-[10px] leading-none text-brand-600 dark:text-brand-300">
+                      1
+                    </span>
+                    {t('device.mockDialLabel', { defaultValue: 'What you type' })}
+                  </figcaption>
+                  <DiallerMock />
+                </figure>
 
-            <span
-              aria-hidden
-              className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-canvas text-brand-500 shadow-sm ring-1 ring-line dark:text-brand-300 md:self-center"
-            >
-              <ArrowRight size={16} className="rotate-90 md:rotate-0" />
-            </span>
+                <span
+                  aria-hidden
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-canvas text-brand-500 shadow-sm ring-1 ring-line dark:text-brand-300 md:self-center"
+                >
+                  <ArrowRight size={16} className="rotate-90 md:rotate-0" />
+                </span>
 
-            <figure className="flex w-full max-w-[330px] flex-col items-center md:w-[288px] lg:w-[330px]">
-              <MockCaption n={2}>
-                {t('device.mockResultLabel', { defaultValue: 'What you see' })}
-              </MockCaption>
-              <div data-mock="result-wrap" className="w-full">
-                <ResultMock />
+                <figure className="flex w-full max-w-[330px] flex-col items-center md:w-[288px] lg:w-[330px]">
+                  <figcaption className="mb-4 hidden items-center gap-2 text-[11px] font-700 uppercase tracking-[0.14em] text-slate-soft md:flex">
+                    <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-500/12 text-[10px] leading-none text-brand-600 dark:text-brand-300">
+                      2
+                    </span>
+                    {t('device.mockResultLabel', { defaultValue: 'What you see' })}
+                  </figcaption>
+                  <ResultMock />
+                </figure>
               </div>
-              <p className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-brand-500/10 px-3.5 py-2 text-xs font-700 text-brand-700 ring-1 ring-brand-500/20 dark:text-brand-200">
-                <Check size={14} /> {t('device.eidFound')}
-              </p>
-            </figure>
+            </div>
+          </Reveal>
+        </Fold>
+      </section>
+
+      {/* The settings route is the fallback for a code that does nothing, so on
+          a phone it waits behind its own heading. */}
+      <section className="mt-3 sm:mt-8">
+        <Fold
+          at="sm"
+          heading
+          open={settingsOpen}
+          onToggle={() => setSettingsOpen((v) => !v)}
+          label={t('device.settingsTitle')}
+        >
+          <div className="mt-3 rounded-2xl bg-surface p-4 ring-1 ring-line sm:mt-0 sm:p-6">
+            <div className="flex items-start gap-3.5">
+              <IconBadge icon={Settings} size="md" className="hidden sm:grid" />
+              <div className="min-w-0">
+                <h2 className="hidden font-display text-base font-700 text-ink sm:block sm:text-lg">
+                  {t('device.settingsTitle')}
+                </h2>
+                <p className="text-[12.5px] leading-[1.5] text-slate-soft sm:mt-1.5 sm:text-sm sm:leading-6">
+                  {t('device.settingsIntro')}
+                </p>
+              </div>
+            </div>
+            {/* Label and path share a line on a phone: on 320px the label alone
+                was a whole 18px row for one word. */}
+            <ul className="mt-3 grid gap-2 sm:mt-4 sm:grid-cols-2 sm:gap-3">
+              {settingsPaths.map((item) => (
+                <li
+                  key={item.key}
+                  className="min-w-0 rounded-xl bg-canvas px-3.5 py-2.5 ring-1 ring-line sm:px-4 sm:py-3.5"
+                >
+                  <p className="break-words text-[12.5px] leading-[1.5] text-slate-soft sm:text-sm sm:leading-6">
+                    <span className="font-700 text-ink sm:block">
+                      {t(`device.${item.key}Label`)}
+                    </span>{' '}
+                    {item.path}
+                  </p>
+                </li>
+              ))}
+            </ul>
           </div>
-        </section>
-      </Reveal>
-
-      <Card className="mt-6 p-5 sm:mt-8 sm:p-6">
-        <div className="flex items-start gap-3.5">
-          <IconBadge icon={Settings} size="md" />
-          <div className="min-w-0">
-            <h2 className="font-display text-base font-700 text-ink sm:text-lg">
-              {t('device.settingsTitle')}
-            </h2>
-            <p className="mt-1.5 text-sm leading-6 text-slate-soft">
-              {t('device.settingsIntro')}
-            </p>
-          </div>
-        </div>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {settingsPaths.map((item) => (
-            <li
-              key={item.key}
-              className="min-w-0 rounded-xl bg-canvas px-4 py-3.5 ring-1 ring-line"
-            >
-              <p className="text-sm font-700 text-ink">{t(`device.${item.key}Label`)}</p>
-              <p className="mt-1 break-words text-sm leading-6 text-slate-soft">{item.path}</p>
-            </li>
-          ))}
-        </ul>
-      </Card>
+        </Fold>
+      </section>
 
       {/* The decision, stated plainly: the presence of an EID is the whole test. */}
-      <div className="mt-6 grid gap-4 sm:mt-8 sm:grid-cols-2">
-        <Card className="relative overflow-hidden bg-brand-50/50 p-5 ring-brand-200 motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:-translate-y-1 sm:p-6 dark:bg-brand-500/10 dark:ring-brand-400/30">
+      <div className="mt-4 grid gap-3 sm:mt-8 sm:gap-4 sm:grid-cols-2">
+        <Card className="relative overflow-hidden bg-brand-50/50 p-3.5 ring-brand-200 motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:-translate-y-1 sm:p-6 dark:bg-brand-500/10 dark:ring-brand-400/30">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-brand-500/15 blur-2xl"
           />
           <div className="relative">
-            <IconBadge icon={Check} size="md" />
-            <p className="mt-4 font-display text-lg font-700 text-brand-700 dark:text-brand-200">
-              {t('device.yesTitle')}
+            {/* The badge is a 22px chip beside the verdict on a phone and the
+                full 44px tile once the card has a column to itself. */}
+            <div className="flex items-center gap-2.5 sm:block">
+              <span className="grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300 sm:h-11 sm:w-11 sm:rounded-xl">
+                <Check className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+              </span>
+              <p className="font-display text-[17px] font-700 leading-tight text-brand-700 dark:text-brand-200 sm:mt-4 sm:text-lg">
+                {t('device.yesTitle')}
+              </p>
+            </div>
+            <p className="mt-2 text-[12.5px] leading-[1.5] text-slate-soft sm:text-sm sm:leading-6">
+              {t('device.yesText')}
             </p>
-            <p className="mt-2 text-sm leading-6 text-slate-soft">{t('device.yesText')}</p>
             <Button
               to="/destinations"
-              className={`mt-5 min-h-11 w-fit px-5 py-2.5 text-sm ${CTA_FOCUS}`}
+              className={`mt-3 min-h-11 w-fit px-4 py-2.5 text-[13px] sm:mt-5 sm:px-5 sm:text-sm ${CTA_FOCUS}`}
             >
               {t('device.yesCta')} <ArrowRight size={16} />
             </Button>
           </div>
         </Card>
 
-        <Card className="p-5 motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:-translate-y-1 sm:p-6">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-canvas text-slate-soft ring-1 ring-line">
-            <X size={20} />
-          </span>
-          <p className="mt-4 font-display text-lg font-700 text-ink">{t('device.noTitle')}</p>
-          <p className="mt-2 text-sm leading-6 text-slate-soft">{t('device.noText')}</p>
+        <Card className="p-3.5 motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:-translate-y-1 sm:p-6">
+          <div className="flex items-center gap-2.5 sm:block">
+            <span className="grid h-[22px] w-[22px] shrink-0 place-items-center rounded-md bg-canvas text-slate-soft ring-1 ring-line sm:h-11 sm:w-11 sm:rounded-xl">
+              <X className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
+            </span>
+            <p className="font-display text-[17px] font-700 leading-tight text-ink sm:mt-4 sm:text-lg">
+              {t('device.noTitle')}
+            </p>
+          </div>
+          <p className="mt-2 text-[12.5px] leading-[1.5] text-slate-soft sm:text-sm sm:leading-6">
+            {t('device.noText')}
+          </p>
           <Button
             to="/support"
             variant="ghost"
-            className={`mt-5 min-h-11 w-fit px-5 py-2.5 text-sm ${CTA_FOCUS}`}
+            className={`mt-3 min-h-11 w-fit px-4 py-2.5 text-[13px] sm:mt-5 sm:px-5 sm:text-sm ${CTA_FOCUS}`}
           >
             {t('device.noCta')}
           </Button>
         </Card>
       </div>
 
-      <div className="mt-6 flex items-start gap-3 rounded-2xl bg-surface p-4 ring-1 ring-line sm:mt-8 sm:p-5">
-        <ShieldCheck size={18} className="mt-0.5 shrink-0 text-brand-500 dark:text-brand-300" />
-        <p className="text-xs leading-6 text-slate-soft sm:text-[13px]">
+      {/* Fine print stays fine print: on a phone it is a footnote against the
+          page, not another panel. */}
+      <div className="mt-4 flex items-start gap-2.5 sm:mt-8 sm:rounded-2xl sm:bg-surface sm:p-5 sm:ring-1 sm:ring-line">
+        <ShieldCheck size={15} className="mt-0.5 shrink-0 text-brand-500 dark:text-brand-300" />
+        <p className="text-[11.5px] leading-[1.55] text-slate-soft sm:text-[13px] sm:leading-6">
           {t('device.privacyNote')}
         </p>
       </div>

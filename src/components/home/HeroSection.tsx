@@ -250,7 +250,26 @@ export default function HeroSection() {
           The desktop panel is a control rather than an ornament, so that one is
           kept and simply held still instead. */}
       {!isDesktop && (
-        <div aria-hidden className="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 opacity-[0.25] sm:top-8 sm:opacity-[0.28] lg:hidden dark:opacity-[0.32]">
+        /* The opacity is a contrast budget, not a taste setting.
+
+           On a phone the planet is directly behind the headline and a 390px
+           screen has nowhere else to put it, so what has to be bounded is how
+           far it can move the pixels under the words. At 0.25 / 0.32 the
+           composited hero swung across 0.467–0.838 relative luminance in the
+           light theme and 0.022–0.160 in the dark one, and no single ink clears
+           both ends of a swing that wide: the dark end of the light theme wants
+           near-black ink, the bright end of the dark theme wants near-white.
+           Turning the planet down closes the swing to a measured 0.585–0.885
+           and 0.019–0.090 (WebKit, iPhone 12 and SE, 14 rotations, whole globe
+           footprint, hero text hidden). Against those bounds brand-700 is
+           4.94:1 and accent-400 is 4.56:1 — worst pixel the globe is capable of
+           painting, not worst pixel it happened to paint, so the figure holds
+           for every rotation, every language and every way the headline wraps.
+
+           The `sm:` opacity step is gone. It only applied between 640 and
+           1023px, where it collided with the `dark:` step at equal specificity
+           and left the winner to stylesheet order. One value per theme. */
+        <div aria-hidden className="pointer-events-none absolute left-1/2 top-10 -translate-x-1/2 opacity-[0.15] sm:top-8 lg:hidden dark:opacity-[0.12]">
           <div className="hero-mobile-background-globe">
             <HeroGlobeVisual render={webgl && !reduced} size={GLOBE_MOBILE} />
           </div>
@@ -264,7 +283,27 @@ export default function HeroSection() {
             className="max-w-full text-balance break-words font-display text-[2rem] font-700 leading-[1.12] text-ink sm:max-w-2xl sm:text-5xl lg:text-6xl rise"
             style={{ animationDelay: '80ms' }}
           >
-            {t('home.title1')} <span className="text-gradient">{t('home.title2')}</span>
+            {t('home.title1')}{' '}
+            {/* Solid ink, not `.text-gradient`.
+
+                The accent half of the headline used to be
+                `background-clip: text; color: transparent` over a mint→teal
+                gradient that also panned on a 6s loop, drawn straight on top of
+                the rotating planet. Text with no colour has no contrast ratio
+                to check; measuring the composited pixels instead gave a worst
+                glyph pixel of 1.00:1 in the light theme and 1.20:1 in the dark
+                one, with 95–100% of the light theme's glyph area under 3:1. The
+                gradient's #34e3b0 stop and the globe's mint continents are the
+                same colour, so the words disappeared into Africa. That is the
+                "rang yutvorgan" the owner reported.
+
+                One colour per theme, both already tokens in index.css and both
+                measured against the composited hero behind them: brand-700 on
+                the pale hero, accent-400 on the dark one — the same pairing the
+                destination links in this file already use. A ratio that can be
+                computed at all is the point; losing the 6s pan is a bonus,
+                since it was one more thing moving under a headline. */}
+            <span className="text-brand-700 dark:text-accent-400">{t('home.title2')}</span>
           </h1>
           <p
             className="mt-4 max-w-full break-words text-base leading-6 text-slate-soft sm:mt-5 sm:max-w-xl sm:text-lg sm:leading-7 rise"

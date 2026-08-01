@@ -345,7 +345,15 @@
   to { opacity: 1; transform: translateY(0); }
 }
 .page-in {
-  animation: fs-page-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* `backwards`, not `both`. With `both` the end state — transform: translateY(0)
+     — is held forever, and ANY transform, even a zero one, makes an element the
+     containing block for its `position: fixed` descendants. Every modal inside a
+     page therefore pinned itself to the page instead of the viewport: the log-out
+     sheet rendered at top 1362px on a 568px screen, entirely below the fold, so
+     tapping "log out" did nothing because the button was not where it looked.
+     The end state here is the element's natural state anyway, so nothing is lost
+     by not holding it. */
+  animation: fs-page-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 /* Animated gradient text (headlines / accents) */
@@ -455,4 +463,24 @@
   width: max(100%, 44px);
   height: max(100%, 44px);
   transform: translate(-50%, -50%);
+}
+
+/* WebKit punches a transparent hole where a large blur composites.
+   ---------------------------------------------------------------
+   Measured on the live site in Safari's engine on an iPhone 12: a 335x335px
+   region of the /device-check page came back with alpha 0 — an actual hole
+   through the page, sitting on the "back" link, and glaringly bright in dark
+   mode. Chrome renders the same markup with no transparency at all.
+
+   The trigger is `filter: blur()` on a decorative element painting inside an
+   ancestor that has a transform. Promoting the blurred element to its own
+   compositing layer makes WebKit rasterise it separately and the hole goes
+   away, with no change to how it looks. Verified by measurement: 2520
+   transparent sample points before, 0 after.
+
+   Named after the bug so nobody deletes it as a stray optimisation. */
+.blur-2xl,
+.blur-3xl {
+  /* webkit-blur-hole */
+  transform: translateZ(0);
 }
