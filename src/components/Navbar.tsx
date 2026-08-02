@@ -30,7 +30,7 @@ export default function Navbar() {
       <PromoStrip />
       <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
         <Logo />
-        <nav className="hidden items-center gap-7 xl:flex">
+        <nav className="hidden items-center gap-5 md:flex xl:gap-7">
           <NavLink to="/destinations" className={linkClass}>
             <Globe size={16} /> {t('nav.destinations')}
           </NavLink>

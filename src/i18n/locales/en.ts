@@ -18,6 +18,7 @@ const en = {
     tariffs: 'Plans',
     support: 'Support',
     profile: 'Profile',
+    device: 'Device',
   },
   common: {
     rateUnavailable: 'Converted at an indicative rate — the central bank rate is temporarily unavailable.',

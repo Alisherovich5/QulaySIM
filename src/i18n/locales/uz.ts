@@ -20,6 +20,7 @@ const uz: Translation = {
     tariffs: 'Tariflar',
     support: 'Yordam',
     profile: 'Profil',
+    device: 'Qurilma',
   },
   common: {
     rateUnavailable: 'Taxminiy kurs bo‘yicha hisoblandi — Markaziy bank kursi vaqtincha mavjud emas.',

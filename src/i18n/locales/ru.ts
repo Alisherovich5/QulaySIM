@@ -20,6 +20,7 @@ const ru: Translation = {
     tariffs: 'Тарифы',
     support: 'Поддержка',
     profile: 'Профиль',
+    device: 'Устройство',
   },
   common: {
     rateUnavailable: 'Пересчёт по ориентировочному курсу — курс ЦБ временно недоступен.',
