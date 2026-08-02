@@ -49,6 +49,36 @@ jobs:
             type=ref,event=tag
             type=raw,value=latest,enable={{is_default_branch}}
 
+      # The build bakes one HTML file per destination per language, and the
+      # catalogue for that comes from the production API. Fetched here on the
+      # runner — not inside BuildKit, where the first attempt failed with an
+      # unreadable "fetch failed" — so a network problem produces a curl error
+      # in this log instead of a silently thinner image. The files land in the
+      # build context; the prerender plugin prefers them over the network.
+      #
+      # continue-on-error because a catalogue outage must not block a deploy:
+      # the build then falls back to its generic descriptions, which is the
+      # documented degradation, and the next deploy heals it.
+      - name: Snapshot the catalogue for prerender
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          mkdir -p prerender-snapshot/detail
+          for lang in uz ru en; do
+            curl -fsS --retry 3 --retry-all-errors --max-time 40 \
+              -H "Accept-Language: $lang" -H "Accept: application/json" \
+              https://qulaysim.uz/api/countries \
+              -o "prerender-snapshot/countries.$lang.json"
+          done
+          for slug in $(jq -r '.[].slug' prerender-snapshot/countries.uz.json); do
+            curl -fsS --retry 3 --retry-all-errors --max-time 40 \
+              -H "Accept: application/json" \
+              "https://qulaysim.uz/api/countries/$slug" \
+              -o "prerender-snapshot/detail/$slug.json"
+            sleep 0.2
+          done
+          echo "countries: $(jq length prerender-snapshot/countries.uz.json), details: $(ls prerender-snapshot/detail | wc -l)"
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:

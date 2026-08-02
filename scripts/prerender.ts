@@ -30,6 +30,7 @@
  */
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import type { Plugin } from 'vite'
 
@@ -70,6 +71,25 @@ const MARKER = '<!--seo-->'
 
 /** Slugs are language-independent; this is just which catalogue to read them from. */
 const DEFAULT_FACTS_LANG: SeoLang = 'uz'
+
+/**
+ * Where the CI workflow drops a catalogue snapshot before the image builds.
+ *
+ * The first CI build proved the direct route does not work: fetches from
+ * inside BuildKit to qulaysim.uz failed on every attempt — GitHub's Azure
+ * runners reach the Uzbek hosting range unreliably, and errors inside a build
+ * step are all but undebuggable. So the workflow now curls the catalogue on
+ * the runner itself, where a failure produces a readable log, and the build
+ * reads these files instead of the network. The live fetch below survives
+ * only as the fallback for local builds, where it does work.
+ */
+const SNAPSHOT_DIR = process.env.PRERENDER_SNAPSHOT || 'prerender-snapshot'
+
+async function readSnapshot<T>(file: string): Promise<T | null> {
+  const path = join(SNAPSHOT_DIR, file)
+  if (!existsSync(path)) return null
+  return JSON.parse(await readFile(path, 'utf8')) as T
+}
 
 interface ApiCountry {
   name: string
@@ -163,6 +183,8 @@ function headFor({ title, description, path, lang, jsonLd }: PageMeta): string {
  * name of a country is admin-managed data, not a string in this repository.
  */
 async function fetchCatalogue(apiBase: string, lang: SeoLang): Promise<ApiCountry[]> {
+  const snapshot = await readSnapshot<ApiCountry[]>(`countries.${lang}.json`)
+  if (snapshot) return snapshot
   const res = await fetch(`${apiBase}/countries`, {
     headers: { 'Accept-Language': lang, Accept: 'application/json' },
     signal: AbortSignal.timeout(20_000),
@@ -180,6 +202,8 @@ async function fetchCatalogue(apiBase: string, lang: SeoLang): Promise<ApiCountr
  * per country rather than once per country per language.
  */
 async function fetchFacts(apiBase: string, slug: string): Promise<DestinationFacts | null> {
+  const snapshot = await readSnapshot<{ plans?: Plan[] }>(`detail/${slug}.json`)
+  if (snapshot) return factsFor(snapshot.plans ?? [])
   const res = await fetch(`${apiBase}/countries/${slug}`, {
     headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(20_000),
