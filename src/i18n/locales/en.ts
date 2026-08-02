@@ -441,6 +441,7 @@ const en = {
 
   footer: {
     tagline: 'Convenient eSIM data plans for travel. Choose a plan, receive your QR code, and connect.',
+    pages: 'Pages',
     contacts: 'Contacts',
     product: 'Product',
     company: 'Company',
@@ -531,6 +532,136 @@ const en = {
     registerTitle: 'Create an account',
     accountTitle: 'My account',
     checkoutTitle: 'Checkout',
+    guideWhatTitle: 'What is an eSIM and how does it work?',
+    guideWhatDescription:
+      'An eSIM is a digital SIM built into your phone. How it differs from a plastic SIM, why it wins for travel and which phones support it — in plain words.',
+    guideInstallTitle: 'How to install an eSIM: step by step',
+    guideInstallDescription:
+      'Installing an eSIM from a QR code takes 5 minutes. Step-by-step guides for iPhone and Android, a pre-flight checklist and what to do when it will not connect.',
+  },
+  guides: {
+    what: {
+      title: 'What is an eSIM?',
+      lead: 'An eSIM (embedded SIM) is a digital SIM card built into your phone at the factory. No plastic card to wait for, hunt down or swap: you buy a plan online, scan a QR code and you are connected in minutes.',
+      diffTitle: 'How is it different from a regular SIM?',
+      diff: [
+        {
+          t: 'The chip is already inside the phone',
+          x: 'Nothing to insert or eject — and no tiny card to lose, either.',
+        },
+        {
+          t: 'Delivered online',
+          x: 'No shop visit, queue or courier — the QR code arrives right after purchase.',
+        },
+        {
+          t: 'Several eSIMs live side by side',
+          x: 'No swapping cards for every trip — your Turkey, Dubai and Europe eSIMs sit together on one phone.',
+        },
+        {
+          t: 'Your main number keeps working',
+          x: 'The eSIM only carries data — calls and SMS still reach your primary SIM as usual.',
+        },
+      ],
+      whyTitle: 'Why does eSIM win for travel?',
+      why: [
+        {
+          t: 'A fraction of roaming prices',
+          x: 'Carrier roaming can cost a small fortune per day; a travel eSIM plan starts at a couple of dollars.',
+        },
+        {
+          t: 'Online the moment you land',
+          x: 'Install the eSIM at home — switch off airplane mode after landing and the data is already flowing.',
+        },
+        {
+          t: 'No hunting for a local SIM',
+          x: 'Passport queues at the airport, unfamiliar kiosks, haggling in a foreign language — all of it stays behind.',
+        },
+      ],
+      deviceTitle: 'Does your phone support eSIM?',
+      deviceText:
+        'Most iPhone, Samsung, Google Pixel and Xiaomi models released since 2018 support eSIM. Check your model in under a minute:',
+      deviceBtn: 'Check your device',
+      faqTitle: 'Frequently asked questions',
+      faqs: [
+        {
+          q: 'How do I buy an eSIM?',
+          a: 'Pick a destination, choose a plan and pay online. The QR code appears in your account within minutes — no shop involved.',
+        },
+        {
+          q: 'Does installing an eSIM change my number?',
+          a: 'No. The eSIM only carries data; your primary SIM and number stay put — calls and SMS arrive as usual.',
+        },
+        {
+          q: 'Can I use one eSIM on two phones?',
+          a: 'No — an eSIM binds to the device it is installed on. The QR code is usually single-use, so scan it on the phone you are actually taking.',
+        },
+        {
+          q: 'When does the eSIM start counting?',
+          a: 'It depends on the plan: validity usually starts from the first connection. Install ahead of time, switch it on when you arrive.',
+        },
+        {
+          q: 'What if my phone is carrier-locked?',
+          a: 'A carrier-locked phone will not accept eSIMs from other networks. Ask your carrier to unlock it first.',
+        },
+      ],
+      ctaTitle: 'Ready to travel?',
+      ctaText: 'Pick your destination — the right plan takes a minute to find.',
+      ctaBtn: 'Browse destinations',
+    },
+    install: {
+      title: 'How to install an eSIM',
+      lead: 'The whole process takes 5 minutes: scan the QR code, add the eSIM in your phone settings and switch it on when you arrive. Separate steps for iPhone and Android below.',
+      beforeTitle: 'Before you fly',
+      before: [
+        'Install over Wi-Fi — downloading the eSIM needs a connection.',
+        'Make sure your phone supports eSIM and is not carrier-locked.',
+        'Install at home, but keep the data off until you arrive — validity will not burn for nothing.',
+      ],
+      iosTitle: 'Installing on iPhone',
+      ios: [
+        'Open Settings → Cellular → Add eSIM.',
+        'Choose “Use QR Code” and scan the code from your account.',
+        'Name the new line (say, “Travel”) and confirm.',
+        'Keep calls on your primary SIM; leave “Cellular Data” on it too for now — you will switch to the eSIM on arrival.',
+      ],
+      androidTitle: 'Installing on Android (Samsung, Pixel, Xiaomi)',
+      android: [
+        'Open Settings → Connections (or Network & internet) → SIM manager.',
+        'Choose “Add eSIM” or “Add mobile plan” and scan the QR code.',
+        'Once downloaded, the eSIM appears in the list — activate it.',
+        'Keep calls on your primary SIM; switch data to the eSIM when you arrive.',
+      ],
+      arriveTitle: 'When you arrive',
+      arrive: [
+        'Turn off airplane mode and let the phone find a local network.',
+        'Select the eSIM as your mobile data line in settings.',
+        'Enable “Data roaming” on the eSIM line — travel eSIMs work in roaming mode, and there is no extra charge for it.',
+      ],
+      troubleTitle: 'Not connecting?',
+      trouble: [
+        'Restart the phone — that alone fixes most cases.',
+        'Check that “Data roaming” is enabled on the eSIM line specifically.',
+        'Pick a network manually: Settings → Carrier selection → turn off automatic and try another network from the list.',
+        'Still nothing? Message us through the support page — a real person will answer.',
+      ],
+      faqs: [
+        {
+          q: 'Do I need to print the QR code?',
+          a: 'No. Open the code on another screen (a computer or a second phone) and scan it, or use manual entry right on the device.',
+        },
+        {
+          q: 'What happens if I delete the eSIM?',
+          a: 'A deleted eSIM usually cannot be restored — the QR code is single-use. Do not delete it until the trip is over; if you do not need it, just disable the line.',
+        },
+        {
+          q: 'Can I top up if I run out of data?',
+          a: 'On most plans, yes — your eSIM page in the account has a top-up button. No need to install a new eSIM.',
+        },
+      ],
+      ctaTitle: 'No eSIM yet?',
+      ctaText: 'Pick your destination — the QR code is ready in minutes.',
+      ctaBtn: 'Choose a plan',
+    },
   },
 }
 

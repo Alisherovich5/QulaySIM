@@ -1,4 +1,5 @@
 import { Send } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Logo from './Logo'
 
@@ -69,10 +70,36 @@ export default function Footer() {
             share the one below it, the social column pinned to the container's
             right edge rather than floating at the halfway mark; at lg all three
             sit on one line with the link columns packed to the right. */}
-        <div className="grid gap-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-10 sm:gap-y-12 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:gap-x-20">
+        <div className="grid gap-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-10 sm:gap-y-12 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto] lg:gap-x-16">
           <div className="max-w-sm sm:col-span-2 lg:col-span-1">
             <Logo />
             <p className="mt-4 text-sm leading-6 text-slate-soft">{t('footer.tagline')}</p>
+          </div>
+
+          <div>
+            <h4 className={columnLabelClass}>{t('footer.pages')}</h4>
+            {/* The guides' only sitewide entry point. A page nothing links to
+                is a page crawlers rarely visit and readers never find. */}
+            <ul className="mt-3 space-y-1">
+              {(
+                [
+                  ['/destinations', t('nav.destinations')],
+                  ['/esim-nima', t('guides.what.title')],
+                  ['/esim-ornatish', t('guides.install.title')],
+                  ['/device-check', t('nav.deviceCheck')],
+                  ['/support', t('nav.support')],
+                ] as const
+              ).map(([to, label]) => (
+                <li key={to}>
+                  <Link
+                    to={to}
+                    className="focus-ring -ml-1 inline-flex min-h-11 items-center rounded-xl px-1 text-[15px] font-600 text-ink transition-colors hover:text-brand-600 dark:hover:text-accent-400"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div>

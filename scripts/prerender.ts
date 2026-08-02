@@ -52,6 +52,7 @@ import {
 import {
   breadcrumbLd,
   destinationLd,
+  faqLd,
   organisationLd,
   webSiteLd,
 } from '../src/lib/structured-data'
@@ -108,7 +109,14 @@ interface ApiCountry {
 type FactsBySlug = Map<string, DestinationFacts>
 
 /** Static routes, and the sitemap priority each is worth. */
-const STATIC_ROUTES = ['/', '/destinations', '/device-check', '/support'] as const
+const STATIC_ROUTES = [
+  '/',
+  '/destinations',
+  '/device-check',
+  '/support',
+  '/esim-nima',
+  '/esim-ornatish',
+] as const
 
 function escapeAttr(value: string): string {
   return value
@@ -226,6 +234,10 @@ async function withConcurrency<T>(jobs: (() => Promise<T>)[], limit: number): Pr
   return results
 }
 
+function guideFaqLd(faqs: { q: string; a: string }[]): Record<string, unknown> | null {
+  return faqLd(faqs.map((f) => ({ question: f.q, answer: f.a })))
+}
+
 function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
   const s = STRINGS[lang].seo
   const base = { path: route, lang }
@@ -236,6 +248,22 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
       return { ...base, title: s.deviceTitle, description: s.deviceDescription, jsonLd: [] }
     case '/support':
       return { ...base, title: s.supportTitle, description: s.supportDescription, jsonLd: [] }
+    // The guides bake their FAQ schema from the same locale arrays the pages
+    // render, so what a crawler reads and what a visitor sees cannot diverge.
+    case '/esim-nima':
+      return {
+        ...base,
+        title: s.guideWhatTitle,
+        description: s.guideWhatDescription,
+        jsonLd: [guideFaqLd(STRINGS[lang].guides.what.faqs)],
+      }
+    case '/esim-ornatish':
+      return {
+        ...base,
+        title: s.guideInstallTitle,
+        description: s.guideInstallDescription,
+        jsonLd: [guideFaqLd(STRINGS[lang].guides.install.faqs)],
+      }
     default:
       return {
         ...base,

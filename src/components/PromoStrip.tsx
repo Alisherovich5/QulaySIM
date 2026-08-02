@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Check, Copy, Sparkles } from 'lucide-react'
+import { BadgePercent, Check, Copy } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCurrency } from '../context/CurrencyContext'
@@ -52,7 +52,12 @@ export default function PromoStrip() {
     <div className="border-b border-white/10 bg-brand-900 text-white">
       <div className="promo-strip-row container-page flex min-h-9 items-center justify-between gap-2 py-1 text-xs sm:text-sm">
         <div className="flex min-w-0 items-center gap-1.5 font-600">
-          <Sparkles size={13} className="shrink-0 text-gold-400" />
+          {/* A percent badge, not the sparkle and not the logo. The sparkle was
+              decoration that said nothing; the logo already sits a centimetre
+              below in the header, and repeating it makes the strip read as a
+              second masthead. This is a discount strip — the icon should say
+              "discount" before the text is read. */}
+          <BadgePercent size={15} className="shrink-0 text-gold-400" aria-hidden />
           <span className="hidden truncate sm:inline">{longLabel}</span>
           <span className="truncate sm:hidden">{shortLabel}</span>
         </div>

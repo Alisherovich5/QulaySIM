@@ -21,6 +21,8 @@ const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const Support = lazy(() => import('./pages/Support'))
 const DeviceCheck = lazy(() => import('./pages/DeviceCheck'))
+const GuideWhatIsEsim = lazy(() => import('./pages/GuideWhatIsEsim'))
+const GuideInstallEsim = lazy(() => import('./pages/GuideInstallEsim'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 function ScrollToTop() {
@@ -72,6 +74,12 @@ export default function App() {
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/support" element={<Support />} />
                   <Route path="/device-check" element={<DeviceCheck />} />
+                  {/* Uzbek slugs on purpose: the pages exist to catch Uzbek
+                      searches, and the URL is part of what matches a query. The
+                      ru/en editions live under their language prefix with the
+                      same slug, like every other page. */}
+                  <Route path="/esim-nima" element={<GuideWhatIsEsim />} />
+                  <Route path="/esim-ornatish" element={<GuideInstallEsim />} />
                   <Route
                     path="/account"
                     element={

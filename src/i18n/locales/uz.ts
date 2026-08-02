@@ -440,6 +440,7 @@ const uz: Translation = {
 
   footer: {
     tagline: 'Sayohat uchun qulay eSIM internet tariflari. Tarifni tanlang, QR-kodni oling va ulaning.',
+    pages: 'Sahifalar',
     contacts: 'Kontaktlar',
     product: 'Mahsulot',
     company: 'Kompaniya',
@@ -517,6 +518,136 @@ const uz: Translation = {
     registerTitle: 'Ro‘yxatdan o‘tish',
     accountTitle: 'Mening hisobim',
     checkoutTitle: 'To‘lov',
+    guideWhatTitle: 'eSIM nima va u qanday ishlaydi?',
+    guideWhatDescription:
+      'eSIM — telefonning ichiga o‘rnatilgan raqamli SIM-karta. Oddiy SIM’dan farqi, sayohatdagi afzalliklari va qaysi telefonlar qo‘llab-quvvatlashi — oddiy tilda tushuntiramiz.',
+    guideInstallTitle: 'eSIM qanday o‘rnatiladi? Qadam-baqadam yo‘riqnoma',
+    guideInstallDescription:
+      'eSIM’ni QR-kod orqali o‘rnatish 5 daqiqa oladi. iPhone va Android uchun qadam-baqadam yo‘riqnoma, uchishdan oldingi tekshiruv va ulanmaganda nima qilish.',
+  },
+  guides: {
+    what: {
+      title: 'eSIM nima?',
+      lead: 'eSIM (embedded SIM) — telefoningizning ichiga zavoddayoq o‘rnatilgan raqamli SIM-karta. Plastik kartani kutish, qidirish yoki almashtirish yo‘q: tarifni onlayn sotib olasiz, QR-kodni skanerlaysiz va bir necha daqiqada internetga ulanasiz.',
+      diffTitle: 'Oddiy SIM-kartadan farqi nimada?',
+      diff: [
+        {
+          t: 'Chip telefonning ichida',
+          x: 'Hech narsa qo‘yilmaydi va olinmaydi — kichkina kartani yo‘qotib qo‘yish xavfi ham yo‘q.',
+        },
+        {
+          t: 'Onlayn yetkaziladi',
+          x: 'Do‘konga borish, navbat kutish yoki kuryer chaqirish shart emas — QR-kod xariddan so‘ng darhol keladi.',
+        },
+        {
+          t: 'Bir nechta eSIM birga saqlanadi',
+          x: 'Har safar kartani almashtirmaysiz — Turkiya, Dubay va Yevropa eSIM’lari telefonda yonma-yon turadi.',
+        },
+        {
+          t: 'Asosiy raqamingiz ishlashda davom etadi',
+          x: 'eSIM faqat internet uchun — qo‘ng‘iroqlar va SMS odatdagidek asosiy SIM orqali keladi.',
+        },
+      ],
+      whyTitle: 'Sayohatda eSIM nega qulay?',
+      why: [
+        {
+          t: 'Roaming’dan bir necha barobar arzon',
+          x: 'Operator roamingi kuniga o‘nlab ming so‘m olishi mumkin; sayohat eSIM tarifi esa bir necha dollardan boshlanadi.',
+        },
+        {
+          t: 'Qo‘nishingiz bilan internet',
+          x: 'eSIM’ni uydan o‘rnatib qo‘yasiz — samolyotdan tushib aviarejimni o‘chirsangiz, internet tayyor.',
+        },
+        {
+          t: 'Mahalliy SIM izlash yo‘q',
+          x: 'Aeroportda pasport bilan navbatga turish, notanish do‘konlar, chet tilida savdolashish — bularning bari ortda qoladi.',
+        },
+      ],
+      deviceTitle: 'Telefoningiz eSIM’ni qo‘llab-quvvatlaydimi?',
+      deviceText:
+        '2018-yildan keyingi ko‘pchilik iPhone, Samsung, Google Pixel va Xiaomi modellari eSIM’ni qo‘llab-quvvatlaydi. Bir daqiqada aniq tekshirib olishingiz mumkin:',
+      deviceBtn: 'Qurilmani tekshirish',
+      faqTitle: 'Ko‘p so‘raladigan savollar',
+      faqs: [
+        {
+          q: 'eSIM’ni qanday sotib olaman?',
+          a: 'Yo‘nalishni tanlaysiz, tarifni belgilaysiz va onlayn to‘laysiz. QR-kod bir necha daqiqada shaxsiy kabinetingizda paydo bo‘ladi — do‘konga borish shart emas.',
+        },
+        {
+          q: 'eSIM o‘rnatsam, raqamim o‘zgaradimi?',
+          a: 'Yo‘q. eSIM faqat internet uchun ishlaydi, asosiy SIM-kartangiz va raqamingiz joyida qoladi — qo‘ng‘iroq va SMS’lar odatdagidek keladi.',
+        },
+        {
+          q: 'Bitta eSIM’ni ikkita telefonda ishlatsam bo‘ladimi?',
+          a: 'Yo‘q — eSIM o‘rnatilgan qurilmaga bog‘lanadi. QR-kod odatda bir marta skanerlash uchun beriladi, shuning uchun uni sayohatga olib boradigan telefoningizda oching.',
+        },
+        {
+          q: 'eSIM qachon ishga tushadi?',
+          a: 'Tarifga qarab: amal qilish muddati odatda birinchi ulanishdan boshlanadi. eSIM’ni oldindan o‘rnatib, manzilga yetganda yoqish — eng to‘g‘ri yo‘l.',
+        },
+        {
+          q: 'Telefonim operatorga qulflangan bo‘lsa-chi?',
+          a: 'Operator qulfi bo‘lgan telefon boshqa tarmoqlarning eSIM’ini qabul qilmaydi. Avval operatoringizdan qulfni ochtirish kerak bo‘ladi.',
+        },
+      ],
+      ctaTitle: 'Sayohatga tayyormisiz?',
+      ctaText: 'Manzilingizni tanlang — mos tarifni bir daqiqada topasiz.',
+      ctaBtn: 'Yo‘nalishlarni ko‘rish',
+    },
+    install: {
+      title: 'eSIM qanday o‘rnatiladi?',
+      lead: 'Butun jarayon 5 daqiqa oladi: QR-kodni skanerlaysiz, telefon sozlamalaridan qo‘shasiz va manzilga yetganda yoqasiz. Quyida iPhone va Android uchun alohida yo‘riqnoma.',
+      beforeTitle: 'Uchishdan oldin',
+      before: [
+        'Wi-Fi’ga ulangan holda o‘rnating — eSIM’ni yuklab olish uchun internet kerak bo‘ladi.',
+        'Telefoningiz eSIM’ni qo‘llashini va operator qulfi yo‘qligini tekshiring.',
+        'eSIM’ni uydayoq o‘rnatib qo‘ying, lekin internetni manzilga yetgach yoqing — muddat behuda ketmaydi.',
+      ],
+      iosTitle: 'iPhone’da o‘rnatish',
+      ios: [
+        'Sozlamalar → Mobil aloqa (Cellular) → eSIM qo‘shish bo‘limini oching.',
+        '«QR-koddan foydalanish»ni tanlang va xariddan keyin kabinetingizda paydo bo‘lgan kodni skanerlang.',
+        'Yangi liniyaga nom bering (masalan, «Sayohat») va qo‘shishni tasdiqlang.',
+        'Qo‘ng‘iroqlar uchun asosiy SIM’ni, «Mobil internet» uchun esa hozircha asosiy SIM’ni qoldiring — eSIM’ga manzilda o‘tasiz.',
+      ],
+      androidTitle: 'Android’da o‘rnatish (Samsung, Pixel, Xiaomi)',
+      android: [
+        'Sozlamalar → Ulanishlar (yoki Tarmoq va internet) → SIM menejeri bo‘limini oching.',
+        '«eSIM qo‘shish» yoki «Mobil tarif qo‘shish»ni tanlang va QR-kodni skanerlang.',
+        'Yuklab olish tugagach, eSIM ro‘yxatda paydo bo‘ladi — uni faollashtiring.',
+        'Qo‘ng‘iroqlarni asosiy SIM’da qoldiring; internetni manzilga yetganda eSIM’ga o‘tkazasiz.',
+      ],
+      arriveTitle: 'Manzilga yetganda',
+      arrive: [
+        'Aviarejimni o‘chiring va telefon mahalliy tarmoqni topishini kuting.',
+        'Sozlamalarda mobil internet liniyasi sifatida eSIM’ni tanlang.',
+        'eSIM liniyasida «Data roaming»ni yoqing — sayohat eSIM’lari roaming rejimida ishlaydi, bu uchun qo‘shimcha haq olinmaydi.',
+      ],
+      troubleTitle: 'Ulanmayaptimi?',
+      trouble: [
+        'Telefonni bir marta o‘chirib yoqing — ko‘p holatda shu kifoya.',
+        '«Data roaming» aynan eSIM liniyasida yoqilganini tekshiring.',
+        'Tarmoqni qo‘lda tanlab ko‘ring: Sozlamalar → Operator tanlash → avtomatikni o‘chirib, ro‘yxatdan boshqa tarmoqni tanlang.',
+        'Baribir ulanmasa — yordam sahifamiz orqali yozing, jonli operator javob beradi.',
+      ],
+      faqs: [
+        {
+          q: 'QR-kodni bosib chiqarish kerakmi?',
+          a: 'Yo‘q. Kodni boshqa ekranda ochib (masalan, kompyuterda yoki ikkinchi telefonda) skanerlashingiz yoki qurilmaning o‘zida qo‘lda kiritish usulidan foydalanishingiz mumkin.',
+        },
+        {
+          q: 'eSIM’ni o‘chirib yuborsam nima bo‘ladi?',
+          a: 'O‘chirilgan eSIM’ni qayta tiklab bo‘lmasligi mumkin, chunki QR-kod odatda bir martalik. Sayohat tugamaguncha eSIM’ni o‘chirmang — kerak bo‘lmasa shunchaki liniyani faolsizlantiring.',
+        },
+        {
+          q: 'Internet tugasa, to‘ldirsam bo‘ladimi?',
+          a: 'Ko‘pchilik tariflarda ha — kabinetingizdagi eSIM sahifasida to‘ldirish tugmasi bor. Yangi eSIM o‘rnatish shart emas.',
+        },
+      ],
+      ctaTitle: 'Hali eSIM olmadingizmi?',
+      ctaText: 'Yo‘nalishingizni tanlang — QR-kod bir necha daqiqada tayyor bo‘ladi.',
+      ctaBtn: 'Tarifni tanlash',
+    },
   },
 }
 
