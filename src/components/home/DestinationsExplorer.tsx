@@ -6,7 +6,7 @@ import { api } from '../../lib/api'
 import type { Country, Region } from '../../lib/types'
 import Flag from '../Flag'
 import Reveal from '../Reveal'
-import { Button, Card, PriceTag, ToggleChip } from '../ui'
+import { Button, Card, PriceTag } from '../ui'
 
 /**
  * A region with nothing promoted falls back to plain browsing, and a whole
@@ -18,23 +18,6 @@ const BROWSE_LIMIT = 12
 const GRID = 'grid grid-cols-2 gap-2.5 min-[360px]:grid-cols-3 sm:gap-4 lg:gap-5'
 
 const TITLE_ID = 'home-destinations-title'
-
-/**
- * `chip` on its own is 26px tall, which is not a tappable target. The focus
- * offset takes the colour of the strip the chips sit on, not the page canvas —
- * on the recessed strip a canvas-coloured gap read as a light halo.
- */
-const CHIP =
-  'min-h-11 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-2 dark:focus-visible:ring-accent-400'
-
-/**
- * ToggleChip fills the selected chip with brand-500, and white on brand-500 is
- * 4.07:1 — under AA. brand-600 is 5.77:1 on the same white. The dark theme
- * needs its own step as well: brand-600 is too close in value to the strip it
- * sits on to read as "selected", so it takes the mint accent (white on
- * accent-700 is 4.53:1).
- */
-const CHIP_ON = 'bg-brand-600 ring-brand-600 dark:bg-accent-700 dark:ring-accent-700'
 
 /**
  * The count is the strongest fact in the section and was reading as an ordinary
@@ -64,10 +47,11 @@ const CARD_SHAPE =
 export default function DestinationsExplorer() {
   const { t, i18n } = useTranslation()
   const [countries, setCountries] = useState<Country[]>([])
-  const [regions, setRegions] = useState<Region[]>([])
-  const [region, setRegion] = useState<string>('')
   const [loading, setLoading] = useState(true)
 
+  // The region filter moved up into the hero, and from there it leads to the
+  // full catalogue — so this section stopped being a browser and went back to
+  // being what its data actually is: the promoted list, curated in the admin.
   useEffect(() => {
     api
       .get<Country[]>('/countries')
@@ -76,12 +60,6 @@ export default function DestinationsExplorer() {
       // on the placeholders forever.
       .catch(() => setCountries([]))
       .finally(() => setLoading(false))
-    // The chips are a filter, not the content: if the regions call fails the
-    // grid still works, so it degrades to the "All" chip rather than throwing.
-    api
-      .get<Region[]>('/regions')
-      .then((r) => setRegions(r.data))
-      .catch(() => setRegions([]))
   }, [i18n.language])
 
   // Region names are admin-owned catalogue data and arrive in English, which is
@@ -90,97 +68,51 @@ export default function DestinationsExplorer() {
   const regionLabel = (r: Region) => t(`region.${r.slug}`, { defaultValue: r.name })
 
   const { shown, promoted } = useMemo(() => {
-    const pool = region ? countries.filter((c) => c.region?.slug === region) : countries
-    const popular = pool.filter((c) => c.is_popular)
+    const popular = countries.filter((c) => c.is_popular)
     // No cap here: the promoted list is curated in the admin, so trimming it to
     // a round number silently dropped whichever destination sorted last. The
     // API already returns it in the admin's own order, so it is not re-sorted
     // either — that order is the business's ranking, not an accident.
     if (popular.length > 0) return { shown: popular, promoted: true }
-    // A filter chip that leads to an empty section reads as a broken page, so a
-    // region with nothing promoted still shows what it has.
-    return { shown: pool.slice(0, BROWSE_LIMIT), promoted: false }
-  }, [countries, region])
+    // A catalogue with nothing promoted still shows what it has, capped so a
+    // whole continent of cards does not bury the rest of the landing page.
+    return { shown: countries.slice(0, BROWSE_LIMIT), promoted: false }
+  }, [countries])
 
-  // Only the promoted list may claim to be the popular one. The earlier form of
-  // this fell back to the popular heading whenever `activeRegion` was missing —
-  // which is the default "All" tab and also any tab at all once the regions
-  // call has failed — so an unpromoted browse list was labelled "popular".
-  const activeRegion = regions.find((r) => r.slug === region)
-  const gridTitle = promoted
-    ? t('home.popularTitle')
-    : activeRegion
-      ? regionLabel(activeRegion)
-      : t('destinations.allDestinations')
+  // Only the promoted list may claim to be the popular one.
+  const gridTitle = promoted ? t('home.popularTitle') : t('destinations.allDestinations')
 
   const title = t('home.exploreTitle')
   const { before, count, after } = splitOnCount(title)
 
   return (
     <section className="container-page py-12 sm:py-16" aria-labelledby={TITLE_ID}>
-      {/* A centred heading over a centred paragraph over a centred row of pills
-          is three loose objects on the page background. This is one module
-          instead: a raised surface that carries the fact and the copy, with the
-          region filter on a recessed strip along its foot, so the filter reads
-          as a control belonging to the section rather than as a third heading. */}
+      {/* The header used to be a raised panel: a numeral set at 8xl, a blur
+          blob behind it, the copy walled off behind a hairline and the filter
+          on a recessed strip along the foot — poster chrome, and the owner
+          called it what it was. With the filter gone to the hero there is
+          nothing here that needs a surface, so the header returns to the page:
+          an editorial two-column — display heading left, supporting copy on
+          the right hung off a single hairline — with the count carried by
+          colour inside the sentence instead of by a font size. The words stay
+          in the translator's order; `aria-label` reads the untouched string. */}
       <Reveal>
-        <div className="relative isolate overflow-hidden rounded-[1.75rem] bg-surface ring-1 ring-line elev-2 sm:rounded-[2rem]">
-          {/* Depth from a tinted wash rather than another border. */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-20 -top-28 -z-10 h-64 w-64 rounded-full bg-brand-400/12 blur-3xl sm:h-80 sm:w-80 dark:bg-accent-400/12"
-          />
+        <div className="lg:flex lg:items-end lg:justify-between lg:gap-16">
+          <h2
+            id={TITLE_ID}
+            aria-label={title}
+            className="max-w-2xl font-display text-[1.75rem] font-700 leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl"
+          >
+            {before && <span>{before} </span>}
+            {count && (
+              <span className="tabular-nums text-brand-600 dark:text-accent-400">{count}</span>
+            )}
+            {after && <span> {after}</span>}
+          </h2>
 
-          {/* The numeral's ink overhangs its line box by design, so the top
-              padding is a step deeper than the bottom to keep the optical gap
-              even against the band edge. */}
-          <div className="px-5 pb-7 pt-9 sm:px-8 sm:pb-8 sm:pt-10 lg:flex lg:items-end lg:justify-between lg:gap-12 lg:px-10 lg:pt-12">
-            {/* The numeral is set at display scale and the rest of the heading
-                hangs off its baseline. `aria-label` carries the untouched
-                sentence, so splitting it for layout costs nothing in the
-                accessibility tree. */}
-            <h2
-              id={TITLE_ID}
-              aria-label={title}
-              className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 font-display text-xl font-700 leading-tight text-ink sm:gap-x-3.5 sm:text-2xl lg:max-w-lg lg:gap-x-5 lg:text-3xl"
-            >
-              {before && <span>{before}</span>}
-              {count && (
-                <span className="text-[3.5rem] leading-[0.9] tracking-tight tabular-nums text-brand-600 sm:text-7xl lg:text-8xl dark:text-accent-400">
-                  {count}
-                </span>
-              )}
-              {after && <span>{after}</span>}
-            </h2>
-
-            <p className="mt-4 max-w-xl text-sm leading-6 text-slate-soft sm:text-[15px] sm:leading-7 lg:mt-0 lg:max-w-sm lg:shrink-0 lg:border-l lg:border-line lg:pl-12">
-              {t('home.exploreSubtitle')}
-            </p>
-          </div>
-
-          {/* Eight chips wrap into three stacked rows on a phone and push the grid
-              below the fold. The rail keeps them on one line, as on /destinations. */}
-          <div className="border-t border-line bg-surface-2 px-5 sm:px-8 lg:px-10">
-            <div className="mobile-scroll-gutter flex items-center gap-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:py-4">
-              <ToggleChip
-                active={!region}
-                onClick={() => setRegion('')}
-                className={`${CHIP} ${!region ? CHIP_ON : ''}`}
-              >
-                {t('home.exploreAll')}
-              </ToggleChip>
-              {regions.map((r) => (
-                <ToggleChip
-                  key={r.id}
-                  active={region === r.slug}
-                  onClick={() => setRegion(r.slug)}
-                  className={`${CHIP} ${region === r.slug ? CHIP_ON : ''}`}
-                >
-                  {regionLabel(r)}
-                </ToggleChip>
-              ))}
-            </div>
-          </div>
+          <p className="mt-4 max-w-xl text-[15px] leading-7 text-slate-soft lg:mt-0 lg:max-w-sm lg:shrink-0 lg:border-l lg:border-line lg:pl-10">
+            {t('home.exploreSubtitle')}
+          </p>
         </div>
       </Reveal>
 

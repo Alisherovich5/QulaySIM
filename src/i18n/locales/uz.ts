@@ -37,7 +37,6 @@ const uz: Translation = {
     badge: '200+ yo‘nalishdagi sayohatchilar ishonadi',
     title1: 'Ko‘plab sayohatchilar duch keladigan internet muammosiga —',
     title2: 'QulaySIM orqali yechim.',
-    subtitle: 'Navbatsiz. Ortiqcha xarajatsiz. Bir zumda.',
     searchPlaceholder: 'Qayerga sayohat qilyapsiz?',
     findPlans: 'Tariflarni topish',
     routeFromLabel: 'Boshlanish',
@@ -344,9 +343,9 @@ const uz: Translation = {
     copyCode: 'Kodni nusxalash',
     copied: 'Nusxalandi',
     mockDialLabel: 'Nima teriladi',
-    mockDone: 'Tayyor',
+    dialHint: '* va # tugmalari raqamlar klaviaturasining eng pastki qatorida.',
     mockResultLabel: 'Nima ko\'rinadi',
-    mockSheetNote: 'Namunaviy qiymatlar. Chiziqlar — rasm, skanerlanadigan kod emas.',
+    mockSheetNote: 'Raqamlar — namuna. Sizning ekraningizda o‘z qiymatlaringiz chiqadi.',
   },
 
   auth: {

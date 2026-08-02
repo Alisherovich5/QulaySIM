@@ -35,7 +35,6 @@ const en = {
     badge: 'Trusted by travellers in 200+ destinations',
     title1: 'A solution to the connectivity problem many travellers face —',
     title2: 'with QulaySIM.',
-    subtitle: 'No queues. No unnecessary costs. Connected in an instant.',
     searchPlaceholder: 'Where are you travelling?',
     findPlans: 'Find plans',
     routeFromLabel: 'From',
@@ -345,9 +344,9 @@ const en = {
     copyCode: 'Copy code',
     copied: 'Copied',
     mockDialLabel: 'What you type',
-    mockDone: 'Done',
+    dialHint: 'The * and # keys sit on the bottom row of the keypad.',
     mockResultLabel: 'What you see',
-    mockSheetNote: 'Sample values. The bars are a drawing, not a scannable code.',
+    mockSheetNote: 'Sample digits. Your screen will show your own values.',
   },
 
   auth: {

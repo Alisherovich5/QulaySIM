@@ -62,7 +62,7 @@ export default function Footer() {
   // the last row of content keeps a visible gap above the nav instead of
   // stopping flush against its top edge.
   return (
-    <footer className="border-t border-line bg-surface pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <footer className="border-t border-line bg-surface pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-0">
       <div className="container-page py-12 sm:py-14">
         {/* Left-aligned at every width. Centred text gave the social tiles
             nothing to line up with, which is what made them look dropped in.

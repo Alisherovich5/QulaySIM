@@ -11,12 +11,21 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, MapPinOff, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
-import type { Country } from '../../lib/types'
+import type { Country, Region } from '../../lib/types'
 import type { HeroGlobePick } from './HeroGlobe'
 import Flag from '../Flag'
 import { Button } from '../ui'
 
 const HeroGlobe = lazy(() => import('./HeroGlobe'))
+
+/**
+ * The hero's region chips. Pills on the hero wash, so they take the raised
+ * surface and hairline the search card below them uses — one vocabulary for
+ * everything sitting on this gradient. No selected state: these navigate to
+ * the filtered catalogue rather than toggling anything in place.
+ */
+const HERO_CHIP =
+  'focus-ring inline-flex min-h-11 shrink-0 items-center rounded-full bg-surface px-4 text-sm font-600 text-ink shadow-sm ring-1 ring-line transition hover:text-brand-600 hover:ring-brand-300 dark:hover:text-accent-400 dark:hover:ring-accent-400/50'
 
 /** Three named destinations plus "all of them" fills the two-by-two block
     under the globe exactly. */
@@ -140,6 +149,7 @@ export default function HeroSection() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [countries, setCountries] = useState<Country[]>([])
+  const [regions, setRegions] = useState<Region[]>([])
   // The country the visitor asked about that we do not sell. Clicking such a
   // place has to answer something; silence reads as a broken globe. `at` is the
   // moment of the click — clicking the same country twice has to restart the
@@ -163,6 +173,21 @@ export default function HeroSection() {
     }
   }, [isDesktop, i18n.language])
 
+  // The region chips live in the hero now, so the hero needs the region list
+  // at every width — unlike the catalogue above, which only the desktop globe
+  // pays for. A failed fetch leaves only the "all destinations" chip, which is
+  // a working control, not a hole.
+  useEffect(() => {
+    let cancelled = false
+    api
+      .get<Region[]>('/regions')
+      .then((r) => !cancelled && setRegions(r.data))
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [i18n.language])
+
   // The notice is an answer, not a state to live in — it steps aside for the
   // destination links again shortly after it has been read.
   useEffect(() => {
@@ -175,6 +200,11 @@ export default function HeroSection() {
     const popular = countries.filter((c) => c.is_popular)
     return (popular.length ? popular : countries).slice(0, QUICK_LINKS)
   }, [countries])
+
+  // Region names are admin-owned catalogue data and arrive in English; the
+  // slug keys the translation, the API name is the fallback for a region added
+  // after this build.
+  const regionLabel = (r: Region) => t(`region.${r.slug}`, { defaultValue: r.name })
 
   const search = (e: React.FormEvent) => {
     e.preventDefault()
@@ -305,12 +335,28 @@ export default function HeroSection() {
                 since it was one more thing moving under a headline. */}
             <span className="text-brand-700 dark:text-accent-400">{t('home.title2')}</span>
           </h1>
-          <p
-            className="mt-4 max-w-full break-words text-base leading-6 text-slate-soft sm:mt-5 sm:max-w-xl sm:text-lg sm:leading-7 rise"
+          {/* The region filter, where the tagline used to be. The tagline was
+              three adjectives nobody chose anything with; these are the eight
+              real ways a person answers "where are you going?" without typing.
+              They are links to the catalogue already filtered — the same
+              destination the search form below submits to — because the full
+              region list lives there, not in the teaser grid further down this
+              page. One scrollable line on phones (the same rail as the
+              catalogue page), wrapping rows from sm up. */}
+          <nav
+            aria-label={t('destinations.region')}
+            className="mobile-scroll-gutter mt-4 flex min-h-11 items-center gap-2 rise sm:mx-0 sm:mt-5 sm:flex-wrap sm:overflow-visible sm:p-0"
             style={{ animationDelay: '160ms' }}
           >
-            {t('home.subtitle')}
-          </p>
+            <Link to="/destinations" className={HERO_CHIP}>
+              {t('home.exploreAll')}
+            </Link>
+            {regions.map((r) => (
+              <Link key={r.id} to={`/destinations?region=${r.slug}`} className={HERO_CHIP}>
+                {regionLabel(r)}
+              </Link>
+            ))}
+          </nav>
 
           <form
             onSubmit={search}

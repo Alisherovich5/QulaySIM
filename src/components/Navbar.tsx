@@ -30,7 +30,10 @@ export default function Navbar() {
       <PromoStrip />
       <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
         <Logo />
-        <nav className="hidden items-center gap-5 md:flex xl:gap-7">
+        {/* lg, not md: measured at 768px this block reaches 814px and pans the
+            whole page 46px. Tablets keep the bottom nav instead — same as
+            phones — and the header links appear where they genuinely fit. */}
+        <nav className="hidden items-center gap-5 lg:flex xl:gap-7">
           <NavLink to="/destinations" className={linkClass}>
             <Globe size={16} /> {t('nav.destinations')}
           </NavLink>
@@ -44,7 +47,7 @@ export default function Navbar() {
             <LifeBuoy size={16} /> {t('nav.support')}
           </NavLink>
         </nav>
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           {/* One settings group at every desktop width. It used to be the group
               at xl and a loose theme+language pair below it, which meant the
               currency — a setting like the other two — was unreachable between
@@ -95,7 +98,7 @@ export default function Navbar() {
             reading order as the desktop cluster. Four 40px cells plus the
             wordmark come to 316px of the 390px row, so the currency fits here
             without shrinking anything. */}
-        <div className="flex items-center gap-1 max-[359px]:gap-0.5 md:hidden">
+        <div className="flex items-center gap-1 max-[359px]:gap-0.5 lg:hidden">
           <CurrencySwitcher compact />
           <ThemeToggle />
           <LanguageSwitcher compact />
