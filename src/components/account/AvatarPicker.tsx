@@ -11,7 +11,10 @@ interface Props {
   onUpdated: (summary: AccountSummary) => void
 }
 
-const MAX_BYTES = 5 * 1024 * 1024
+// Must agree with MAX_UPLOAD_BYTES in the API's app/domain/avatars.py. 5 MB
+// refused what a current iPhone routinely produces (5-10 MB off the camera) —
+// the check exists to fail fast on absurd files, not to fail normal photos.
+const MAX_BYTES = 15 * 1024 * 1024
 
 /** What the component is waiting on — drives the label the live region reads. */
 type Pending = 'upload' | 'remove' | null
