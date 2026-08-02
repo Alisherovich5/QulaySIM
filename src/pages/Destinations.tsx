@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import Seo from '../components/Seo'
+import type { SeoLang } from '../lib/seo'
+import { breadcrumbLd, destinationListLd } from '../lib/structured-data'
 import { api } from '../lib/api'
 import type { Country, Region } from '../lib/types'
 import CountryCard from '../components/CountryCard'
@@ -44,8 +47,21 @@ export default function Destinations() {
     return t('destinations.allDestinations')
   }, [search, region, regions, t])
 
+  const seoLang = (i18n.resolvedLanguage ?? 'uz') as SeoLang
+  const listLd = destinationListLd(countries, seoLang)
+
   return (
     <div className="container-page py-8 sm:py-12">
+      <Seo
+        title={t('seo.destinationsTitle')}
+        description={t('seo.destinationsDescription')}
+        jsonLd={[
+          // Built from what the page is actually showing, so a filtered view
+          // never advertises destinations it is not listing.
+          ...(listLd ? [listLd] : []),
+          breadcrumbLd([{ name: t('nav.destinations'), path: '/destinations' }], seoLang),
+        ]}
+      />
       <h1 className="text-2xl font-700 sm:text-3xl">{t('destinations.title')}</h1>
       <p className="mt-2 leading-6 text-slate-soft">{t('destinations.subtitle')}</p>
 

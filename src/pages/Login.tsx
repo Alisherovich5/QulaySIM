@@ -4,6 +4,7 @@ import { ArrowLeft, LogIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { tooManyAttemptsMessage } from '../lib/api'
 import GoogleSignIn from '../components/GoogleSignIn'
+import Seo from '../components/Seo'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
 import LanguageSwitcher from '../components/LanguageSwitcher'
@@ -45,6 +46,9 @@ export default function Login() {
 
   return (
     <div className="container-page grid min-h-[70vh] place-items-center py-12">
+      {/* noindex: a sign-in form is never the answer to a search, and letting
+          it rank pulls clicks away from the page the searcher wanted. */}
+      <Seo title={t('seo.signInTitle')} description={t('seo.homeDescription')} noindex />
       <div className="w-full max-w-md">
         <div className="flex items-center justify-between">
           <Logo />

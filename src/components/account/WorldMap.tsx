@@ -244,8 +244,16 @@ export default function WorldMap({ passport }: Props) {
             <Globe2 size={18} />
           </span>
           <div className="min-w-0">
-            <h2 className="truncate font-700 leading-tight">{t('account.mapTitle')}</h2>
-            <p className="truncate text-xs text-slate-soft">{t('account.globeOpenHint')}</p>
+            <h2 className="font-700 leading-tight">{t('account.mapTitle')}</h2>
+            {/* Wraps rather than truncating. On a 390px phone the hint does not
+                fit on one line in any of the three languages — it read
+                "Interaktiv 3D globusni ochish uchu…", and the Russian string is
+                longer still — so a single line was always going to clip. Two
+                lines is the cap: a long translation can extend the header a
+                little, but not push the globe off the first screen. */}
+            <p className="line-clamp-2 text-xs leading-snug text-slate-soft">
+              {t('account.globeOpenHint')}
+            </p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">

@@ -1,12 +1,31 @@
 # Everything on this site is public catalogue and marketing; nothing here needs
-# hiding from crawlers. The account, checkout and admin paths are disallowed
+# hiding from crawlers. The account, checkout and sign-in paths are disallowed
 # because they are useless to index — they require a session and produce no
 # content — not because they are secret.
+#
+# Each one is listed three times because each language edition is its own URL:
+# /account, /ru/account and /en/account are three separate pages to a crawler,
+# and a rule for one says nothing about the others.
 User-agent: *
 Allow: /
+
 Disallow: /account
 Disallow: /checkout
 Disallow: /login
 Disallow: /register
+
+Disallow: /ru/account
+Disallow: /ru/checkout
+Disallow: /ru/login
+Disallow: /ru/register
+
+Disallow: /en/account
+Disallow: /en/checkout
+Disallow: /en/login
+Disallow: /en/register
+
+# The empty shell nginx serves for a URL the build did not bake. It is not a
+# page; it is what a page is made from before React fills it in.
+Disallow: /fallback.html
 
 Sitemap: https://qulaysim.uz/sitemap.xml

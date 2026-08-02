@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
 import { setApiLanguage } from '../lib/api'
+import { DEFAULT_LANG, langFromPath } from '../lib/seo'
 import en from './locales/en'
 import ru from './locales/ru'
 import uz from './locales/uz'
@@ -13,20 +14,48 @@ export const LANGUAGES = [
   { code: 'en', label: 'English', short: 'EN', flag: 'gb' },
 ] as const
 
+/**
+ * A language prefix in the address is a decision, not a hint.
+ *
+ * /ru/support has to render Russian for everyone — including a visitor whose
+ * localStorage still says Uzbek from a previous session, and including
+ * Googlebot, which has no storage at all and would otherwise index three
+ * identical Uzbek pages under three URLs. The stored preference still decides
+ * the unprefixed pages, so a returning customer is not thrown back to Uzbek on
+ * the home page.
+ */
+const pathLang = typeof window === 'undefined' ? DEFAULT_LANG : langFromPath(window.location.pathname)
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    ...(pathLang === DEFAULT_LANG ? {} : { lng: pathLang }),
     resources: {
       en: { translation: en },
       ru: { translation: ru },
       uz: { translation: uz },
     },
-    fallbackLng: 'en',
+    // Uzbek, because the unprefixed URLs are the Uzbek edition and the audience
+    // is in Uzbekistan. It used to be English, which meant a missing key showed
+    // English text on a page that had told search engines it was Uzbek.
+    fallbackLng: DEFAULT_LANG,
     supportedLngs: ['uz', 'ru', 'en'],
     interpolation: { escapeValue: false },
     detection: {
-      order: ['localStorage', 'navigator'],
+      // `navigator` was deliberately removed. With it, an unprefixed URL —
+      // which is the *Uzbek* edition, and says so in its own hreflang tags —
+      // rendered in whatever language the browser happened to ask for. That was
+      // measurable: with an en-US browser, "/" served English text under an
+      // Uzbek canonical, and Googlebot browses as en-US. hreflang describes a
+      // set of URLs that each serve one language; a URL that serves whatever
+      // the visitor's browser prefers makes the whole set a lie, and Google
+      // discards sets it cannot verify.
+      //
+      // A stored choice still wins on unprefixed URLs, so a returning customer
+      // keeps their language. Crawlers have no storage, so they always get the
+      // Uzbek the tags promise.
+      order: ['localStorage'],
       lookupLocalStorage: 'fastsim_lang',
       caches: ['localStorage'],
     },

@@ -212,6 +212,7 @@ const uz: Translation = {
     expires: 'Tugaydi {{date}}',
     activate: 'Faollashtirish',
     activating: 'Faollashmoqda…',
+    qrPending: 'QR-kod tayyorlanmoqda',
     statusPending: 'kutilmoqda',
     statusActive: 'faol',
     statusExpired: 'tugagan',
@@ -479,6 +480,43 @@ const uz: Translation = {
     title: 'Sahifa topilmadi',
     subtitle: 'Siz qidirayotgan sahifa mavjud emas.',
     backHome: 'Bosh sahifaga',
+  },
+  seo: {
+    homeTitle: 'Sayohat uchun eSIM — 200+ davlatda internet',
+    homeDescription:
+      'Sayohat uchun eSIM’ni bir necha daqiqada oling. Manzilingizga tarif tanlang, QR-kodni skanerlang va yetib borganingizda darhol ulaning — roaming hisobisiz, SIM almashtirmasdan.',
+    destinationsTitle: 'eSIM yo‘nalishlari — 200+ davlat tariflari',
+    destinationsDescription:
+      'Biz qamrab olgan barcha davlatlar va ularning eng arzon tariflari. Narx, amal qilish muddati va qamrovni solishtiring, so‘ng sayohatingizga mosini tanlang.',
+    countryTitle: '{{country}} uchun eSIM — internet tariflari',
+    countryProductName: '{{country}} uchun eSIM',
+    countryDescriptionRich:
+      '{{country}} uchun {{count}} ta sayohat eSIM tarifi — ${{price}} dan. {{days}} kun, {{networks}} tarmoqlarida. Onlayn xarid qiling, QR-kod orqali o‘rnating va qo‘nganingizdayoq ulaning.',
+    factsTitle: '{{country}} uchun eSIM haqida',
+    factsPlans: 'Mavjud tariflar',
+    factsFrom: 'Boshlang‘ich narx',
+    factsValidity: 'Amal qilish muddati',
+    factsValidityValue: '{{days}} kun',
+    factsNetworks: 'Tarmoqlar',
+    factsHotspot: 'Internet ulashish',
+    factsHotspotYes: 'Barcha tariflarda mavjud',
+    factsHotspotNo: 'Tarifga qarab farq qiladi',
+    factsUnlimited: 'Cheksiz internet mavjud',
+    relatedTitle: 'Yaqin yo‘nalishlar',
+    countryDescription:
+      '{{country}} uchun sayohat eSIM tariflari. Onlayn xarid qiling, uchishdan oldin QR-kod orqali o‘rnating va qo‘nganingizdayoq internetga ulaning.',
+    deviceTitle: 'Telefoningiz eSIM’ni qo‘llab-quvvatlaydimi?',
+    deviceDescription:
+      'Telefoningiz eSIM’ni qo‘llab-quvvatlashini bir necha soniyada tekshiring — *#06# raqamini tering yoki modelingizni ro‘yxatdan toping. iPhone, Samsung, Google Pixel, Xiaomi va boshqalar.',
+    supportTitle: 'Yordam va ko‘p so‘raladigan savollar',
+    supportDescription:
+      'eSIM’ni qanday o‘rnatish, ulanmasa nima qilish, pul qaytarish va hisobni to‘ldirish. Mijozlar eng ko‘p so‘raydigan savollarga javoblar.',
+    notFoundTitle: 'Sahifa topilmadi',
+    notFoundDescription: 'Bunday sahifa mavjud emas. eSIM yo‘nalishlarimizni ko‘rib chiqing.',
+    signInTitle: 'Kirish',
+    registerTitle: 'Ro‘yxatdan o‘tish',
+    accountTitle: 'Mening hisobim',
+    checkoutTitle: 'To‘lov',
   },
 }
 

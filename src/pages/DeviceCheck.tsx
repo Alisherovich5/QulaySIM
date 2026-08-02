@@ -2,6 +2,7 @@ import { useCallback, useRef, useState, type CSSProperties, type ReactNode } fro
 import { Link } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Check, Copy, Settings, ShieldCheck, Wifi, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import Seo from '../components/Seo'
 
 /* ==========================================================================
  * Device check — Direction A: a check, not a document.
@@ -321,6 +322,7 @@ export default function DeviceCheckA() {
 
   return (
     <div className="container-page pb-4 pt-2 sm:py-10">
+      <Seo title={t('seo.deviceTitle')} description={t('seo.deviceDescription')} />
       <Link
         to="/"
         className="focus-ring -ml-2 inline-flex min-h-11 items-center gap-1.5 rounded-xl px-2 py-2 text-[13px] font-600 text-slate-soft transition-colors hover:text-brand-600 dark:hover:text-brand-300"

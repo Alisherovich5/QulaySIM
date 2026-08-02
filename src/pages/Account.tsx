@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
+import Seo from '../components/Seo'
 import { useAuth } from '../context/AuthContext'
 import type { AccountSummary, ESIM, Order } from '../lib/types'
 import EsimCard from '../components/EsimCard'
@@ -191,6 +192,7 @@ export default function Account() {
 
   return (
     <div className="container-page py-6 sm:py-10">
+      <Seo title={t('seo.accountTitle')} description={t('seo.homeDescription')} noindex />
       <Reveal>
         <ProfileHeader summary={summary} onLogout={handleLogout} onSummaryChange={setSummary} />
       </Reveal>

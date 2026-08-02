@@ -87,14 +87,17 @@ export default function StatTile({
         className={`pointer-events-none absolute -right-4 -top-5 opacity-[0.07] dark:opacity-[0.14] ${TONES[tone]}`}
       />
 
-      <p className="relative flex items-center gap-1.5 text-[11px] font-600 uppercase leading-none tracking-[0.09em] text-slate-soft">
+      {/* `items-start` and a wrapping label: at 320px the tiles are two to a
+          row, which leaves about 130px, and "Jami sarflangan" clipped to
+          "Jami sarflanga…". The live dot stays aligned to the first line. */}
+      <p className="relative flex items-start gap-1.5 text-[11px] font-600 uppercase leading-tight tracking-[0.09em] text-slate-soft">
         {live && (
-          <span aria-hidden className="relative grid h-2 w-2 shrink-0 place-items-center">
+          <span aria-hidden className="relative mt-[3px] grid h-2 w-2 shrink-0 place-items-center">
             <span className="pulse-dot absolute inset-0 rounded-full bg-accent-500" />
             <span className="absolute inset-0 rounded-full bg-accent-500/50" />
           </span>
         )}
-        <span className="min-w-0 truncate">{label}</span>
+        <span className="min-w-0">{label}</span>
       </p>
 
       <p

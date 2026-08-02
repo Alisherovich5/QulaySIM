@@ -12,6 +12,7 @@
 
 import { readFileSync } from 'node:fs'
 import { execSync } from 'node:child_process'
+import { runInNewContext } from 'node:vm'
 
 const LANGS = ['uz', 'en', 'ru']
 const BASE = 'en'
@@ -72,7 +73,11 @@ function loadLocale(lang) {
     }
   }
   if (end < 0) throw new Error(`${lang}: unbalanced braces in the object literal`)
-  return eval(`(${raw.slice(start, end)})`)
+  // `node:vm` rather than eval: the locale files are ours, but this still
+  // runs a source file as code, and an empty context means the snippet
+  // cannot reach this script's scope or Node's globals if one ever grows
+  // something other than a plain data literal.
+  return runInNewContext(`(${raw.slice(start, end)})`, Object.create(null))
 }
 
 const flatten = (obj, prefix = '') =>

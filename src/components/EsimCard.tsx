@@ -41,8 +41,23 @@ export default function EsimCard({ esim, onActivate, onTopup, activating, toppin
   return (
     <Card className="lift overflow-hidden">
       <div className="flex flex-col gap-5 p-5 sm:flex-row">
-        <div className="grid shrink-0 place-items-center rounded-xl bg-white p-3 ring-1 ring-line">
-          <img src={esim.qr_image} alt="eSIM QR code" className="h-28 w-28" />
+        {/* An eSIM that the supplier has not provisioned yet has no QR: the
+            column defaults to an empty string and stays that way until
+            fulfilment runs. Rendering <img src=""> for it is not merely an
+            empty box — the browser resolves the empty URL to the current
+            document and downloads the whole page again, then draws a broken
+            image where the code should be. */}
+        <div className="grid h-[136px] w-[136px] shrink-0 place-items-center rounded-xl bg-white p-3 ring-1 ring-line">
+          {esim.qr_image ? (
+            <img src={esim.qr_image} alt="eSIM QR code" className="h-28 w-28" />
+          ) : (
+            <div className="flex flex-col items-center gap-2 px-1 text-center">
+              <CircleDot size={22} className="animate-pulse text-slate-400" aria-hidden />
+              <span className="text-[11px] leading-tight font-600 text-slate-500">
+                {t('account.qrPending')}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="min-w-0 flex-1">

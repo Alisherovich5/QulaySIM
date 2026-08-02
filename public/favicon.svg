@@ -1,4 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<!-- 96x96, not 32x32. Google documents the favicon it shows beside a search
+     result as needing to be a square multiple of 48px, and it rasterises the
+     file at its intrinsic size before deciding. The viewBox stays 0 0 32 32 —
+     that is the artwork's own coordinate system, so nothing is redrawn; only
+     the size the file reports about itself changes. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="96" height="96">
   <!-- Favicon derived from the Q of the QulaySIM wordmark, so the tab icon and
        the header logo are the same letterform rather than two different marks.
        A wordmark cannot be a favicon: at 16px a four-to-one lockup is a smear. -->

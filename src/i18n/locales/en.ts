@@ -210,6 +210,7 @@ const en = {
     expires: 'Expires {{date}}',
     activate: 'Activate',
     activating: 'Activating…',
+    qrPending: 'QR code is being prepared',
     statusPending: 'pending',
     statusActive: 'active',
     statusExpired: 'expired',
@@ -480,6 +481,56 @@ const en = {
     title: 'Page not found',
     subtitle: 'The page you are looking for does not exist.',
     backHome: 'Back home',
+  },
+  // Written for the search results page, not for the site. A title is what a
+  // searcher clicks and a description is the sentence that persuades them to,
+  // so each one names the destination and says what it costs to arrive at —
+  // rather than repeating the brand, which is appended to every title anyway.
+  //
+  // Titles stay under ~50 characters because " | QulaySIM" is added to them and
+  // Google truncates the pair at roughly 60.
+  seo: {
+    homeTitle: 'eSIM for travel — data in 200+ countries',
+    homeDescription:
+      'Buy a travel eSIM in minutes. Pick a plan for your destination, scan the QR code and land connected — no roaming bills, no SIM swap, no queue at the airport.',
+    destinationsTitle: 'eSIM destinations — plans for 200+ countries',
+    destinationsDescription:
+      'Every country we cover, with the cheapest data plan for each. Compare prices, validity and coverage, then buy the one that fits your trip.',
+    countryTitle: '{{country}} eSIM — travel data plans',
+    // The name of the thing being sold, for structured data. Separate
+    // from the title because word order differs by language and a
+    // product called "Турция eSIM" reads like machine output.
+    countryProductName: '{{country}} eSIM',
+    // Built from the plans the page actually renders, so no two destinations
+    // get the same sentence — the plan count, the entry price, the validity
+    // range and the networks all differ by country.
+    countryDescriptionRich:
+      '{{count}} travel eSIM plans for {{country}} from ${{price}} — {{days}} days on {{networks}}. Buy online, install by QR code before you fly and connect the moment you land.',
+    factsTitle: 'About eSIM in {{country}}',
+    factsPlans: 'Plans available',
+    factsFrom: 'Starting from',
+    factsValidity: 'Validity',
+    factsValidityValue: '{{days}} days',
+    factsNetworks: 'Networks',
+    factsHotspot: 'Hotspot',
+    factsHotspotYes: 'Supported on every plan',
+    factsHotspotNo: 'Varies by plan',
+    factsUnlimited: 'Unlimited data available',
+    relatedTitle: 'Nearby destinations',
+    countryDescription:
+      'Travel eSIM plans for {{country}}. Buy online, install by QR code before you fly and connect the moment you land.',
+    deviceTitle: 'Does your phone support eSIM?',
+    deviceDescription:
+      'Check eSIM support on your phone in a few seconds — dial *#06# or find your model in the list. Covers iPhone, Samsung, Google Pixel, Xiaomi and more.',
+    supportTitle: 'Help and frequently asked questions',
+    supportDescription:
+      'How to install an eSIM, what to do if it will not connect, refunds and top-ups. Answers to the questions customers ask most.',
+    notFoundTitle: 'Page not found',
+    notFoundDescription: 'This page does not exist. Browse our eSIM destinations instead.',
+    signInTitle: 'Sign in',
+    registerTitle: 'Create an account',
+    accountTitle: 'My account',
+    checkoutTitle: 'Checkout',
   },
 }
 

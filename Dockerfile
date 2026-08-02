@@ -6,6 +6,17 @@ WORKDIR /build
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+
+# The build prerenders one HTML file per destination per language, and it reads
+# the destination list from the live API — a list checked into the repository
+# would be wrong the first time someone adds a country in the admin. So this
+# stage needs network access. If the API cannot be reached the build still
+# succeeds and logs a warning; only the destination pages go unbaked, and they
+# fall back to client rendering until the next deploy.
+#
+# Point this at a staging API to build a staging image against its catalogue.
+ARG PRERENDER_API_BASE=https://qulaysim.uz/api
+ENV PRERENDER_API_BASE=$PRERENDER_API_BASE
 RUN npm run build
 
 # ---- runtime ---------------------------------------------------------------

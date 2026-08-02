@@ -1,7 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { LifeBuoy, MessageCircle, Send, Smartphone } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import Seo from '../components/Seo'
 import { api } from '../lib/api'
+import { faqLd } from '../lib/structured-data'
 import type { Faq } from '../lib/types'
 import { Button, Card, FaqItem, IconBadge } from '../components/ui'
 
@@ -62,6 +64,14 @@ export default function Support() {
 
   return (
     <div className="container-page flex flex-col py-8 sm:py-12">
+      {/* The FAQ markup is built from the same `faqs` array the page renders
+          below, so the structured data and the visible answers cannot drift
+          apart — Google checks, and a mismatch costs rich results site-wide. */}
+      <Seo
+        title={t('seo.supportTitle')}
+        description={t('seo.supportDescription')}
+        jsonLd={faqLd(faqs.map((f) => ({ question: f.q, answer: f.a }))) ?? undefined}
+      />
       <div className="mx-auto max-w-2xl text-center">
         <IconBadge icon={LifeBuoy} tone="brand" size="xl" className="mx-auto" />
         <h1 className="mt-5 text-3xl font-700">{t('support.title')}</h1>

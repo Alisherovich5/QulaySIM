@@ -12,7 +12,7 @@
     var t = localStorage.getItem('fastsim_theme')
     if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     if (t === 'dark') document.documentElement.classList.add('dark')
-  } catch (e) {
+  } catch {
     /* Private mode can throw on localStorage; the light default is fine. */
   }
 })()

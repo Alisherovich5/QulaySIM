@@ -4,25 +4,11 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="QulaySIM — sayohat uchun eSIM internet tariflari. Tarifni tanlang, QR-kodni oling va manzilga yetganda ulaning." />
-    <link rel="canonical" href="https://qulaysim.uz/" />
 
-    <!-- Without these, sharing the link on Telegram or WhatsApp — which is how
-         most of this audience will encounter it — shows a bare URL with no
-         title, description or image. -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="QulaySIM" />
-    <meta property="og:url" content="https://qulaysim.uz/" />
-    <meta property="og:title" content="QulaySIM — sayohat uchun qulay eSIM" />
-    <meta property="og:description" content="200+ davlat uchun eSIM internet tariflari. Tarifni tanlang, QR-kodni oling va manzilga yetganda ulaning." />
-    <meta property="og:image" content="https://qulaysim.uz/og-card.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:locale" content="uz_UZ" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="QulaySIM — sayohat uchun qulay eSIM" />
-    <meta name="twitter:description" content="200+ davlat uchun eSIM internet tariflari." />
-    <meta name="twitter:image" content="https://qulaysim.uz/og-card.png" />
+    <!-- SEO tags are injected here by scripts/prerender.ts at build time, and
+         by src/components/Seo.tsx at runtime. Declaring any of them statically
+         breaks both — see the note in prerender.ts. -->
+    <!--seo-->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Sign in with Google loads its script from here and then opens a popup to
@@ -34,7 +20,6 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
-    <title>QulaySIM — sayohat uchun qulay eSIM</title>
     <!-- Blocking on purpose: it must run before paint. Kept in its own file
          because the site's CSP (script-src 'self') blocks inline scripts. -->
     <script src="/theme-init.js"></script>

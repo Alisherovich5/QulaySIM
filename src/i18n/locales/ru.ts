@@ -212,6 +212,7 @@ const ru: Translation = {
     expires: 'Истекает {{date}}',
     activate: 'Активировать',
     activating: 'Активация…',
+    qrPending: 'QR-код готовится',
     statusPending: 'ожидает',
     statusActive: 'активна',
     statusExpired: 'истекла',
@@ -479,6 +480,43 @@ const ru: Translation = {
     title: 'Страница не найдена',
     subtitle: 'Запрашиваемая страница не существует.',
     backHome: 'На главную',
+  },
+  seo: {
+    homeTitle: 'eSIM для путешествий — интернет в 200+ странах',
+    homeDescription:
+      'Оформите eSIM для поездки за несколько минут. Выберите тариф для своей страны, отсканируйте QR-код и подключитесь сразу после прилёта — без счетов за роуминг и без замены SIM-карты.',
+    destinationsTitle: 'Направления eSIM — тарифы для 200+ стран',
+    destinationsDescription:
+      'Все страны, которые мы покрываем, и самый дешёвый тариф для каждой. Сравните цену, срок действия и покрытие, затем выберите подходящий для поездки.',
+    countryTitle: 'eSIM для страны {{country}} — тарифы интернета',
+    countryProductName: 'eSIM {{country}}',
+    countryDescriptionRich:
+      '{{count}} тарифов туристической eSIM для страны {{country}} от ${{price}} — {{days}} дней в сетях {{networks}}. Купите онлайн, установите по QR-коду и подключитесь сразу после посадки.',
+    factsTitle: 'Об eSIM для страны {{country}}',
+    factsPlans: 'Доступно тарифов',
+    factsFrom: 'Цена от',
+    factsValidity: 'Срок действия',
+    factsValidityValue: '{{days}} дней',
+    factsNetworks: 'Сети',
+    factsHotspot: 'Раздача интернета',
+    factsHotspotYes: 'Есть во всех тарифах',
+    factsHotspotNo: 'Зависит от тарифа',
+    factsUnlimited: 'Есть безлимитные тарифы',
+    relatedTitle: 'Близкие направления',
+    countryDescription:
+      'Тарифы туристической eSIM для страны {{country}}. Купите онлайн, установите по QR-коду до вылета и подключитесь сразу после посадки.',
+    deviceTitle: 'Поддерживает ли ваш телефон eSIM?',
+    deviceDescription:
+      'Проверьте поддержку eSIM за несколько секунд — наберите *#06# или найдите свою модель в списке. iPhone, Samsung, Google Pixel, Xiaomi и другие.',
+    supportTitle: 'Помощь и часто задаваемые вопросы',
+    supportDescription:
+      'Как установить eSIM, что делать, если нет подключения, возвраты и пополнение. Ответы на вопросы, которые задают чаще всего.',
+    notFoundTitle: 'Страница не найдена',
+    notFoundDescription: 'Такой страницы нет. Посмотрите наши направления eSIM.',
+    signInTitle: 'Вход',
+    registerTitle: 'Регистрация',
+    accountTitle: 'Мой аккаунт',
+    checkoutTitle: 'Оформление заказа',
   },
 }
 

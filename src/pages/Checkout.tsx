@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
+import Seo from '../components/Seo'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
@@ -98,6 +99,7 @@ export default function Checkout() {
 
   return (
     <div className="container-page py-8 sm:py-12">
+      <Seo title={t('seo.checkoutTitle')} description={t('seo.homeDescription')} noindex />
       <h1 className="text-2xl font-700 sm:text-3xl">{t('checkout.title')}</h1>
       {priceChanged && (
         <p className="mt-3 rounded-xl bg-gold-500/10 px-4 py-3 text-sm text-gold-700 ring-1 ring-gold-500/20 dark:text-gold-300">
