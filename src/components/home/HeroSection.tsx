@@ -307,8 +307,13 @@ export default function HeroSection() {
       )}
 
       <div className="container-page relative z-10 grid items-center gap-10 py-10 sm:py-14 lg:min-h-[590px] lg:grid-cols-2 lg:gap-12 lg:py-24">
-        {/* Left — copy + search */}
-        <div className="max-w-2xl">
+        {/* Left — copy + search. min-w-0 is load-bearing: the chips rail
+            below is a scroll container, and a grid item's automatic minimum
+            width lets that rail's content size push the whole column — and the
+            headline with it — past the viewport, where the section's own
+            overflow-hidden quietly crops it. Measured: 672px of column in a
+            390px screen before, 350px after. */}
+        <div className="min-w-0 max-w-2xl">
           <h1
             className="max-w-full text-balance break-words font-display text-[2rem] font-700 leading-[1.12] text-ink sm:max-w-2xl sm:text-5xl lg:text-6xl rise"
             style={{ animationDelay: '80ms' }}
