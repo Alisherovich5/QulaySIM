@@ -15,6 +15,7 @@ import Home from './pages/Home'
  */
 const Destinations = lazy(() => import('./pages/Destinations'))
 const CountryDetail = lazy(() => import('./pages/CountryDetail'))
+const RegionDetail = lazy(() => import('./pages/RegionDetail'))
 const Checkout = lazy(() => import('./pages/Checkout'))
 const Account = lazy(() => import('./pages/Account'))
 const Login = lazy(() => import('./pages/Login'))
@@ -70,6 +71,9 @@ export default function App() {
                 <Route element={<Layout />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/destinations" element={<Destinations />} />
+                  {/* The static segment outranks :slug in v6 route ranking, so a
+                      region page never falls through to the country page. */}
+                  <Route path="/destinations/region/:slug" element={<RegionDetail />} />
                   <Route path="/destinations/:slug" element={<CountryDetail />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/support" element={<Support />} />

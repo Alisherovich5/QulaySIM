@@ -12,7 +12,7 @@ import DestinationFacts from '../components/DestinationFacts'
 import RelatedDestinations from '../components/RelatedDestinations'
 import { Button } from '../components/ui'
 import { useCart } from '../context/CartContext'
-import type { SeoLang } from '../lib/seo'
+import { SITE_URL, type SeoLang } from '../lib/seo'
 import { descriptionParams, factsFor } from '../lib/destination-facts'
 import { breadcrumbLd, destinationLd } from '../lib/structured-data'
 
@@ -109,11 +109,22 @@ export default function CountryDetail() {
       <Seo
         title={t('seo.countryTitle', { country: country.name })}
         description={description}
+        image={`${SITE_URL}/api/og/${country.slug}.png`}
         jsonLd={[
           ...(product ? [product] : []),
           breadcrumbLd(
             [
               { name: t('nav.destinations'), path: '/destinations' },
+              ...(country.region
+                ? [
+                    {
+                      name: t(`region.${country.region.slug}`, {
+                        defaultValue: country.region.name,
+                      }),
+                      path: `/destinations/region/${country.region.slug}`,
+                    },
+                  ]
+                : []),
               { name: country.name, path },
             ],
             lang,
@@ -137,7 +148,19 @@ export default function CountryDetail() {
         <div>
           <h1 className="text-2xl font-700 sm:text-3xl">{country.name}</h1>
           <p className="mt-1 text-sm leading-5 text-slate-soft sm:text-base">
-            {country.region?.name} · {t('country.plansAvailable', { count: country.plans.length })}
+            {country.region ? (
+              // A link, not a label: the region hub is this page's category
+              // tier, and every country page linking up to it is what makes
+              // the hub rank for "region + eSIM" queries.
+              <Link
+                to={`/destinations/region/${country.region.slug}`}
+                className="focus-ring rounded font-600 text-brand-600 hover:underline dark:text-accent-400"
+              >
+                {t(`region.${country.region.slug}`, { defaultValue: country.region.name })}
+              </Link>
+            ) : null}
+            {country.region ? ' · ' : ''}
+            {t('country.plansAvailable', { count: country.plans.length })}
           </p>
         </div>
       </div>

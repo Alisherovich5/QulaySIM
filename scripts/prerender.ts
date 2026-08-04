@@ -96,6 +96,7 @@ interface ApiCountry {
   name: string
   slug: string
   starting_price: number | null
+  region: { name: string; slug: string } | null
 }
 
 /**
@@ -137,6 +138,8 @@ interface PageMeta {
   path: string
   lang: SeoLang
   jsonLd: Array<Record<string, unknown> | null>
+  /** og:image override. Only destinations set one — see metaForCountry. */
+  image?: string
 }
 
 /**
@@ -150,9 +153,10 @@ interface PageMeta {
  */
 const BAKED = ' data-prerendered'
 
-function headFor({ title, description, path, lang, jsonLd }: PageMeta): string {
+function headFor({ title, description, path, lang, jsonLd, image }: PageMeta): string {
   const full = `${title} | ${SITE_NAME}`
   const canonical = absoluteUrl(path, lang)
+  const card = image ?? OG_IMAGE
   const tags: string[] = [
     `<title${BAKED}>${escapeAttr(full)}</title>`,
     `<meta name="description" content="${escapeAttr(description)}"${BAKED} />`,
@@ -168,14 +172,14 @@ function headFor({ title, description, path, lang, jsonLd }: PageMeta): string {
     `<meta property="og:title" content="${escapeAttr(full)}"${BAKED} />`,
     `<meta property="og:description" content="${escapeAttr(description)}"${BAKED} />`,
     `<meta property="og:url" content="${canonical}"${BAKED} />`,
-    `<meta property="og:image" content="${OG_IMAGE}"${BAKED} />`,
+    `<meta property="og:image" content="${card}"${BAKED} />`,
     `<meta property="og:image:width" content="1200"${BAKED} />`,
     `<meta property="og:image:height" content="630"${BAKED} />`,
     `<meta property="og:locale" content="${OG_LOCALE[lang]}"${BAKED} />`,
     `<meta name="twitter:card" content="summary_large_image"${BAKED} />`,
     `<meta name="twitter:title" content="${escapeAttr(full)}"${BAKED} />`,
     `<meta name="twitter:description" content="${escapeAttr(description)}"${BAKED} />`,
-    `<meta name="twitter:image" content="${OG_IMAGE}"${BAKED} />`,
+    `<meta name="twitter:image" content="${card}"${BAKED} />`,
   )
   for (const block of jsonLd) {
     if (block) tags.push(`<script type="application/ld+json"${BAKED}>${escapeJson(block)}</script>`)
@@ -274,6 +278,64 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
   }
 }
 
+/**
+ * One page per region per language, grouped out of the catalogue snapshot.
+ *
+ * The country payload already carries its region, localised by the same
+ * Accept-Language the catalogue was fetched with — so the region tier costs no
+ * extra requests, and its names cannot disagree with the pages beneath it.
+ */
+function regionPages(countries: ApiCountry[], lang: SeoLang): PageMeta[] {
+  const s = STRINGS[lang].seo
+  const groups = new Map<string, { name: string; members: ApiCountry[] }>()
+  for (const c of countries) {
+    if (!c.region) continue
+    const g = groups.get(c.region.slug) ?? { name: c.region.name, members: [] }
+    g.members.push(c)
+    groups.set(c.region.slug, g)
+  }
+  const pages: PageMeta[] = []
+  for (const [slug, g] of groups) {
+    const prices = g.members
+      .map((c) => c.starting_price)
+      .filter((v): v is number => v != null && v > 0)
+    if (prices.length === 0) continue // nothing to sell — not worth an address yet
+    const path = `/destinations/region/${slug}`
+    const description = interpolate(s.regionDescriptionRich, {
+      region: g.name,
+      count: g.members.length,
+      price: Math.min(...prices).toFixed(2),
+    })
+    pages.push({
+      path,
+      lang,
+      title: interpolate(s.regionTitle, { region: g.name }),
+      description,
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          numberOfItems: g.members.length,
+          itemListElement: g.members.slice(0, 60).map((c, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            name: c.name,
+            url: absoluteUrl(`/destinations/${c.slug}`, lang),
+          })),
+        },
+        breadcrumbLd(
+          [
+            { name: STRINGS[lang].nav.destinations, path: '/destinations' },
+            { name: g.name, path },
+          ],
+          lang,
+        ),
+      ],
+    })
+  }
+  return pages
+}
+
 function metaForCountry(
   country: ApiCountry,
   lang: SeoLang,
@@ -290,6 +352,10 @@ function metaForCountry(
   return {
     path,
     lang,
+    // The card the API draws for this destination — name and live entry
+    // price — instead of the one generic banner. Same URL for every
+    // language: the card is in Uzbek, the audience's shared language.
+    image: `${SITE_URL}/api/og/${country.slug}.png`,
     title: s.countryTitle.replace('{{country}}', country.name),
     description,
     jsonLd: [
@@ -381,6 +447,7 @@ export function prerender(): Plugin {
       const pages: PageMeta[] = []
       for (const lang of SEO_LANGS) {
         for (const route of STATIC_ROUTES) pages.push(metaForStaticRoute(route, lang))
+        pages.push(...regionPages(catalogues.get(lang) ?? [], lang))
         for (const country of catalogues.get(lang) ?? []) {
           pages.push(metaForCountry(country, lang, facts.get(country.slug)))
         }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Seo from '../components/Seo'
@@ -121,6 +121,26 @@ export default function Destinations() {
                 </Reveal>
               ))}
             </div>
+          )}
+
+          {/* Real links to the region hubs, distinct from the filter chips
+              above: a chip rewrites this page's query string, which neither a
+              crawler nor a shared link can hold onto. These are addresses. */}
+          {regions.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-base font-700 sm:text-lg">{t('seo.regionHubsTitle')}</h2>
+              <div className="mt-4 flex flex-wrap gap-2.5">
+                {regions.map((r) => (
+                  <Link
+                    key={r.slug}
+                    to={`/destinations/region/${r.slug}`}
+                    className="focus-ring flex min-h-11 items-center rounded-xl bg-surface px-3.5 text-sm font-600 text-ink ring-1 ring-line transition hover:ring-brand-300 hover:text-brand-600"
+                  >
+                    {t(`region.${r.slug}`, { defaultValue: r.name })}
+                  </Link>
+                ))}
+              </div>
+            </section>
           )}
         </>
       )}

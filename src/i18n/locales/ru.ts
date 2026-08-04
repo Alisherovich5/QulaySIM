@@ -517,6 +517,14 @@ const ru: Translation = {
     registerTitle: 'Регистрация',
     accountTitle: 'Мой аккаунт',
     checkoutTitle: 'Оформление заказа',
+    regionTitle: 'eSIM для региона {{region}} — страны и тарифы',
+    regionDescriptionRich:
+      'eSIM для путешествий по региону {{region}}: {{count}} стран, тарифы от ${{price}}. Выберите страну, установите по QR-коду и подключитесь сразу по прилёте.',
+    regionPageCount: '{{count}} стран · от ${{price}}',
+    regionOthers: 'Другие регионы',
+    regionAllCta: 'Все направления',
+    regionEmpty: 'В этом регионе пока нет направлений.',
+    regionHubsTitle: 'По регионам',
     guideWhatTitle: 'Что такое eSIM и как она работает?',
     guideWhatDescription:
       'eSIM — цифровая SIM-карта, встроенная в телефон. Чем она отличается от обычной SIM, почему удобна в поездках и какие телефоны её поддерживают — объясняем простыми словами.',

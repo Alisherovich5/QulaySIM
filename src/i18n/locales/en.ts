@@ -531,6 +531,14 @@ const en = {
     registerTitle: 'Create an account',
     accountTitle: 'My account',
     checkoutTitle: 'Checkout',
+    regionTitle: '{{region}} eSIM — countries and plans',
+    regionDescriptionRich:
+      'Travel eSIM across {{region}}: {{count}} countries, plans from ${{price}}. Pick a country, install by QR code and connect the moment you land.',
+    regionPageCount: '{{count}} countries · from ${{price}}',
+    regionOthers: 'Other regions',
+    regionAllCta: 'Browse all destinations',
+    regionEmpty: 'No destinations in this region yet.',
+    regionHubsTitle: 'By region',
     guideWhatTitle: 'What is an eSIM and how does it work?',
     guideWhatDescription:
       'An eSIM is a digital SIM built into your phone. How it differs from a plastic SIM, why it wins for travel and which phones support it — in plain words.',

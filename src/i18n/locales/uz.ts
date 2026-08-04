@@ -517,6 +517,14 @@ const uz: Translation = {
     registerTitle: 'Ro‘yxatdan o‘tish',
     accountTitle: 'Mening hisobim',
     checkoutTitle: 'To‘lov',
+    regionTitle: '{{region}} uchun eSIM — davlatlar va tariflar',
+    regionDescriptionRich:
+      '{{region}} bo‘ylab sayohat uchun eSIM: {{count}} davlat, tariflar ${{price}} dan. Davlatni tanlang, QR-kod orqali o‘rnating va yetib borganingizdayoq internetga ulaning.',
+    regionPageCount: '{{count}} davlat · ${{price}} dan',
+    regionOthers: 'Boshqa mintaqalar',
+    regionAllCta: 'Barcha yo‘nalishlarni ko‘rish',
+    regionEmpty: 'Bu mintaqada hozircha yo‘nalishlar yo‘q.',
+    regionHubsTitle: 'Mintaqalar bo‘yicha',
     guideWhatTitle: 'eSIM nima va u qanday ishlaydi?',
     guideWhatDescription:
       'eSIM — telefonning ichiga o‘rnatilgan raqamli SIM-karta. Oddiy SIM’dan farqi, sayohatdagi afzalliklari va qaysi telefonlar qo‘llab-quvvatlashi — oddiy tilda tushuntiramiz.',
