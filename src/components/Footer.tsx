@@ -88,6 +88,9 @@ export default function Footer() {
                   ['/esim-ornatish', t('guides.install.title')],
                   ['/device-check', t('nav.deviceCheck')],
                   ['/support', t('nav.support')],
+                  ['/oferta', t('legal.oferta.title')],
+                  ['/qaytarish', t('legal.refund.title')],
+                  ['/maxfiylik', t('legal.privacy.title')],
                 ] as const
               ).map(([to, label]) => (
                 <li key={to}>

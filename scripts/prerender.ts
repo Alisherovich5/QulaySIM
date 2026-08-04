@@ -117,6 +117,9 @@ const STATIC_ROUTES = [
   '/support',
   '/esim-nima',
   '/esim-ornatish',
+  '/oferta',
+  '/qaytarish',
+  '/maxfiylik',
 ] as const
 
 function escapeAttr(value: string): string {
@@ -261,6 +264,12 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
         description: s.guideWhatDescription,
         jsonLd: [guideFaqLd(STRINGS[lang].guides.what.faqs)],
       }
+    case '/oferta':
+      return { ...base, title: s.ofertaTitle, description: s.legalDescription, jsonLd: [] }
+    case '/qaytarish':
+      return { ...base, title: s.refundTitle, description: s.legalDescription, jsonLd: [] }
+    case '/maxfiylik':
+      return { ...base, title: s.privacyTitle, description: s.legalDescription, jsonLd: [] }
     case '/esim-ornatish':
       return {
         ...base,

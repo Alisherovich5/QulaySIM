@@ -528,9 +528,158 @@ const uz: Translation = {
     guideWhatTitle: 'eSIM nima va u qanday ishlaydi?',
     guideWhatDescription:
       'eSIM — telefonning ichiga o‘rnatilgan raqamli SIM-karta. Oddiy SIM’dan farqi, sayohatdagi afzalliklari va qaysi telefonlar qo‘llab-quvvatlashi — oddiy tilda tushuntiramiz.',
+    ofertaTitle: 'Ommaviy oferta',
+    refundTitle: 'Qaytarish siyosati',
+    privacyTitle: 'Maxfiylik siyosati',
+    legalDescription: 'QulaySIM xizmatidan foydalanish shartlari, to‘lov, yetkazib berish va qaytarish tartibi.',
     guideInstallTitle: 'eSIM qanday o‘rnatiladi? Qadam-baqadam yo‘riqnoma',
     guideInstallDescription:
       'eSIM’ni QR-kod orqali o‘rnatish 5 daqiqa oladi. iPhone va Android uchun qadam-baqadam yo‘riqnoma, uchishdan oldingi tekshiruv va ulanmaganda nima qilish.',
+  },
+  legal: {
+    updated: "Oxirgi yangilanish: 2026-yil 4-avgust",
+    fillNote: "«[ ]» ichidagi ma'lumotlar rasmiy rekvizitlar bilan to'ldiriladi.",
+    oferta: {
+      title: 'Ommaviy oferta',
+      sections: [
+        {
+          h: '1. Umumiy qoidalar',
+          ps: [
+            "Ushbu hujjat [Yuridik nom / YaTT F.I.Sh.] (keyingi o'rinlarda — «Sotuvchi») tomonidan qulaysim.uz sayti orqali xizmat ko'rsatishning ommaviy taklifi (oferta) hisoblanadi.",
+            "Saytda buyurtma berish va to'lovni amalga oshirish ushbu oferta shartlarini so'zsiz qabul qilish (aksept) hisoblanadi.",
+          ],
+        },
+        {
+          h: '2. Xizmat tavsifi',
+          ps: [
+            "Sotuvchi mijozga tanlangan davlat yoki mintaqa uchun mobil internet xizmatini beruvchi raqamli eSIM-profil (QR-kod ko'rinishida) taqdim etadi.",
+            "Tarif hajmi, amal qilish muddati va qamrovi har bir tarif sahifasida to'lovdan oldin ko'rsatiladi.",
+          ],
+        },
+        {
+          h: '3. Buyurtma va to‘lov',
+          ps: [
+            "Narxlar saytda ko'rsatiladi; to'lov O'zbekiston so'mida, to'lov sahifasida ko'rsatilgan summa bo'yicha onlayn amalga oshiriladi.",
+            "To'lovlar litsenziyalangan to'lov tashkiloti orqali qabul qilinadi. Sotuvchi bank kartasi ma'lumotlarini qabul qilmaydi va saqlamaydi.",
+          ],
+        },
+        {
+          h: '4. Yetkazib berish',
+          ps: [
+            "eSIM raqamli mahsulot: to'lov tasdiqlangach, QR-kod bir necha daqiqa ichida mijozning shaxsiy kabinetida taqdim etiladi. Jismoniy yetkazib berish yo'q.",
+          ],
+        },
+        {
+          h: '5. Mijozning majburiyatlari',
+          ps: [
+            "Qurilmaning eSIM texnologiyasini qo'llab-quvvatlashi va operator qulfidan xoli ekanini xariddan oldin tekshirish mijoz zimmasida — buning uchun saytda bepul tekshiruv sahifasi mavjud.",
+            "Buyurtmada to'g'ri elektron pochta ko'rsatish mijoz mas'uliyatidadir.",
+          ],
+        },
+        {
+          h: '6. Javobgarlik chegarasi',
+          ps: [
+            "Mobil tarmoq sifati va qamrovi mahalliy operatorlarga bog'liq; Sotuvchi tarif sahifasida ko'rsatilgan qamrov doirasida xizmatning taqdim etilishiga javob beradi.",
+            "eSIM'ni qo'llab-quvvatlamaydigan yoki qulflangan qurilmada ishlatib bo'lmagani uchun Sotuvchi javobgar emas (5-bandga qarang).",
+          ],
+        },
+        {
+          h: '7. Qaytarish',
+          ps: [
+            "Pulni qaytarish shartlari alohida «Qaytarish siyosati» hujjatida belgilangan va ushbu ofertaning ajralmas qismi hisoblanadi.",
+          ],
+        },
+        {
+          h: '8. Nizolar va qonunchilik',
+          ps: [
+            "Tomonlar nizolarni muzokara yo'li bilan hal qilishga intiladi. Kelishuvga erishilmasa, nizolar O'zbekiston Respublikasi qonunchiligiga muvofiq ko'rib chiqiladi.",
+          ],
+        },
+        {
+          h: '9. Rekvizitlar',
+          ps: [
+            "[Yuridik nom / YaTT F.I.Sh.] · STIR: [_________] · Manzil: [_________] · E-mail: [_________] · Tel: [_________]",
+          ],
+        },
+      ],
+    },
+    refund: {
+      title: 'Qaytarish siyosati',
+      sections: [
+        {
+          h: '1. Umumiy tamoyil',
+          ps: [
+            "eSIM — raqamli mahsulot: QR-kod taqdim etilgach, uni «qaytarib topshirish» texnik jihatdan mumkin emas. Shuning uchun qaytarish shartlari QR-kod holatiga bog'liq.",
+          ],
+        },
+        {
+          h: '2. To‘liq qaytariladi',
+          ps: [
+            "To'lov o'tgan, lekin QR-kod texnik sabab bilan taqdim etilmagan bo'lsa — to'liq qaytariladi yoki mijoz xohishiga ko'ra qayta beriladi.",
+            "eSIM mijozning aybisiz umuman faollashtirilmasa (ta'minotchi tomonidagi nosozlik tasdiqlanganda) — to'liq qaytariladi.",
+          ],
+        },
+        {
+          h: '3. Qaytarilmaydi',
+          ps: [
+            "QR-kod qurilmaga o'rnatilgan va tarif faollashgan (internet ishlatila boshlangan) holatlar.",
+            "Qurilma eSIM'ni qo'llab-quvvatlamasligi yoki operator qulfi sababli o'rnatib bo'lmagani — bu holatlarni xariddan oldin saytdagi bepul tekshiruv sahifasida aniqlash mumkin.",
+            "Tarif muddati tugagani yoki trafik sarflab bo'lingani.",
+          ],
+        },
+        {
+          h: '4. Murojaat tartibi',
+          ps: [
+            "Qaytarish so'rovi xarid sanasidan 14 kun ichida yordam sahifasi yoki [support e-mail] orqali yuboriladi: buyurtma raqami va muammo tavsifi bilan.",
+            "So'rov 3 ish kuni ichida ko'rib chiqiladi. Ijobiy qarorda mablag' to'lov qilingan usulga qaytariladi; bankka yetib borishi odatda 3–10 ish kuni.",
+          ],
+        },
+      ],
+    },
+    privacy: {
+      title: 'Maxfiylik siyosati',
+      sections: [
+        {
+          h: '1. Qanday ma’lumotlar yig‘iladi',
+          ps: [
+            "Hisob yaratishda: elektron pochta va ism. Buyurtmada: tanlangan tariflar va to'lov holati.",
+            "Bank kartasi ma'lumotlari bizga yetib kelmaydi — ular faqat litsenziyalangan to'lov tashkilotining himoyalangan sahifasida qayta ishlanadi.",
+          ],
+        },
+        {
+          h: '2. Nima maqsadda ishlatiladi',
+          ps: [
+            "Buyurtmani bajarish (eSIM taqdim etish), hisobni yuritish, yordam so'rovlariga javob berish va qonun talab qilgan hisob-kitoblar uchun.",
+            "Ma'lumotlar reklama maqsadida uchinchi shaxslarga sotilmaydi.",
+          ],
+        },
+        {
+          h: '3. Uchinchi tomonlar',
+          ps: [
+            "eSIM-profil berish uchun buyurtma ma'lumoti xalqaro eSIM ta'minotchisiga uzatiladi; to'lov ma'lumotini to'lov tashkiloti qayta ishlaydi; Google orqali kirishda Google identifikatsiya xizmati ishlatiladi.",
+          ],
+        },
+        {
+          h: '4. Cookie va saqlash',
+          ps: [
+            "Sayt til va mavzu tanlovini brauzeringizda saqlaydi; seans xavfsizligi uchun texnik cookie ishlatiladi. Reklama kuzatuvi ishlatilmaydi.",
+          ],
+        },
+        {
+          h: '5. Saqlash muddati va huquqlaringiz',
+          ps: [
+            "Hisob ma'lumotlari hisob faol bo'lgan davrda, buyurtma-moliya yozuvlari qonunda belgilangan muddatda saqlanadi.",
+            "Siz o'z ma'lumotlaringizga kirish, ularni tuzatish yoki hisobni o'chirishni so'rash huquqiga egasiz — [support e-mail] orqali murojaat qiling.",
+          ],
+        },
+        {
+          h: '6. Mas’ul shaxs',
+          ps: [
+            "[Yuridik nom / YaTT F.I.Sh.] · E-mail: [_________]",
+          ],
+        },
+      ],
+    },
   },
   guides: {
     what: {

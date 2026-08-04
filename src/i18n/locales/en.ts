@@ -542,9 +542,158 @@ const en = {
     guideWhatTitle: 'What is an eSIM and how does it work?',
     guideWhatDescription:
       'An eSIM is a digital SIM built into your phone. How it differs from a plastic SIM, why it wins for travel and which phones support it — in plain words.',
+    ofertaTitle: 'Public offer',
+    refundTitle: 'Refund policy',
+    privacyTitle: 'Privacy policy',
+    legalDescription: 'QulaySIM terms of service: payment, eSIM delivery and refunds.',
     guideInstallTitle: 'How to install an eSIM: step by step',
     guideInstallDescription:
       'Installing an eSIM from a QR code takes 5 minutes. Step-by-step guides for iPhone and Android, a pre-flight checklist and what to do when it will not connect.',
+  },
+  legal: {
+    updated: 'Last updated: 4 August 2026',
+    fillNote: 'Values in “[ ]” will be filled with official company details.',
+    oferta: {
+      title: 'Public offer',
+      sections: [
+        {
+          h: '1. General',
+          ps: [
+            'This document is a public offer by [Legal name / sole proprietor] (the “Seller”) for services provided through qulaysim.uz.',
+            'Placing an order and paying on the site constitutes unconditional acceptance of these terms.',
+          ],
+        },
+        {
+          h: '2. The service',
+          ps: [
+            'The Seller provides a digital eSIM profile (as a QR code) giving mobile data access in the chosen country or region.',
+            'Data allowance, validity and coverage are shown on each plan page before payment.',
+          ],
+        },
+        {
+          h: '3. Ordering and payment',
+          ps: [
+            'Prices are shown on the site; payment is made online in Uzbek som for the amount shown on the payment page.',
+            'Payments are processed by a licensed payment organisation. The Seller never receives or stores card details.',
+          ],
+        },
+        {
+          h: '4. Delivery',
+          ps: [
+            'An eSIM is a digital product: once payment is confirmed, the QR code appears in the customer account within minutes. There is no physical delivery.',
+          ],
+        },
+        {
+          h: '5. Customer responsibilities',
+          ps: [
+            'Before purchase the customer must confirm the device supports eSIM and is not carrier-locked — the site provides a free check page for this.',
+            'The customer is responsible for providing a correct e-mail address.',
+          ],
+        },
+        {
+          h: '6. Limitation of liability',
+          ps: [
+            'Network quality and coverage depend on local operators; the Seller is responsible for providing the service within the coverage stated on the plan page.',
+            'The Seller is not liable where the eSIM cannot be used on an unsupported or carrier-locked device (see section 5).',
+          ],
+        },
+        {
+          h: '7. Refunds',
+          ps: [
+            'Refund terms are set out in the separate Refund Policy, which forms an integral part of this offer.',
+          ],
+        },
+        {
+          h: '8. Disputes and law',
+          ps: [
+            'The parties will seek to resolve disputes by negotiation; failing that, disputes are resolved under the law of the Republic of Uzbekistan.',
+          ],
+        },
+        {
+          h: '9. Company details',
+          ps: [
+            '[Legal name / sole proprietor] · TIN: [_________] · Address: [_________] · E-mail: [_________] · Tel: [_________]',
+          ],
+        },
+      ],
+    },
+    refund: {
+      title: 'Refund policy',
+      sections: [
+        {
+          h: '1. The principle',
+          ps: [
+            'An eSIM is a digital product: once the QR code has been issued it cannot technically be “returned”, so refund terms depend on the state of the QR code.',
+          ],
+        },
+        {
+          h: '2. Full refund',
+          ps: [
+            'Payment went through but the QR code was not delivered for a technical reason — full refund, or reissue at the customer’s choice.',
+            'The eSIM never activated through no fault of the customer (a confirmed supplier-side failure) — full refund.',
+          ],
+        },
+        {
+          h: '3. No refund',
+          ps: [
+            'The QR code has been installed and the plan activated (data usage has begun).',
+            'Installation is impossible because the device does not support eSIM or is carrier-locked — both are checkable before purchase on the free device-check page.',
+            'The plan has expired or the data has been used up.',
+          ],
+        },
+        {
+          h: '4. How to request',
+          ps: [
+            'Send a refund request within 14 days of purchase via the support page or to [support e-mail], with the order number and a description of the problem.',
+            'Requests are reviewed within 3 business days. Approved refunds go back to the original payment method; bank processing usually takes 3–10 business days.',
+          ],
+        },
+      ],
+    },
+    privacy: {
+      title: 'Privacy policy',
+      sections: [
+        {
+          h: '1. What we collect',
+          ps: [
+            'On sign-up: e-mail address and name. On ordering: the chosen plans and payment status.',
+            'Card details never reach us — they are processed only on the licensed payment organisation’s secure page.',
+          ],
+        },
+        {
+          h: '2. What it is used for',
+          ps: [
+            'Fulfilling orders (issuing eSIMs), maintaining the account, answering support requests and legally required accounting.',
+            'Data is never sold to third parties for advertising.',
+          ],
+        },
+        {
+          h: '3. Third parties',
+          ps: [
+            'Order details are passed to the international eSIM supplier to issue the profile; payment data is handled by the payment organisation; Google sign-in uses Google’s identity service.',
+          ],
+        },
+        {
+          h: '4. Cookies and browser storage',
+          ps: [
+            'The site stores your language and theme choice in your browser; technical cookies protect the session. No advertising trackers are used.',
+          ],
+        },
+        {
+          h: '5. Retention and your rights',
+          ps: [
+            'Account data is kept while the account is active; order and finance records for the period required by law.',
+            'You may request access to, correction of, or deletion of your data — contact [support e-mail].',
+          ],
+        },
+        {
+          h: '6. Controller',
+          ps: [
+            '[Legal name / sole proprietor] · E-mail: [_________]',
+          ],
+        },
+      ],
+    },
   },
   guides: {
     what: {

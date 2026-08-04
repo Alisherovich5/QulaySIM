@@ -24,6 +24,7 @@ const Support = lazy(() => import('./pages/Support'))
 const DeviceCheck = lazy(() => import('./pages/DeviceCheck'))
 const GuideWhatIsEsim = lazy(() => import('./pages/GuideWhatIsEsim'))
 const GuideInstallEsim = lazy(() => import('./pages/GuideInstallEsim'))
+const LegalPage = lazy(() => import('./pages/LegalPage'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 function ScrollToTop() {
@@ -84,6 +85,9 @@ export default function App() {
                       same slug, like every other page. */}
                   <Route path="/esim-nima" element={<GuideWhatIsEsim />} />
                   <Route path="/esim-ornatish" element={<GuideInstallEsim />} />
+                  <Route path="/oferta" element={<LegalPage doc="oferta" />} />
+                  <Route path="/qaytarish" element={<LegalPage doc="refund" />} />
+                  <Route path="/maxfiylik" element={<LegalPage doc="privacy" />} />
                   <Route
                     path="/account"
                     element={
