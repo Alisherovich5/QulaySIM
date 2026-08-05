@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import Seo from '../components/Seo'
+import PaymentFrame from '../components/PaymentFrame'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
@@ -24,6 +25,31 @@ export default function Checkout() {
   const { items, setQuantity, remove, subtotal } = useCart()
   const { customer } = useAuth()
   const { t } = useTranslation()
+  const [payUrl, setPayUrl] = useState<string | null>(null)
+  const [payState, setPayState] = useState<'idle' | 'starting' | 'error' | 'unavailable'>('idle')
+
+  /**
+   * Ask the API to place the order and hand back a payment URL.
+   *
+   * The order is created server-side from the server's own prices — the cart in
+   * this browser is a suggestion, not an authority — and the URL that comes
+   * back belongs to whichever provider is configured. A 503 means no provider
+   * is live yet, which is a different message from a failure.
+   */
+  const startPayment = async () => {
+    setPayState('starting')
+    try {
+      const { data } = await api.post<{ payment_url: string }>('/checkout', {
+        items: items.map((i) => ({ plan_id: i.plan.id, quantity: i.quantity })),
+        promo_code: appliedPromo || undefined,
+      })
+      setPayUrl(data.payment_url)
+      setPayState('idle')
+    } catch (error: unknown) {
+      const status = (error as { response?: { status?: number } })?.response?.status
+      setPayState(status === 503 ? 'unavailable' : 'error')
+    }
+  }
   const { formatPrice } = useCurrency()
 
   const [promo, setPromo] = useState('')
@@ -209,13 +235,31 @@ export default function Checkout() {
                 is stopped from seeing what they are about to pay. */}
             {customer ? (
               <>
-                <Button disabled fullWidth className="mt-5 py-3.5">
+                {/* The provider is chosen server-side: this asks for a payment
+                    URL and shows it in place. A 503 means none is configured
+                    yet, so the copy falls back to "coming soon" rather than
+                    leaving a button that cannot work. */}
+                <Button
+                  fullWidth
+                  className="mt-5 py-3.5"
+                  loading={payState === 'starting'}
+                  disabled={payState === 'starting' || payState === 'unavailable'}
+                  onClick={startPayment}
+                >
                   <CreditCard size={18} />
-                  {t('checkout.paymentSetup')}
+                  {payState === 'unavailable'
+                    ? t('checkout.paymentSetup')
+                    : t('checkout.payWithCard')}
                 </Button>
                 <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-soft">
-                  <Lock size={12} /> {t('checkout.paymentSetupNote')}
+                  <Lock size={12} />
+                  {payState === 'unavailable'
+                    ? t('checkout.paymentSetupNote')
+                    : t('checkout.payFrameNote')}
                 </p>
+                {payState === 'error' && (
+                  <p className="mt-2 text-center text-xs text-bad">{t('checkout.payFailed')}</p>
+                )}
               </>
             ) : (
               <>
@@ -231,6 +275,8 @@ export default function Checkout() {
           </Card>
         </div>
       </div>
+
+      {payUrl && <PaymentFrame url={payUrl} onClose={() => setPayUrl(null)} />}
     </div>
   )
 }
