@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { api } from '../lib/api'
-import type { Country, Region } from '../lib/types'
+import type { Country, Plan, Region, RegionDetail as RegionDetailData } from '../lib/types'
 import CountryCard from '../components/CountryCard'
+import PlanCard from '../components/PlanCard'
 import Reveal from '../components/Reveal'
 import Seo from '../components/Seo'
 import { Button } from '../components/ui'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd, destinationListLd } from '../lib/structured-data'
+import { useCart } from '../context/CartContext'
 
 /**
  * One region's catalogue as its own page — the category tier the site lacked.
@@ -28,8 +30,12 @@ export default function RegionDetail() {
   const { t, i18n } = useTranslation()
   const [countries, setCountries] = useState<Country[]>([])
   const [regions, setRegions] = useState<Region[]>([])
+  const [detail, setDetail] = useState<RegionDetailData | null>(null)
   const [loading, setLoading] = useState(true)
   const [missing, setMissing] = useState(false)
+  const [added, setAdded] = useState<number | null>(null)
+  const { add } = useCart()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!slug) return
@@ -37,10 +43,14 @@ export default function RegionDetail() {
     Promise.all([
       api.get<Country[]>('/countries', { params: { region: slug } }),
       api.get<Region[]>('/regions'),
+      // Allowed to fail on its own: a region with no multi-country tariff is a
+      // normal region, and losing its country list over that would be worse.
+      api.get<RegionDetailData>(`/regions/${slug}`).catch(() => null),
     ])
-      .then(([c, r]) => {
+      .then(([c, r, d]) => {
         setCountries(c.data)
         setRegions(r.data)
+        setDetail(d ? d.data : null)
         // The regions endpoint is the authority on whether this slug exists;
         // an empty country list alone is a thin region, not a missing one.
         setMissing(!r.data.some((x) => x.slug === slug))
@@ -88,6 +98,15 @@ export default function RegionDetail() {
 
   const listLd = destinationListLd(countries, lang)
   const siblings = regions.filter((r) => r.slug !== slug)
+  const regionalPlans = detail?.plans ?? []
+
+  const handleAdd = (plan: Plan) => {
+    // No ISO code: a regional eSIM belongs to no single country, so the cart
+    // shows the region's own name instead of a flag it cannot pick.
+    add(plan, regionName, '')
+    setAdded(plan.id)
+    setTimeout(() => navigate('/checkout'), 350)
+  }
 
   return (
     <div className="container-page py-8 sm:py-12">
@@ -120,6 +139,34 @@ export default function RegionDetail() {
         <p className="mt-2 leading-6 text-slate-soft">
           {t('seo.regionPageCount', { count: countries.length, price: minPrice.toFixed(2) })}
         </p>
+      )}
+
+      {/* The regional eSIMs, above the destinations they cover.
+          A traveller who lands here is usually planning several countries in
+          one trip — one eSIM answers that, and putting the country grid first
+          would have them buy three. */}
+      {regionalPlans.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-lg font-700 sm:text-xl">
+            {t('region.oneEsimTitle', { region: regionName })}
+          </h2>
+          <p className="mt-1.5 text-sm leading-6 text-slate-soft">
+            {t('region.oneEsimNote', { count: detail?.country_count ?? countries.length })}
+          </p>
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {regionalPlans.map((plan, i) => (
+              <Reveal key={plan.id} delay={i * 60}>
+                <PlanCard plan={plan} onAdd={handleAdd} added={added === plan.id} />
+              </Reveal>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {regionalPlans.length > 0 && countries.length > 0 && (
+        <h2 className="mt-12 text-lg font-700 sm:text-xl">
+          {t('region.oneCountryTitle')}
+        </h2>
       )}
 
       {countries.length === 0 ? (

@@ -441,6 +441,11 @@ const ru: Translation = {
     'africa': 'Африка',
     'oceania': 'Океания',
     'latin-america': 'Латинская Америка',
+      'global': 'Весь мир',
+      oneEsimTitle: 'Одна eSIM для региона «{{region}}»',
+      oneEsimNote:
+        'Если поездка охватывает несколько стран, хватит одной eSIM. Эти тарифы работают в {{count}} направлениях.',
+      oneCountryTitle: 'Или для одной страны',
   },
 
   footer: {

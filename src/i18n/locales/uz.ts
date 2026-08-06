@@ -441,6 +441,11 @@ const uz: Translation = {
     'africa': 'Afrika',
     'oceania': 'Okeaniya',
     'latin-america': 'Lotin Amerikasi',
+      'global': 'Butun dunyo',
+      oneEsimTitle: '{{region}} uchun bitta eSIM',
+      oneEsimNote:
+        'Bir necha davlatga borsangiz — bitta eSIM yetadi. Bu tariflar {{count}} ta yo‘nalishda ishlaydi.',
+      oneCountryTitle: 'Yoki bitta davlat uchun',
   },
 
   footer: {

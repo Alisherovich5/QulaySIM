@@ -4,6 +4,19 @@ export interface Region {
   slug: string
 }
 
+/**
+ * A region with the multi-country eSIMs sold for it.
+ *
+ * The product for a traveller doing three countries on one trip: one eSIM
+ * instead of three. `country_count` is why anyone buys it — "Yevropa 5 GB" says
+ * nothing about whether their stop is covered, "41 ta davlat" says everything.
+ */
+export interface RegionDetail extends Region {
+  plans: Plan[]
+  starting_price: number | null
+  country_count: number
+}
+
 export interface Plan {
   id: number
   scope: string

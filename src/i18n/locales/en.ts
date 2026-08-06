@@ -442,6 +442,11 @@ const en = {
     'africa': 'Africa',
     'oceania': 'Oceania',
     'latin-america': 'Latin America',
+      'global': 'Worldwide',
+      oneEsimTitle: 'One eSIM for {{region}}',
+      oneEsimNote:
+        'Travelling through several countries? One eSIM covers them. These plans work across {{count}} destinations.',
+      oneCountryTitle: 'Or for a single country',
   },
 
   footer: {
