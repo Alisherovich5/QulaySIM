@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import { api } from '../lib/api'
+import { charmUzs } from '../lib/charm'
 
 export type Currency = 'USD' | 'UZS'
 
@@ -78,7 +79,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       if (usd == null) return '—'
       return `${new Intl.NumberFormat('uz-UZ', {
         maximumFractionDigits: 0,
-      }).format(Math.round(usd * usdToUzs))} so‘m`
+      }).format(charmUzs(usd * usdToUzs))} so‘m`
     },
     [usdToUzs],
   )
