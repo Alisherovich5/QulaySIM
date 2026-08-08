@@ -1,4 +1,4 @@
-import { CalendarClock, CheckCircle2, CircleDot, Plus, Power } from 'lucide-react'
+import { CalendarClock, CheckCircle2, CircleDot, Power, ShoppingBag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { ESIM } from '../lib/types'
 import { formatDate, usedLabel } from '../lib/format'
@@ -7,9 +7,7 @@ import { Button, Card } from './ui'
 interface Props {
   esim: ESIM
   onActivate: (id: number) => void
-  onTopup?: (id: number) => void
   activating?: boolean
-  toppingUp?: boolean
 }
 
 const STATUS_STYLE: Record<string, string> = {
@@ -23,7 +21,7 @@ function daysUntil(iso: string | null): number | null {
   return Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000))
 }
 
-export default function EsimCard({ esim, onActivate, onTopup, activating, toppingUp }: Props) {
+export default function EsimCard({ esim, onActivate, activating }: Props) {
   const { t, i18n } = useTranslation()
   const total = esim.data_total_mb
   const unlimited = total === 0
@@ -96,12 +94,20 @@ export default function EsimCard({ esim, onActivate, onTopup, activating, toppin
             </div>
 
             <div className="flex-1 text-sm">
-              <p className="text-slate-soft">{t('account.dataUsed')}</p>
+              {/* Remaining leads, used follows. "0 GB / 3 GB" asks the reader to
+                  subtract before they learn the thing they opened the page for. */}
+              <p className="text-slate-soft">{t('account.dataLeft')}</p>
               <p className="font-600 text-ink">
-                {unlimited
-                  ? t('account.unlimited')
-                  : `${usedLabel(esim.data_used_mb)} / ${usedLabel(total)}`}
+                {unlimited ? t('account.unlimited') : usedLabel(Math.max(0, total - esim.data_used_mb))}
               </p>
+              {!unlimited && (
+                <p className="text-xs text-slate-soft">
+                  {t('account.ofTotalUsed', {
+                    used: usedLabel(esim.data_used_mb),
+                    total: usedLabel(total),
+                  })}
+                </p>
+              )}
               <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-soft">
                 <CalendarClock size={13} />
                 {daysLeft !== null && esim.status !== 'expired'
@@ -109,6 +115,27 @@ export default function EsimCard({ esim, onActivate, onTopup, activating, toppin
                   : t('account.expires', { date: formatDate(esim.expires_at, i18n.language) })}
               </p>
             </div>
+          </div>
+
+          {/* The receipt line: when it was bought and what it cost. Both come
+              from the order, frozen at the sale, so a later repricing does not
+              rewrite what the customer remembers paying. */}
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line pt-3 text-xs text-slate-soft">
+            <span className="flex items-center gap-1.5">
+              <ShoppingBag size={13} />
+              {t('account.purchasedOn', { date: formatDate(esim.created_at, i18n.language) })}
+            </span>
+            {esim.paid_uzs != null && (
+              <span className="font-600 text-ink">
+                {new Intl.NumberFormat('uz-UZ', { maximumFractionDigits: 0 }).format(esim.paid_uzs)}{' '}
+                {t('account.som')}
+                {esim.paid_usd != null && (
+                  <span className="ml-1 font-400 text-slate-soft">
+                    (${esim.paid_usd.toFixed(2)})
+                  </span>
+                )}
+              </span>
+            )}
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -121,17 +148,6 @@ export default function EsimCard({ esim, onActivate, onTopup, activating, toppin
               >
                 {!activating && <Power size={15} />}{' '}
                 {activating ? t('account.activating') : t('account.activate')}
-              </Button>
-            )}
-            {esim.status === 'active' && !unlimited && onTopup && (
-              <Button
-                onClick={() => onTopup(esim.id)}
-                loading={toppingUp}
-                variant="ghost"
-                className="min-h-11 px-4 py-2 text-sm"
-              >
-                {!toppingUp && <Plus size={15} />}{' '}
-                {toppingUp ? t('account.toppingUp') : t('account.topUp')}
               </Button>
             )}
           </div>

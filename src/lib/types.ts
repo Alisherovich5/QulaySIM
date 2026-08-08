@@ -59,6 +59,9 @@ export interface ESIM {
   activated_at: string | null
   expires_at: string | null
   created_at: string
+  /** What was paid at the sale, not the plan's price today. Null if unknown. */
+  paid_usd: number | null
+  paid_uzs: number | null
   plan: Plan
 }
 

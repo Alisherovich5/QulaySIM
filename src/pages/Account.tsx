@@ -92,7 +92,6 @@ export default function Account() {
   const [error, setError] = useState(false)
   const [tab, setTab] = useState<Tab>('map')
   const [activating, setActivating] = useState<number | null>(null)
-  const [toppingUp, setToppingUp] = useState<number | null>(null)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   const load = () => {
@@ -130,16 +129,6 @@ export default function Account() {
       setSummary(s.data)
     } finally {
       setActivating(null)
-    }
-  }
-
-  const topup = async (id: number) => {
-    setToppingUp(id)
-    try {
-      const { data } = await api.post<ESIM>(`/account/esims/${id}/topup`, { extra_mb: 1024 })
-      setEsims((prev) => prev.map((e) => (e.id === id ? data : e)))
-    } finally {
-      setToppingUp(null)
     }
   }
 
@@ -321,9 +310,7 @@ export default function Account() {
                     <EsimCard
                       esim={e}
                       onActivate={activate}
-                      onTopup={topup}
                       activating={activating === e.id}
-                      toppingUp={toppingUp === e.id}
                     />
                   </Reveal>
                 ))}
