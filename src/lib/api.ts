@@ -50,6 +50,15 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${accessToken}`
   }
   config.headers['Accept-Language'] = language
+  // A FormData body must not inherit the instance's JSON content type. Axios
+  // sets multipart/form-data itself, with the boundary the parser needs to find
+  // the parts at all — but only if nothing has already set the header. With the
+  // default left in place the avatar upload went out as JSON, FastAPI parsed no
+  // parts, and answered 422 "Field required" about a file that had been sent.
+  // The message named the wrong thing and pointed at the wrong side.
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    delete config.headers['Content-Type']
+  }
   return config
 })
 
