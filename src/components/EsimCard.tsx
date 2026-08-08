@@ -31,6 +31,14 @@ export default function EsimCard({ esim, onActivate, activating }: Props) {
   )
   const daysLeft = daysUntil(esim.expires_at)
 
+  // The API sends these as strings — they are Decimal columns, and a price is
+  // not something to hand to a float on the way out. Parsed once, and only
+  // shown if the parse produced a real number: `.toFixed()` on the raw string
+  // threw, and the throw took the whole account page down with it.
+  const paidUzs = Number(esim.paid_uzs)
+  const paidUsd = Number(esim.paid_usd)
+  const showPaid = esim.paid_uzs != null && Number.isFinite(paidUzs)
+
   // Circular ring geometry
   const r = 26
   const circ = 2 * Math.PI * r
@@ -125,14 +133,12 @@ export default function EsimCard({ esim, onActivate, activating }: Props) {
               <ShoppingBag size={13} />
               {t('account.purchasedOn', { date: formatDate(esim.created_at, i18n.language) })}
             </span>
-            {esim.paid_uzs != null && (
+            {showPaid && (
               <span className="font-600 text-ink">
-                {new Intl.NumberFormat('uz-UZ', { maximumFractionDigits: 0 }).format(esim.paid_uzs)}{' '}
+                {new Intl.NumberFormat('uz-UZ', { maximumFractionDigits: 0 }).format(paidUzs)}{' '}
                 {t('account.som')}
-                {esim.paid_usd != null && (
-                  <span className="ml-1 font-400 text-slate-soft">
-                    (${esim.paid_usd.toFixed(2)})
-                  </span>
+                {Number.isFinite(paidUsd) && (
+                  <span className="ml-1 font-400 text-slate-soft">(${paidUsd.toFixed(2)})</span>
                 )}
               </span>
             )}

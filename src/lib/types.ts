@@ -59,9 +59,11 @@ export interface ESIM {
   activated_at: string | null
   expires_at: string | null
   created_at: string
-  /** What was paid at the sale, not the plan's price today. Null if unknown. */
-  paid_usd: number | null
-  paid_uzs: number | null
+  /** What was paid at the sale, not the plan's price today. Null if unknown.
+   *  Strings: these are Decimal columns, and the API serialises them as such
+   *  rather than risk a float rounding a price. Convert before arithmetic. */
+  paid_usd: string | null
+  paid_uzs: string | null
   plan: Plan
 }
 
