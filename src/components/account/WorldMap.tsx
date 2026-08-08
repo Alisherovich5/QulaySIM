@@ -6,6 +6,7 @@ import { AlertTriangle, Globe2, Maximize2, RotateCw, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Country, PassportCountry } from '../../lib/types'
 import { numericFor } from '../../lib/isoNumeric'
+import { GlobeErrorBoundary } from '../GlobeErrorBoundary'
 import { api } from '../../lib/api'
 
 // Heavy (three.js) — only loaded when this account tab renders / globe opens.
@@ -295,27 +296,32 @@ export default function WorldMap({ passport }: Props) {
             <Globe2 size={28} className="opacity-40" />
           </div>
         ) : (
-          <Suspense fallback={loadingBox}>
-            {/* `rise` is the system's entrance and is already switched off under
-                prefers-reduced-motion, so the planet fades up instead of
-                snapping in — felt, not watched.
-                The label sits here rather than on the panel: `role="img"` makes
-                its whole subtree presentational, which would have hidden the
-                retry button in the error state from screen readers. */}
-            <div className="rise" role="img" aria-label={t('account.globeAria')}>
-              <GlobeCore
-                features={features}
-                catalogByNumeric={catalogByNumeric}
-                visited={visited}
-                palette={palette}
-                width={inlineW}
-                height={INLINE_H}
-                altitude={2}
-                enableZoom={false}
-                onCountryClick={handleClick}
-              />
-            </div>
-          </Suspense>
+          // Without WebGL the globe throws during render, and an uncaught throw
+          // here blanked the entire account page — profile, eSIM list and QR
+          // code included. The boundary keeps the failure the size of the globe.
+          <GlobeErrorBoundary fallback={loadingBox}>
+            <Suspense fallback={loadingBox}>
+              {/* `rise` is the system's entrance and is already switched off under
+                  prefers-reduced-motion, so the planet fades up instead of
+                  snapping in — felt, not watched.
+                  The label sits here rather than on the panel: `role="img"` makes
+                  its whole subtree presentational, which would have hidden the
+                  retry button in the error state from screen readers. */}
+              <div className="rise" role="img" aria-label={t('account.globeAria')}>
+                <GlobeCore
+                  features={features}
+                  catalogByNumeric={catalogByNumeric}
+                  visited={visited}
+                  palette={palette}
+                  width={inlineW}
+                  height={INLINE_H}
+                  altitude={2}
+                  enableZoom={false}
+                  onCountryClick={handleClick}
+                />
+              </div>
+            </Suspense>
+          </GlobeErrorBoundary>
         )}
       </div>
 
@@ -349,25 +355,33 @@ export default function WorldMap({ passport }: Props) {
               </button>
             </div>
 
-            <Suspense
+            <GlobeErrorBoundary
               fallback={
                 <div className="grid h-full place-items-center text-sm text-slate-soft">
-                  {t('common.loading')}
+                  {t('account.globeUnavailable')}
                 </div>
               }
             >
-              <GlobeCore
-                features={features}
-                catalogByNumeric={catalogByNumeric}
-                visited={visited}
-                palette={palette}
-                width={win.w}
-                height={win.h}
-                altitude={fitAltitude(win.w, win.h)}
-                enableZoom
-                onCountryClick={handleClick}
-              />
-            </Suspense>
+              <Suspense
+                fallback={
+                  <div className="grid h-full place-items-center text-sm text-slate-soft">
+                    {t('common.loading')}
+                  </div>
+                }
+              >
+                <GlobeCore
+                  features={features}
+                  catalogByNumeric={catalogByNumeric}
+                  visited={visited}
+                  palette={palette}
+                  width={win.w}
+                  height={win.h}
+                  altitude={fitAltitude(win.w, win.h)}
+                  enableZoom
+                  onCountryClick={handleClick}
+                />
+              </Suspense>
+            </GlobeErrorBoundary>
 
             <div className="absolute bottom-5 left-1/2 z-10 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded-2xl bg-surface/70 px-4 py-2.5 text-xs text-ink ring-1 ring-line backdrop-blur-md sm:rounded-full sm:px-5">
               {legend}

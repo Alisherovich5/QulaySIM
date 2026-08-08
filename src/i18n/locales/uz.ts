@@ -309,6 +309,7 @@ const uz: Translation = {
     avatarUploading: 'Rasm yuklanmoqda…',
     esimsSubtitle: 'Faollashtiring, to\'ldiring va QR kodlaringizni skanerlang.',
     globeAria: 'Sayohat globusi: siz ulangan davlatlar va rejalar mavjud bo\'lgan yo\'nalishlar',
+    globeUnavailable: 'Globus bu qurilmada ko‘rsatilmaydi',
     ordersSubtitle: 'Barcha xaridlar, eng yangisidan boshlab.',
     overview: 'Umumiy ko\'rinish',
   },

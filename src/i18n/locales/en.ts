@@ -310,6 +310,7 @@ const en = {
     avatarUploading: 'Uploading photo…',
     esimsSubtitle: 'Activate, top up and scan your QR codes.',
     globeAria: 'Travel globe showing the countries you have connected to and where plans are available',
+    globeUnavailable: 'The globe cannot be shown on this device',
     ordersSubtitle: 'Every purchase, newest first.',
     overview: 'Overview',
   },

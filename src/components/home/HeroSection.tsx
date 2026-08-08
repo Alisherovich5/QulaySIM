@@ -1,11 +1,9 @@
 import {
-  Component,
   lazy,
   Suspense,
   useEffect,
   useMemo,
   useState,
-  type ReactNode,
 } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, MapPinOff, Search } from 'lucide-react'
@@ -14,6 +12,7 @@ import { api } from '../../lib/api'
 import type { Country } from '../../lib/types'
 import type { HeroGlobePick } from './HeroGlobe'
 import Flag from '../Flag'
+import { GlobeErrorBoundary } from '../GlobeErrorBoundary'
 import { Button } from '../ui'
 
 const HeroGlobe = lazy(() => import('./HeroGlobe'))
@@ -100,18 +99,6 @@ function GlobeFallback({ size }: { size: number }) {
       />
     </div>
   )
-}
-
-class GlobeErrorBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, { failed: boolean }> {
-  state = { failed: false }
-
-  static getDerivedStateFromError() {
-    return { failed: true }
-  }
-
-  render() {
-    return this.state.failed ? this.props.fallback : this.props.children
-  }
 }
 
 interface VisualProps {
