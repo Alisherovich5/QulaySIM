@@ -41,12 +41,24 @@ export default function PaymentFrame({ url, onClose }: { url: string; onClose: (
 
   return (
     <div
-      className="fixed inset-0 z-[100] grid place-items-center bg-brand-950/70 p-3 backdrop-blur-sm sm:p-6"
+      className="fixed inset-0 z-[100] grid place-items-center bg-brand-950/70 backdrop-blur-sm sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={t('checkout.payFrameTitle')}
     >
-      <div className="flex max-h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-surface shadow-2xl ring-1 ring-line">
+      {/* Edge to edge on a phone, a centred card from `sm` up. The provider's form
+          is taller than a padded dialog leaves room for, so on a phone it was cut
+          off mid-way through the card fields and the customer had to scroll
+          *inside* the frame to reach the pay button — a scrollbar they cannot see,
+          in a box they did not expect to scroll.
+
+          `100dvh` rather than `100vh`: with the mobile browser's own bars counted
+          in, `vh` is taller than what is visible and pushes the bottom of the form
+          back underneath them. */}
+      <div
+        className="flex h-[100dvh] w-full flex-col overflow-hidden bg-surface shadow-2xl ring-line sm:h-auto sm:max-h-full sm:max-w-lg sm:rounded-2xl sm:ring-1"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
         <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
           <h2 className="flex items-center gap-2 text-sm font-700">
             <Lock size={15} className="text-brand-500 dark:text-accent-400" aria-hidden />
@@ -62,7 +74,9 @@ export default function PaymentFrame({ url, onClose }: { url: string; onClose: (
           </button>
         </div>
 
-        <div className="relative flex-1 overflow-hidden bg-white">
+        {/* `flex-1` with a full-height iframe rather than a fixed height, so the
+            frame takes whatever the header leaves and the form gets the screen. */}
+        <div className="relative min-h-0 flex-1 overflow-hidden bg-white">
           {!loaded && (
             <p className="absolute inset-0 grid place-items-center text-sm text-slate-soft">
               {t('checkout.payOpening')}
@@ -72,7 +86,7 @@ export default function PaymentFrame({ url, onClose }: { url: string; onClose: (
             src={url}
             title={t('checkout.payFrameTitle')}
             onLoad={() => setLoaded(true)}
-            className="h-[min(70vh,640px)] w-full border-0"
+            className="h-full min-h-[420px] w-full border-0"
             // The provider needs forms and its own scripts; nothing else is
             // granted. allow-same-origin is required for its session to work
             // and is safe here because the frame is a different origin.
@@ -80,8 +94,8 @@ export default function PaymentFrame({ url, onClose }: { url: string; onClose: (
           />
         </div>
 
-        <div className="border-t border-line px-4 py-3">
-          <p className="text-[11px] leading-5 text-slate-soft">{t('checkout.payFrameNote')}</p>
+        <div className="shrink-0 border-t border-line px-4 py-2">
+          <p className="text-[11px] leading-4 text-slate-soft">{t('checkout.payFrameNote')}</p>
           {/* The escape hatch, shown only while the form has not appeared.
               As a second full-width button under "Confirm payment" it read as a
               second thing to do — the owner asked why there were two windows at
