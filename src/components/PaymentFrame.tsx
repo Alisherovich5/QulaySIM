@@ -82,16 +82,25 @@ export default function PaymentFrame({ url, onClose }: { url: string; onClose: (
 
         <div className="border-t border-line px-4 py-3">
           <p className="text-[11px] leading-5 text-slate-soft">{t('checkout.payFrameNote')}</p>
-          {/* A plain anchor, not the Button component: that one renders a
-              router Link or a <button>, and this has to leave the site. */}
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="focus-ring mt-2.5 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl text-xs font-600 text-brand-600 ring-1 ring-line transition hover:bg-mist dark:text-accent-400"
-          >
-            {t('checkout.payFallback')} <ExternalLink size={13} aria-hidden />
-          </a>
+          {/* The escape hatch, shown only while the form has not appeared.
+              As a second full-width button under "Confirm payment" it read as a
+              second thing to do — the owner asked why there were two windows at
+              all — and most people never need it. It cannot simply be deleted:
+              some browsers refuse third-party frames outright, and then this
+              link is the only way to pay.
+
+              A plain anchor, not the Button component: that one renders a router
+              Link or a <button>, and this has to leave the site. */}
+          {!loaded && (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="focus-ring mt-2.5 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl text-xs font-600 text-brand-600 ring-1 ring-line transition hover:bg-mist dark:text-accent-400"
+            >
+              {t('checkout.payFallback')} <ExternalLink size={13} aria-hidden />
+            </a>
+          )}
         </div>
       </div>
     </div>
