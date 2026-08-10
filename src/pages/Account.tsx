@@ -23,7 +23,6 @@ import Reveal from '../components/Reveal'
 import { Button, Card } from '../components/ui'
 import ProfileHeader from '../components/account/ProfileHeader'
 import StatTile from '../components/account/StatTile'
-import PassportCard from '../components/account/PassportCard'
 import OrderRow from '../components/account/OrderRow'
 import SettingsForm from '../components/account/SettingsForm'
 import WorldMap from '../components/account/WorldMap'
@@ -285,10 +284,10 @@ export default function Account() {
       {/* Panel ----------------------------------------------------------- */}
       <div key={tab} className="page-in mt-6 sm:mt-8">
         {tab === 'map' && (
-          <div className="space-y-5 sm:space-y-6">
-            <WorldMap passport={summary.passport} />
-            <PassportCard passport={summary.passport} />
-          </div>
+          // The passport panel is gone: it was a second box below the globe
+          // saying what the globe already said, and its one useful line — which
+          // countries, how many eSIMs — now sits under the globe itself.
+          <WorldMap passport={summary.passport} />
         )}
 
         {tab === 'esims' && (

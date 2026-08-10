@@ -6,6 +6,7 @@ import { AlertTriangle, Globe2, Maximize2, RotateCw, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Country, PassportCountry } from '../../lib/types'
 import { numericFor } from '../../lib/isoNumeric'
+import Flag from '../Flag'
 import { GlobeErrorBoundary } from '../GlobeErrorBoundary'
 import { api } from '../../lib/api'
 
@@ -324,6 +325,26 @@ export default function WorldMap({ passport }: Props) {
           </GlobeErrorBoundary>
         )}
       </div>
+
+      {/* The countries visited, on the same card as the globe they are marked on.
+          They used to sit in a separate "travel passport" panel below — a second
+          box repeating what the globe already showed, which the owner asked to
+          remove. One flag chip per country, with how many eSIMs were bought for
+          it, is the whole of what that panel said. */}
+      {passport.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 border-t border-line px-4 py-3 sm:px-6">
+          {passport.map((c) => (
+            <span
+              key={c.iso2}
+              className="inline-flex items-center gap-2 rounded-full bg-mist px-2.5 py-1 text-xs ring-1 ring-line"
+            >
+              <Flag iso2={c.iso2} className="h-3.5 w-5 rounded-[3px]" />
+              <span className="font-600 text-ink">{c.name}</span>
+              <span className="text-slate-soft">{t('account.stamps', { count: c.esims })}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3 text-xs text-slate-soft sm:px-6">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">{legend}</div>
