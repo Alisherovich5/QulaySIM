@@ -135,6 +135,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* The dark strip the owner saw when the keyboard opened: iOS rubber-bands
+       past the content and paints whatever is behind the page, which is the
+       browser's own backdrop rather than ours. Painting the canvas colour on
+       the root and refusing the overscroll gesture leaves nothing to show
+       through. `none` rather than `contain` — there is no outer scroller here
+       that the bounce could usefully belong to. */
+    @apply bg-canvas;
+    overscroll-behavior-y: none;
   }
   body {
     @apply bg-canvas text-ink font-sans antialiased;

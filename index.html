@@ -3,7 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- `maximum-scale` and `user-scalable=no` stop iOS zooming the page when a
+         field is focused: the keyboard opening would scale the layout up and
+         leave a dark strip of unpainted canvas beside it. `viewport-fit=cover`
+         lets the background reach under the home indicator so there is no bar
+         there either.
+
+         Disabling zoom is a real accessibility cost and worth naming: someone
+         who relies on pinch-to-zoom loses it. Every font size here is already
+         at least 11px and respects the system text-size setting, which is what
+         most people actually use on a phone. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
 
     <!-- SEO tags are injected here by scripts/prerender.ts at build time, and
          by src/components/Seo.tsx at runtime. Declaring any of them statically

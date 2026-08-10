@@ -3,6 +3,7 @@ import { BadgePercent, Check, Copy } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCurrency } from '../context/CurrencyContext'
+import { useAuth } from '../context/AuthContext'
 import { usePromo } from '../lib/usePromo'
 
 // Used only until the banner loads, and if no banner is configured at all.
@@ -21,8 +22,18 @@ export default function PromoStrip() {
   const { t } = useTranslation()
   const { formatPrice } = useCurrency()
   const promo = usePromo()
+  const { customer } = useAuth()
   const [copied, setCopied] = useState(false)
   const code = promo?.code || FALLBACK_CODE
+
+  // A first-order code is refused at checkout once someone has bought, so
+  // keeping the bar up only promises a discount that will not arrive. The owner
+  // saw his own second order still advertising it.
+  //
+  // Hidden only when both are known: the code is first-order-only, and this
+  // customer has paid before. A visitor with no account still sees it, which is
+  // who the offer is for.
+  if (promo?.first_order_only && customer?.has_purchases) return null
 
   // "20% off" or "$20 off", whichever the linked code actually gives.
   const shortLabel = (() => {

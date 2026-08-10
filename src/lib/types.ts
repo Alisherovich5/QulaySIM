@@ -101,6 +101,8 @@ export interface Customer {
   email: string
   full_name: string
   created_at: string
+  /** Has ever paid for an order. Hides the first-order promo strip. */
+  has_purchases: boolean
 }
 
 export interface Faq {
@@ -142,6 +144,7 @@ export interface Promo {
   /** From the promo code that actually applies the discount, so the advertised
    *  figure and the one checkout takes off cannot differ. Null if no code linked. */
   discount_type: 'percent' | 'fixed' | null
+  first_order_only?: boolean
   discount_value: number | null
 }
 
