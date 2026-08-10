@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Globe, LifeBuoy, LogOut, ShoppingBag, Smartphone, UserRound } from 'lucide-react'
+import { Globe2, Globe, LifeBuoy, LogOut, ShoppingBag, Smartphone, UserRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Logo from './Logo'
 import CurrencySwitcher from './CurrencySwitcher'
@@ -34,6 +34,12 @@ export default function Navbar() {
             whole page 46px. Tablets keep the bottom nav instead — same as
             phones — and the header links appear where they genuinely fit. */}
         <nav className="hidden items-center gap-5 lg:flex xl:gap-7">
+          {/* Beside destinations rather than buried: choosing "everywhere" is a
+              different decision from choosing a country, and the customer making
+              it has no country page to find it on. */}
+          <NavLink to="/global" className={linkClass}>
+            <Globe2 size={16} /> {t('nav.global')}
+          </NavLink>
           <NavLink to="/destinations" className={linkClass}>
             <Globe size={16} /> {t('nav.destinations')}
           </NavLink>

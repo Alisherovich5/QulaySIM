@@ -14,6 +14,7 @@ import Home from './pages/Home'
  * dashboard, checkout and support pages before seeing the hero.
  */
 const Destinations = lazy(() => import('./pages/Destinations'))
+const Global = lazy(() => import('./pages/Global'))
 const CountryDetail = lazy(() => import('./pages/CountryDetail'))
 const RegionDetail = lazy(() => import('./pages/RegionDetail'))
 const Checkout = lazy(() => import('./pages/Checkout'))
@@ -72,6 +73,10 @@ export default function App() {
                 <Route element={<Layout />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/destinations" element={<Destinations />} />
+                  {/* Its own address: a customer who does not yet know their whole
+                      itinerary is exactly who this is for, and has no country page
+                      to arrive on. */}
+                  <Route path="/global" element={<Global />} />
                   {/* The static segment outranks :slug in v6 route ranking, so a
                       region page never falls through to the country page. */}
                   <Route path="/destinations/region/:slug" element={<RegionDetail />} />
