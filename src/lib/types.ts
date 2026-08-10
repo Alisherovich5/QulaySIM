@@ -2,6 +2,10 @@ export interface Region {
   id: number
   name: string
   slug: string
+  /** Countries one regional eSIM covers, and the cheapest such plan. Zero and
+   *  null mean the region has no multi-country plan of its own yet. */
+  country_count: number
+  starting_price: number | null
 }
 
 /**

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Search, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useCurrency } from '../context/CurrencyContext'
 import Seo from '../components/Seo'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd, destinationListLd } from '../lib/structured-data'
@@ -40,6 +41,15 @@ export default function Destinations() {
     else next.delete(key)
     setParams(next, { replace: true })
   }
+
+  const { formatPrice } = useCurrency()
+
+  // Only regions that actually sell a multi-country plan. A card without a
+  // price would promise a product we do not have.
+  const regionCards = useMemo(
+    () => regions.filter((r) => r.starting_price != null && r.country_count > 0),
+    [regions],
+  )
 
   const heading = useMemo(() => {
     if (search) return t('destinations.resultsFor', { query: search })
@@ -123,20 +133,47 @@ export default function Destinations() {
             </div>
           )}
 
-          {/* Real links to the region hubs, distinct from the filter chips
-              above: a chip rewrites this page's query string, which neither a
-              crawler nor a shared link can hold onto. These are addresses. */}
-          {regions.length > 0 && (
+          {/* One eSIM for a whole trip, presented as a product rather than as a
+              list of links. These were text chips under an SEO heading at the
+              bottom of the page, so the regional plans — which already exist,
+              are priced, and cover up to 55 countries each — were invisible: a
+              customer going to three countries bought three separate eSIMs
+              because nothing told them they did not have to.
+
+              Still real addresses, unlike the filter chips higher up: a chip
+              rewrites this page's query string, which neither a crawler nor a
+              shared link can hold onto.
+
+              Only regions that actually sell a multi-country plan appear. One
+              without a price would be a card promising something we cannot
+              deliver, which is worse than a shorter list. */}
+          {regionCards.length > 0 && (
             <section className="mt-12">
-              <h2 className="text-base font-700 sm:text-lg">{t('seo.regionHubsTitle')}</h2>
-              <div className="mt-4 flex flex-wrap gap-2.5">
-                {regions.map((r) => (
+              <h2 className="text-base font-700 sm:text-lg">{t('destinations.regionsTitle')}</h2>
+              <p className="mt-1 text-sm text-slate-soft">{t('destinations.regionsSubtitle')}</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {regionCards.map((r) => (
                   <Link
                     key={r.slug}
                     to={`/destinations/region/${r.slug}`}
-                    className="focus-ring flex min-h-11 items-center rounded-xl bg-surface px-3.5 text-sm font-600 text-ink ring-1 ring-line transition hover:ring-brand-300 hover:text-brand-600"
+                    className="focus-ring lift group flex items-center justify-between gap-3 rounded-2xl bg-surface p-4 ring-1 ring-line transition hover:ring-brand-300"
                   >
-                    {t(`region.${r.slug}`, { defaultValue: r.name })}
+                    <span className="min-w-0">
+                      <span className="block truncate font-700 text-ink group-hover:text-brand-600">
+                        {t(`region.${r.slug}`, { defaultValue: r.name })}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-slate-soft">
+                        {t('destinations.regionCountries', { count: r.country_count })}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-right">
+                      <span className="block text-[11px] text-slate-soft">
+                        {t('destinations.priceFrom')}
+                      </span>
+                      <span className="block font-700 text-brand-600 dark:text-accent-400">
+                        {formatPrice(r.starting_price)}
+                      </span>
+                    </span>
                   </Link>
                 ))}
               </div>
