@@ -791,9 +791,9 @@ const uz: Translation = {
       shot4: '4. Liniyaga nom berib, internetni tanlaysiz',
       screenLabel: 'Liniya sozlamalari',
       rowLabel: 'Nomi',
-      rowCalls: 'Qo‘ng‘iroqlar',
+      rowCalls: 'Qo‘ng‘iroq',
       rowData: 'Mobil internet',
-      primary: 'Asosiy SIM',
+      primary: 'Asosiy',
       on: 'Yoniq',
       shot4Note: 'Internetni eSIM’ga faqat manzilga yetganda o‘tkazing.',
       ios: [

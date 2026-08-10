@@ -79,7 +79,10 @@ export function ScreenRow({
           their own screen into "Enter Details Ma…" and "Mobil int…" — the two
           longest labels, which are exactly the ones being pointed at. Two short
           lines read; an ellipsis does not. */}
-      <span className="min-w-0 flex-1 break-words">{children}</span>
+      {/* Wraps at spaces only. `break-words` split "Qo'ng'iroqlar" as
+          "Qo'ng'iro / qlar", which is worse than the truncation it replaced — a
+          label too long for 143px is a label to shorten, not to hyphenate. */}
+      <span className="min-w-0 flex-1">{children}</span>
       <span
         className={`shrink-0 whitespace-nowrap pt-px text-[9px] ${
           highlight ? 'text-white/80' : 'text-slate-400'
