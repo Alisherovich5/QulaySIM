@@ -90,7 +90,20 @@ export default function Account() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [tab, setTab] = useState<Tab>('map')
+  // Which tab to open, from the URL. The payment provider sends the customer
+  // back here after a successful charge, and they land on whatever this opens
+  // with — the travel globe, if nothing says otherwise. What they actually came
+  // for is the QR code of the eSIM they have just paid for, one tab away, and a
+  // customer standing at an airport does not want to go looking for it.
+  //
+  // A `?tab=` param rather than a route so the URL the provider is configured
+  // with never has to change again, and an unknown value falls back to the map
+  // instead of rendering nothing.
+  const [tab, setTab] = useState<Tab>(() => {
+    const wanted = new URLSearchParams(window.location.search).get('tab')
+    const known: Tab[] = ['map', 'esims', 'orders', 'review', 'referral', 'settings']
+    return known.includes(wanted as Tab) ? (wanted as Tab) : 'map'
+  })
   const [activating, setActivating] = useState<number | null>(null)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
