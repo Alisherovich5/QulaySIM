@@ -86,7 +86,10 @@ export default function Global() {
           <Globe2 size={14} aria-hidden />
           {t('global.eyebrow')}
         </span>
-        <h1 className="mt-4 max-w-2xl text-3xl font-700 leading-tight sm:text-5xl">
+        {/* `text-white` explicitly: the global stylesheet gives headings the ink
+            colour, which wins over the colour inherited from the hero — so in the
+            light theme the headline came out near-black on dark green. */}
+        <h1 className="mt-4 max-w-2xl text-3xl font-700 leading-tight text-white sm:text-5xl">
           {t('global.title')}
         </h1>
         <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/85 sm:text-base">
