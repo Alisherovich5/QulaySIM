@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowRight, CheckCircle2, LifeBuoy, PlaneLanding, QrCode } from 'lucide-react'
 
 import Seo from '../components/Seo'
+import IosWalkthrough from '../components/guide/IosWalkthrough'
 import { Button, Card, FaqItem, IconBadge } from '../components/ui'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd, faqLd } from '../lib/structured-data'
@@ -77,7 +78,7 @@ export default function GuideInstallEsim() {
 
         {/* Per-platform steps ---------------------------------------------- */}
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <Card className="p-6">
+          <Card className="p-6 lg:col-span-2">
             <h2 className="text-lg font-700">{t('guides.install.iosTitle')}</h2>
             <ol className="mt-4 space-y-3.5">
               {ios.map((step, i) => (
@@ -86,8 +87,15 @@ export default function GuideInstallEsim() {
                 </Step>
               ))}
             </ol>
+            {/* The same four steps as pictures. "Settings → Cellular → Add eSIM"
+                is three words for three screens, and someone doing it for the
+                first time cannot tell which row of a long settings list is the
+                one to tap. The highlighted row says it in the one way prose
+                cannot — and it takes the full width because a diagram squeezed
+                into half a column is a diagram nobody reads. */}
+            <IosWalkthrough />
           </Card>
-          <Card className="p-6">
+          <Card className="p-6 lg:col-span-2">
             <h2 className="text-lg font-700">{t('guides.install.androidTitle')}</h2>
             <ol className="mt-4 space-y-3.5">
               {android.map((step, i) => (
