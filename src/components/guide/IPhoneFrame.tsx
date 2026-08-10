@@ -68,14 +68,23 @@ export function ScreenRow({
 }) {
   return (
     <div
-      className={`flex items-center justify-between gap-1.5 rounded-md px-2 py-1.5 text-[10px] leading-tight ${
+      className={`flex items-start justify-between gap-1.5 rounded-md px-2 py-1.5 text-[10px] leading-tight ${
         highlight
           ? 'bg-brand-500 font-700 text-white'
           : 'bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-200'
       }`}
     >
-      <span className="truncate">{children}</span>
-      <span className={`shrink-0 text-[9px] ${highlight ? 'text-white/80' : 'text-slate-400'}`}>
+      {/* Wraps rather than truncates. At phone width the frames are 143px across,
+          and truncation turned the rows a customer is meant to match against
+          their own screen into "Enter Details Ma…" and "Mobil int…" — the two
+          longest labels, which are exactly the ones being pointed at. Two short
+          lines read; an ellipsis does not. */}
+      <span className="min-w-0 flex-1 break-words">{children}</span>
+      <span
+        className={`shrink-0 whitespace-nowrap pt-px text-[9px] ${
+          highlight ? 'text-white/80' : 'text-slate-400'
+        }`}
+      >
         {value}
         {chevron && ' ›'}
       </span>
