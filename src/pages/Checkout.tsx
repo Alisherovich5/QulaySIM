@@ -17,6 +17,7 @@ import PaymentFrame from '../components/PaymentFrame'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
+import { promoRejection } from '../lib/promoRejection'
 import Flag from '../components/Flag'
 import { Button, Card } from '../components/ui'
 import type { Quote } from '../lib/types'
@@ -97,7 +98,7 @@ export default function Checkout() {
       if (data.promo_applied) {
         setAppliedPromo(promo)
       } else {
-        setPromoError(data.promo_message || 'Invalid promo code')
+        setPromoError(promoRejection(data, t, formatPrice))
         setAppliedPromo(null)
       }
     } catch {

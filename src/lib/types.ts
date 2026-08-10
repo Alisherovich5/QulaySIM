@@ -92,6 +92,11 @@ export interface Quote {
   total: number
   promo_applied: boolean
   promo_message: string | null
+  /** Stable slug for a refusal, so it can be translated. Prose stays in
+   *  `promo_message` as the fallback for a slug we do not know yet. */
+  promo_reason: string | null
+  /** The code's minimum, sent only when that is why it was refused. */
+  promo_min_order_usd: number | null
   /** Server-side prices. The cart in localStorage can be hours out of date. */
   lines: QuoteLine[]
 }
