@@ -151,7 +151,7 @@ const uz: Translation = {
     eyebrow: 'Bir eSIM — 200+ davlat',
     title: 'Bir marta oling, butun dunyoda ishlatavering',
     lead: 'Har bir davlat uchun alohida eSIM sotib olish shart emas. Bitta global tarif olasiz va yo‘lingizdagi hamma davlatda ishlaydi — telefonda hech nima almashtirmasdan.',
-    fromPrice: 'Narxlar',
+    fromPrice: 'Boshlanish narxi:',
     reasonOneTitle: 'Bir marta xarid',
     reasonOneText: 'Uch davlatga chiqsangiz ham bitta eSIM. Har chegarada yangi tarif izlash yo‘q.',
     reasonTwoTitle: 'Bir marta o‘rnatish',

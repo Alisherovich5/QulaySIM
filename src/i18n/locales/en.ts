@@ -149,7 +149,7 @@ const en = {
     eyebrow: 'One eSIM — 200+ countries',
     title: 'Buy once, use it anywhere in the world',
     lead: 'No separate eSIM for every country. One worldwide plan works everywhere your trip takes you, with nothing to swap on the phone.',
-    fromPrice: 'From',
+    fromPrice: 'Starting from',
     reasonOneTitle: 'One purchase',
     reasonOneText: 'Three countries, one eSIM. No hunting for a new plan at every border.',
     reasonTwoTitle: 'One installation',
