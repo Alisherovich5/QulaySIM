@@ -153,6 +153,7 @@ const en = {
     regionsTitle: 'One eSIM for a whole region',
     regionsSubtitle: 'Buy once, use it in every country in the region',
     regionCountries: '{{count}} countries',
+    regionWorldwide: 'Worldwide coverage',
     priceFrom: 'from',
     allDestinations: 'All destinations',
     resultsFor: 'Results for “{{query}}”',

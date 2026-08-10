@@ -155,6 +155,7 @@ const uz: Translation = {
     regionsTitle: 'Bir eSIM — butun mintaqa',
     regionsSubtitle: 'Bir marta olasiz, mintaqadagi hamma davlatda ishlaydi',
     regionCountries: '{{count}} ta davlat',
+    regionWorldwide: 'Butun dunyo bo‘ylab',
     priceFrom: 'dan',
     allDestinations: 'Barcha yo‘nalishlar',
     resultsFor: '“{{query}}” bo‘yicha natijalar',

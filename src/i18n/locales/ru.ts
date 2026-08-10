@@ -155,6 +155,7 @@ const ru: Translation = {
     regionsTitle: 'Один eSIM на весь регион',
     regionsSubtitle: 'Купите один раз — работает во всех странах региона',
     regionCountries: '{{count}} стран',
+    regionWorldwide: 'По всему миру',
     priceFrom: 'от',
     allDestinations: 'Все направления',
     resultsFor: 'Результаты по «{{query}}»',

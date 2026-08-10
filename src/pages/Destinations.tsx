@@ -46,8 +46,13 @@ export default function Destinations() {
 
   // Only regions that actually sell a multi-country plan. A card without a
   // price would promise a product we do not have.
+  //
+  // The count is deliberately not part of the test. Countries are mapped to
+  // Europe, Asia and so on, so the worldwide region legitimately has none — and
+  // requiring one hid the global plan, which is the product the whole section
+  // exists to sell.
   const regionCards = useMemo(
-    () => regions.filter((r) => r.starting_price != null && r.country_count > 0),
+    () => regions.filter((r) => r.starting_price != null),
     [regions],
   )
 
@@ -163,7 +168,13 @@ export default function Destinations() {
                         {t(`region.${r.slug}`, { defaultValue: r.name })}
                       </span>
                       <span className="mt-0.5 block text-xs text-slate-soft">
-                        {t('destinations.regionCountries', { count: r.country_count })}
+                        {/* No count for the worldwide plan: its coverage comes
+                            from the wholesaler, not from our region mapping, and
+                            inventing "200+ countries" would be a number nobody
+                            has checked. */}
+                        {r.country_count > 0
+                          ? t('destinations.regionCountries', { count: r.country_count })
+                          : t('destinations.regionWorldwide')}
                       </span>
                     </span>
                     <span className="shrink-0 text-right">
