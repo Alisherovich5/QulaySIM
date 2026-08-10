@@ -191,6 +191,50 @@ export default function Account() {
   const hasQuota = summary.data_total_mb > 0
   const gbLeft = Math.max(0, (summary.data_total_mb - summary.data_used_mb) / 1024)
 
+  /* The eSIM list, kept in one place because it is now shown twice: on its own
+     tab, and under the globe on the overview. Duplicating forty lines of JSX is
+     how the two copies start disagreeing. */
+  const esimsSection = (
+      <div>
+        <SectionHead
+          title={t('account.tabEsims')}
+          subtitle={t('account.esimsSubtitle')}
+          count={esims.length || undefined}
+          action={
+            esims.length > 0 ? (
+              <Button to="/destinations" variant="ghost" className="focus-ring min-h-11 py-0 text-sm">
+                <Plus size={16} /> {t('account.buyAnother')}
+              </Button>
+            ) : undefined
+          }
+        />
+        {esims.length === 0 ? (
+          <Card className="elev-1 px-6 py-12 text-center">
+            <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-500/10 text-brand-600 ring-1 ring-brand-500/15 dark:text-brand-300">
+              <QrCode size={26} />
+            </span>
+            <h3 className="mt-4 font-display text-xl font-700">{t('account.emptyTitle')}</h3>
+            <p className="mx-auto mt-2 max-w-sm text-slate-soft">{t('account.emptySubtitle')}</p>
+            <Button to="/destinations" className="focus-ring mx-auto mt-5 w-fit px-6 py-3">
+              <Plus size={16} /> {t('account.buyAnother')}
+            </Button>
+          </Card>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {esims.map((e, i) => (
+              <Reveal key={e.id} delay={i * 50}>
+                <EsimCard
+                  esim={e}
+                  onActivate={activate}
+                  activating={activating === e.id}
+                />
+              </Reveal>
+            ))}
+          </div>
+        )}
+      </div>
+  )
+
   return (
     <div className="container-page py-6 sm:py-10">
       <Seo title={t('seo.accountTitle')} description={t('seo.homeDescription')} noindex />
@@ -287,49 +331,18 @@ export default function Account() {
           // The passport panel is gone: it was a second box below the globe
           // saying what the globe already said, and its one useful line — which
           // countries, how many eSIMs — now sits under the globe itself.
-          <WorldMap passport={summary.passport} />
-        )}
-
-        {tab === 'esims' && (
-          <div>
-            <SectionHead
-              title={t('account.tabEsims')}
-              subtitle={t('account.esimsSubtitle')}
-              count={esims.length || undefined}
-              action={
-                esims.length > 0 ? (
-                  <Button to="/destinations" variant="ghost" className="focus-ring min-h-11 py-0 text-sm">
-                    <Plus size={16} /> {t('account.buyAnother')}
-                  </Button>
-                ) : undefined
-              }
-            />
-            {esims.length === 0 ? (
-              <Card className="elev-1 px-6 py-12 text-center">
-                <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-500/10 text-brand-600 ring-1 ring-brand-500/15 dark:text-brand-300">
-                  <QrCode size={26} />
-                </span>
-                <h3 className="mt-4 font-display text-xl font-700">{t('account.emptyTitle')}</h3>
-                <p className="mx-auto mt-2 max-w-sm text-slate-soft">{t('account.emptySubtitle')}</p>
-                <Button to="/destinations" className="focus-ring mx-auto mt-5 w-fit px-6 py-3">
-                  <Plus size={16} /> {t('account.buyAnother')}
-                </Button>
-              </Card>
-            ) : (
-              <div className="grid gap-4 lg:grid-cols-2">
-                {esims.map((e, i) => (
-                  <Reveal key={e.id} delay={i * 50}>
-                    <EsimCard
-                      esim={e}
-                      onActivate={activate}
-                      activating={activating === e.id}
-                    />
-                  </Reveal>
-                ))}
-              </div>
-            )}
+          // One page rather than one panel: the globe, then the eSIMs the
+          // customer came for, then the referral offer. The tabs still work — this
+          // is the overview showing what a customer opening their account wants
+          // to see without hunting for a tab.
+          <div className="space-y-10 sm:space-y-12">
+            <WorldMap passport={summary.passport} />
+            {esimsSection}
+            <ReferralPanel />
           </div>
         )}
+
+        {tab === 'esims' && esimsSection}
 
         {tab === 'orders' && (
           <div>
