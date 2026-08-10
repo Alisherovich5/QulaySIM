@@ -796,6 +796,10 @@ const uz: Translation = {
       primary: 'Asosiy',
       on: 'Yoniq',
       shot4Note: 'Internetni eSIM’ga faqat manzilga yetganda o‘tkazing.',
+      shot3Hint: 'QR-kod kabinetingizda, «Mening eSIM‘larim» bo‘limida.',
+      screenOther: 'Boshqa sozlamalar',
+      rowTurnOn: 'Bu liniyani yoqish',
+      off: 'O‘chiq',
       ios: [
         'Sozlamalar → Mobil aloqa (Cellular) → eSIM qo‘shish bo‘limini oching.',
         '«QR-koddan foydalanish»ni tanlang va xariddan keyin kabinetingizda paydo bo‘lgan kodni skanerlang.',

@@ -810,6 +810,10 @@ const en = {
       primary: 'Primary',
       on: 'On',
       shot4Note: 'Switch data to the eSIM only once you have arrived.',
+      shot3Hint: 'The QR code is in your account, under “My eSIMs”.',
+      screenOther: 'Other settings',
+      rowTurnOn: 'Turn On This Line',
+      off: 'Off',
       ios: [
         'Open Settings → Cellular → Add eSIM.',
         'Choose “Use QR Code” and scan the code from your account.',
