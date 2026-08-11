@@ -17,6 +17,7 @@ const en = {
   mobileNav: {
     home: 'Home',
     tariffs: 'Plans',
+    global: 'World',
     support: 'Support',
     profile: 'Profile',
     device: 'Device',
@@ -150,6 +151,7 @@ const en = {
     title: 'Buy once, use it anywhere in the world',
     lead: 'No separate eSIM for every country. One worldwide plan works everywhere your trip takes you, with nothing to swap on the phone.',
     fromPrice: 'Starting from',
+    cta: 'See the plans',
     reasonOneTitle: 'One purchase',
     reasonOneText: 'Three countries, one eSIM. No hunting for a new plan at every border.',
     reasonTwoTitle: 'One installation',

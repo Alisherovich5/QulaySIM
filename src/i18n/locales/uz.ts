@@ -19,6 +19,7 @@ const uz: Translation = {
   mobileNav: {
     home: 'Bosh sahifa',
     tariffs: 'Tariflar',
+    global: 'Dunyo',
     support: 'Yordam',
     profile: 'Profil',
     device: 'Qurilma',
@@ -152,6 +153,7 @@ const uz: Translation = {
     title: 'Bir marta oling, butun dunyoda ishlatavering',
     lead: 'Har bir davlat uchun alohida eSIM sotib olish shart emas. Bitta global tarif olasiz va yo‘lingizdagi hamma davlatda ishlaydi — telefonda hech nima almashtirmasdan.',
     fromPrice: 'Boshlanish narxi:',
+    cta: 'Tariflarni ko‘rish',
     reasonOneTitle: 'Bir marta xarid',
     reasonOneText: 'Uch davlatga chiqsangiz ham bitta eSIM. Har chegarada yangi tarif izlash yo‘q.',
     reasonTwoTitle: 'Bir marta o‘rnatish',

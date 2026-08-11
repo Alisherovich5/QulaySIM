@@ -1,4 +1,4 @@
-import { Globe2, House, LifeBuoy, Smartphone, UserRound } from 'lucide-react'
+import { Earth, Globe2, House, LifeBuoy, Smartphone, UserRound } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
@@ -10,6 +10,11 @@ export default function MobileNav() {
   const items = [
     { to: '/', label: t('mobileNav.home'), icon: House, end: true },
     { to: '/destinations', label: t('mobileNav.tariffs'), icon: Globe2, end: false },
+    // The worldwide page had no route to it below 1280px at all: its only link
+    // lived in the xl-only header. A product page nobody on a phone can reach is
+    // a product page that does not sell. Short label — six cells on a 390px
+    // screen leave about 60px each.
+    { to: '/global', label: t('mobileNav.global'), icon: Earth, end: false },
     // "Does my phone work?" is the question that stops the sale, and its page
     // had no link at all below 1280px — the only one lived in the xl-only
     // header nav. It belongs where a phone user can reach it.
