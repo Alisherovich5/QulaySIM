@@ -25,20 +25,24 @@ export default function MobileNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-[70] border-t border-line bg-surface/95 shadow-[0_-10px_28px_rgba(0,40,35,0.10)] backdrop-blur-xl xl:hidden" aria-label="Mobile navigation">
-      <div className="container-page grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-5 max-[359px]:px-3 pb-[env(safe-area-inset-bottom)]">
+      {/* Six columns, not five. The grid was fixed at five, so adding the
+          worldwide entry pushed "Profil" onto a second row and doubled the bar's
+          height. Padding is trimmed too: at 390px six cells are about 60px each,
+          which fits a 20px icon and a one-word label and nothing more. */}
+      <div className="grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-6 px-1 pb-[env(safe-area-inset-bottom)] sm:px-3">
         {items.map((item) => (
           <NavLink
             key={item.label}
             to={item.to}
             end={item.end}
-            className={({ isActive }) => `relative flex min-w-0 flex-col items-center justify-center gap-1 text-[11px] font-700 transition max-[359px]:gap-0.5 max-[359px]:text-[10px] ${
+            className={({ isActive }) => `relative flex min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 text-[10px] font-700 leading-tight transition max-[359px]:text-[9px] sm:text-[11px] ${
               isActive ? 'text-brand-600' : 'text-slate-soft'
             }`}
           >
             {({ isActive }) => (
               <>
                 {isActive && <span className="absolute top-0 h-0.5 w-9 rounded-full bg-brand-500" />}
-                <item.icon size={20} strokeWidth={isActive ? 2.4 : 2} />
+                <item.icon size={19} strokeWidth={isActive ? 2.4 : 2} />
                 <span className="max-w-full truncate">{item.label}</span>
               </>
             )}

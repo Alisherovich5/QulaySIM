@@ -17,7 +17,7 @@ const uz: Translation = {
     deviceCheck: 'Qurilma tekshiruvi',
   },
   mobileNav: {
-    home: 'Bosh sahifa',
+    home: 'Asosiy',
     tariffs: 'Tariflar',
     global: 'Dunyo',
     support: 'Yordam',
