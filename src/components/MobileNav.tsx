@@ -19,7 +19,7 @@ export default function MobileNav() {
   ]
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-[70] border-t border-line bg-surface/95 shadow-[0_-10px_28px_rgba(0,40,35,0.10)] backdrop-blur-xl lg:hidden" aria-label="Mobile navigation">
+    <nav className="fixed inset-x-0 bottom-0 z-[70] border-t border-line bg-surface/95 shadow-[0_-10px_28px_rgba(0,40,35,0.10)] backdrop-blur-xl xl:hidden" aria-label="Mobile navigation">
       <div className="container-page grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-5 max-[359px]:px-3 pb-[env(safe-area-inset-bottom)]">
         {items.map((item) => (
           <NavLink

@@ -16,7 +16,7 @@ export default function Navbar() {
   const navigate = useNavigate()
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `inline-flex min-h-11 items-center gap-1.5 text-sm font-600 transition-colors ${
+    `inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-600 transition-colors ${
       isActive ? 'text-brand-600' : 'text-slate-soft hover:text-ink'
     }`
 
@@ -29,17 +29,16 @@ export default function Navbar() {
       <header className="sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md">
       <PromoStrip />
       <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
-        <Logo />
-        {/* lg, not md: measured at 768px this block reaches 814px and pans the
-            whole page 46px. Tablets keep the bottom nav instead — same as
-            phones — and the header links appear where they genuinely fit. */}
-        <nav className="hidden items-center gap-5 lg:flex xl:gap-7">
-          {/* Beside destinations rather than buried: choosing "everywhere" is a
-              different decision from choosing a country, and the customer making
-              it has no country page to find it on. */}
-          <NavLink to="/global" className={linkClass}>
-            <Globe2 size={16} /> {t('nav.global')}
-          </NavLink>
+        <div className="shrink-0">
+          <Logo />
+        </div>
+        {/* xl, not lg. Four links plus the settings group and the account button
+            fit in 1024px only if none of them is "Butun dunyo": adding a fifth
+            item pushed the total past the container, and because the settings
+            group has a background it silently covered "Yordam" instead of
+            wrapping. Raised to 1280 with the bottom nav extended to match, so
+            there is never a width with no navigation at all. */}
+        <nav className="hidden min-w-0 flex-nowrap items-center gap-5 xl:flex">
           <NavLink to="/destinations" className={linkClass}>
             <Globe size={16} /> {t('nav.destinations')}
           </NavLink>
@@ -49,11 +48,17 @@ export default function Navbar() {
           <NavLink to="/device-check" className={linkClass}>
             <Smartphone size={16} /> {t('nav.deviceCheck')}
           </NavLink>
+          {/* Before support, after the two links a visitor uses first. Placed at
+              the head of the row it crowded the logo and wrapped onto a second
+              line, which pushed the rest of the bar out of place. */}
+          <NavLink to="/global" className={linkClass}>
+            <Globe2 size={16} /> {t('nav.global')}
+          </NavLink>
           <NavLink to="/support" className={linkClass}>
             <LifeBuoy size={16} /> {t('nav.support')}
           </NavLink>
         </nav>
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-2 xl:flex">
           {/* One settings group at every desktop width. It used to be the group
               at xl and a loose theme+language pair below it, which meant the
               currency — a setting like the other two — was unreachable between
@@ -80,7 +85,7 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <Link to="/account" className="btn-ghost min-h-11 px-3 py-2 text-sm">
                   <UserRound size={16} />
-                  <span className="hidden xl:inline">{customer.full_name || t('nav.account')}</span>
+                  <span className="hidden 2xl:inline">{customer.full_name || t('nav.account')}</span>
                 </Link>
                 <button
                   onClick={() => {
@@ -104,7 +109,7 @@ export default function Navbar() {
             reading order as the desktop cluster. Four 40px cells plus the
             wordmark come to 316px of the 390px row, so the currency fits here
             without shrinking anything. */}
-        <div className="flex items-center gap-1 max-[359px]:gap-0.5 lg:hidden">
+        <div className="flex items-center gap-1 max-[359px]:gap-0.5 xl:hidden">
           <CurrencySwitcher compact />
           <ThemeToggle />
           <LanguageSwitcher compact />
