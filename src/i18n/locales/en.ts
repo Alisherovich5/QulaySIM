@@ -224,6 +224,8 @@ const en = {
     payWithCard: 'Pay by card',
     payOpening: 'Preparing the payment form…',
     payFrameTitle: 'Secure payment',
+    payMethodCard: 'Card',
+    payMethodsHint: "Click/Payme under “Other method”",
     payFrameNote: 'Card details go straight to the payment provider — they never touch our server.',
     payCancel: 'Cancel',
     payFallback: 'Form did not open? Open on a new page',

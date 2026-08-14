@@ -226,6 +226,8 @@ const uz: Translation = {
     payWithCard: 'Karta bilan to‘lash',
     payOpening: 'To‘lov oynasi tayyorlanmoqda…',
     payFrameTitle: 'Xavfsiz to‘lov',
+    payMethodCard: 'Karta',
+    payMethodsHint: "Click/Payme — «Boshqa usuli»da",
     payFrameNote: 'Karta ma’lumotlari to‘g‘ridan-to‘g‘ri to‘lov tizimiga yuboriladi — bizning serverimizga tegmaydi.',
     payCancel: 'Bekor qilish',
     payFallback: 'Oyna ochilmadimi? Yangi sahifada ochish',

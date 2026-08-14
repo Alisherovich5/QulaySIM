@@ -80,6 +80,23 @@ export default function PaymentFrame({ url, onClose }: { url: string; onClose: (
           </button>
         </div>
 
+        {/* The provider's page opens on the card form, with CLICK and PAYME
+            folded away under "Boshqa usuli" — the screenshot proves it: even in
+            a 880px sheet that section sits collapsed at the fold. A customer who
+            came to pay with Click sees a card form and concludes that is all we
+            take. We cannot restyle that page (different origin, and the links
+            behind those buttons are minted by their server), so the honest fix
+            is to say up front what is inside it. Names as text, not logos: no
+            third-party asset to host and nothing for the CSP to block. */}
+        <div className="flex shrink-0 flex-wrap items-center gap-x-2 gap-y-1 border-b border-line bg-mist/70 px-4 py-2">
+          <span className="rounded-md bg-brand-600 px-1.5 py-0.5 text-[10px] font-700 uppercase tracking-wide text-white">
+            {t('checkout.payMethodCard')}
+          </span>
+          <span className="rounded-md bg-[#0F86D8] px-1.5 py-0.5 text-[10px] font-700 text-white">Click</span>
+          <span className="rounded-md bg-[#00C4B4] px-1.5 py-0.5 text-[10px] font-700 text-white">Payme</span>
+          <span className="text-[11px] leading-4 text-slate-soft">{t('checkout.payMethodsHint')}</span>
+        </div>
+
         {/* `flex-1` with a full-height iframe rather than a fixed height, so the
             frame takes whatever the header leaves and the form gets the screen. */}
         <div className="relative min-h-0 flex-1 overflow-hidden bg-white">

@@ -226,6 +226,8 @@ const ru: Translation = {
     payWithCard: 'Оплатить картой',
     payOpening: 'Готовим форму оплаты…',
     payFrameTitle: 'Безопасная оплата',
+    payMethodCard: 'Карта',
+    payMethodsHint: "Click/Payme — «Другой способ»",
     payFrameNote: 'Данные карты уходят напрямую в платёжную систему — на наш сервер они не попадают.',
     payCancel: 'Отмена',
     payFallback: 'Форма не открылась? Открыть на новой странице',
