@@ -87,10 +87,22 @@ export default function PaymentFrame({ url, onClose }: { url: string; onClose: (
             title={t('checkout.payFrameTitle')}
             onLoad={() => setLoaded(true)}
             className="h-full min-h-[420px] w-full border-0"
-            // The provider needs forms and its own scripts; nothing else is
-            // granted. allow-same-origin is required for its session to work
-            // and is safe here because the frame is a different origin.
-            sandbox="allow-forms allow-scripts allow-same-origin allow-top-navigation-by-user-activation"
+            // The provider needs forms and its own scripts. `allow-same-origin`
+            // is required for its session to work and is safe here because the
+            // frame is a different origin.
+            //
+            // The two popup permissions are what make CLICK and PAYME work.
+            // Both hand the customer off by calling `window.open()` — the button
+            // carries a perfectly good my.click.uz URL — and a sandboxed frame
+            // without `allow-popups` blocks that silently: no error, no new tab,
+            // a button that simply does nothing. `allow-popups-to-escape-sandbox`
+            // then lets the opened page run unsandboxed, since inheriting these
+            // restrictions would break the payment page it lands on instead.
+            //
+            // The cost is worth naming: this frame can now open windows. It is
+            // the payment provider's own origin, which is already trusted with
+            // the card number, so the added reach is small — but it is not zero.
+            sandbox="allow-forms allow-scripts allow-same-origin allow-top-navigation-by-user-activation allow-popups allow-popups-to-escape-sandbox"
           />
         </div>
 
