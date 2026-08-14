@@ -56,7 +56,13 @@ export default function PaymentFrame({ url, onClose }: { url: string; onClose: (
           in, `vh` is taller than what is visible and pushes the bottom of the form
           back underneath them. */}
       <div
-        className="flex h-[100dvh] w-full flex-col overflow-hidden bg-surface shadow-2xl ring-line sm:h-auto sm:max-h-full sm:max-w-lg sm:rounded-2xl sm:ring-1"
+        // On a phone the sheet is the screen. On a desktop it was `h-auto` inside
+        // `max-h-full`, so the panel took only as much height as the layout gave
+        // it and the provider's form was cut off part-way down — the same inner
+        // scrollbar the phone had, moved to the laptop. A definite height fixes
+        // it: 88% of the window, capped so it does not become a strip on a very
+        // tall display, and a little wider so the card fields are not cramped.
+        className="flex h-[100dvh] w-full flex-col overflow-hidden bg-surface shadow-2xl ring-line sm:h-[min(88vh,880px)] sm:max-w-xl sm:rounded-2xl sm:ring-1"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
