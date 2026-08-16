@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { Globe2, Globe, LifeBuoy, LogOut, ShoppingBag, Smartphone, UserRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +11,24 @@ import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 
 export default function Navbar() {
+  // The header's real height, published as a CSS variable.
+  //
+  // Anything else that sticks — the worldwide filter bar today — has to sit
+  // directly under it, and a hardcoded offset is wrong the moment the promo
+  // banner is dismissed or the viewport narrows. Measured rather than guessed,
+  // and re-measured when it changes.
+  const headerRef = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const el = headerRef.current
+    if (!el) return
+    const publish = () =>
+      document.documentElement.style.setProperty('--header-h', `${Math.round(el.getBoundingClientRect().height)}px`)
+    publish()
+    const observer = new ResizeObserver(publish)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   const { count } = useCart()
   const { customer, logout } = useAuth()
   const { t } = useTranslation()
@@ -26,7 +45,7 @@ export default function Navbar() {
           browses. I had moved it out to reclaim ~40px per screen; that was the
           wrong call for a storefront whose main lever is the discount code —
           a promotion nobody can see while choosing a plan is not a promotion. */}
-      <header className="sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md">
+      <header ref={headerRef} className="sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md">
       <PromoStrip />
       <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
         <div className="shrink-0">

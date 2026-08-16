@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Check, Globe2, Plane, QrCode, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Check } from 'lucide-react'
 import Seo from '../components/Seo'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd } from '../lib/structured-data'
@@ -68,6 +68,29 @@ export default function Global() {
 
   const cheapest = detail?.starting_price ?? null
 
+  // The widest coverage list we actually sell. Everything the hero claims is
+  // read from this, so the page cannot promise more than the catalogue holds.
+  const widest = useMemo(() => {
+    let best: string[] = []
+    for (const plan of detail?.plans ?? []) {
+      const codes = plan.coverage ?? []
+      if (codes.length > best.length) best = codes
+    }
+    return best
+  }, [detail])
+
+  // Twenty-four of them, popular destinations first — the ones a customer here
+  // recognises — then whatever else is covered, alphabetically by our own name.
+  const heroFlags = useMemo(() => {
+    const known = new Map(countries.map((c) => [c.iso2.toUpperCase(), c]))
+    const rows = widest
+      .map((iso2) => ({ iso2, country: known.get(iso2) }))
+      .filter((row) => row.country)
+      .map((row) => ({ iso2: row.iso2, name: row.country!.name, popular: row.country!.is_popular }))
+    rows.sort((a, b) => Number(b.popular) - Number(a.popular) || a.name.localeCompare(b.name))
+    return rows.slice(0, 24)
+  }, [widest, countries])
+
   const handleAdd = (plan: Plan) => {
     // No ISO code: a worldwide eSIM belongs to no country, so the cart shows the
     // plan's own name rather than a flag it cannot choose.
@@ -88,98 +111,96 @@ export default function Global() {
       />
 
       {/* Hero.
-          The first version was a flat green block with the copy in the left half
-          and nothing in the right — which is what made it read as a placeholder
-          rather than a product page. It now works as two columns on a wide screen:
-          the offer on the left, and on the right the thing being sold, drawn as a
-          stack of country chips over a lit globe.
-
-          The headline is the offer, not the category: "one eSIM, every country"
-          makes someone stop; "Global tariflar" does not. */}
-      <div className="relative overflow-hidden rounded-3xl bg-brand-800 text-white">
-        {/* No glow blobs, no grid overlay. Two radial gradients under a fine
-            mesh is the house style of every generated landing page of the last
-            two years, and it reads as one — the flat brand colour with type on
-            it looks more expensive, not less. */}
-        <div className="relative grid items-center gap-10 px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-600 ring-1 ring-white/20 backdrop-blur">
-              <Globe2 size={14} aria-hidden />
-              {t('global.eyebrow')}
-            </span>
-            {/* `text-white` explicitly: the global stylesheet gives headings the
-                ink colour, which beats the colour inherited from the hero — in the
-                light theme the headline came out near-black on dark green. */}
-            <h1 className="mt-4 text-3xl font-700 leading-[1.08] text-white sm:text-5xl">
-              {t('global.title')}
-            </h1>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/85 sm:text-base">
-              {t('global.lead')}
+          What was here: a green ball drawn in CSS with five flag pills floating
+          around it. The owner's word for it was "aldov" — a prop. It said
+          nothing true: the ball was not a map, the five countries were picked
+          because they fit the layout, and the "+200" was decoration.
+          
+          What replaces it is the same claim made with evidence. The flags are
+          the actual coverage list of the widest plan we sell, read from the
+          API, and the count beside them is that list's real length. If a
+          supplier drops thirty countries tomorrow, this strip shrinks —
+          which is exactly the property a prop does not have. */}
+      <section className="grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-12">
+        <div>
+          {widest.length > 0 && (
+            <p className="text-xs font-700 uppercase tracking-[0.16em] text-brand-600 dark:text-accent-400">
+              {t('global.eyebrow', { count: widest.length })}
             </p>
+          )}
+          <h1 className="mt-3 font-display text-3xl font-700 leading-[1.06] text-ink sm:text-[2.75rem]">
+            {t('global.title')}
+          </h1>
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-slate-soft">
+            {t('global.lead')}
+          </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-4">
-              <a
-                href="#plans"
-                className="focus-ring inline-flex min-h-12 items-center gap-2 rounded-xl bg-white px-5 font-700 text-brand-800 shadow-lg shadow-black/20 transition hover:bg-white/90"
-              >
-                {t('global.cta')}
-                <ArrowRight size={17} aria-hidden />
-              </a>
-              {cheapest != null && (
-                <span className="text-sm text-white/75">
-                  {t('global.fromPrice')}{' '}
-                  <span className="font-700 text-white">{formatPrice(cheapest)}</span>
-                </span>
-              )}
+          {/* Numbers, not adjectives — and every one of them computed from what
+              is actually on sale a line above. */}
+          <dl className="mt-7 flex flex-wrap items-end gap-x-8 gap-y-4 border-t border-line pt-5">
+            <div>
+              <dt className="text-xs text-slate-soft">{t('global.statCountries')}</dt>
+              <dd className="font-display text-2xl font-700 tabular-nums text-ink">{widest.length || '—'}</dd>
             </div>
-          </div>
+            <div>
+              <dt className="text-xs text-slate-soft">{t('global.statPlans')}</dt>
+              <dd className="font-display text-2xl font-700 tabular-nums text-ink">
+                {detail?.plans.length ?? 0}
+              </dd>
+            </div>
+            {cheapest != null && (
+              <div>
+                <dt className="text-xs text-slate-soft">{t('global.fromPrice')}</dt>
+                <dd className="font-display text-2xl font-700 tabular-nums text-ink">
+                  {formatPrice(cheapest)}
+                </dd>
+              </div>
+            )}
+          </dl>
 
-          {/* The product, drawn. Country chips floating over a globe says
-              "works in these places" faster than a sentence does, and it fills
-              the half of the panel that was empty. */}
-          <div aria-hidden className="relative hidden h-[300px] lg:block">
-            <div className="absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#2ee6b0_0%,#0e8f7a_38%,#075a55_72%,#04333a_100%)] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6),inset_-24px_-24px_60px_rgba(0,0,0,0.45)]" />
-            <div className="absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full ring-1 ring-white/15" />
-            {[
-              { code: 'TR', top: '4%', left: '6%' },
-              { code: 'AE', top: '22%', left: '68%' },
-              { code: 'DE', top: '52%', left: '0%' },
-              { code: 'TH', top: '74%', left: '58%' },
-              { code: 'US', top: '86%', left: '14%' },
-            ].map((c) => (
-              <span
-                key={c.code}
-                style={{ top: c.top, left: c.left }}
-                className="absolute inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-700 text-brand-900 shadow-lg shadow-black/25"
-              >
-                <Flag iso2={c.code} className="h-3 w-4 rounded-[2px]" />
-                {c.code}
-              </span>
-            ))}
-            <span className="absolute bottom-[38%] right-[2%] inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-3 py-1 text-[11px] font-700 text-white shadow-lg shadow-black/30">
-              +200
-            </span>
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            <a href="#plans" className="btn btn-primary">
+              {t('global.cta')}
+              <ArrowRight size={17} aria-hidden />
+            </a>
+            <Link
+              to="/guide/install-esim"
+              className="focus-ring rounded-lg px-3 py-2 text-sm font-600 text-slate-soft hover:text-ink"
+            >
+              {t('global.howItWorks')}
+            </Link>
           </div>
         </div>
-      </div>
 
-      {/* Why, in three lines. A traveller weighing this against buying per
-          country needs the comparison spelled out once. */}
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        {[
-          { icon: Plane, key: 'reasonOne' },
-          { icon: QrCode, key: 'reasonTwo' },
-          { icon: ShieldCheck, key: 'reasonThree' },
-        ].map(({ icon: Icon, key }) => (
-          <Card key={key} className="flex gap-3 p-5">
-            <Icon size={20} className="mt-0.5 shrink-0 text-brand-500 dark:text-accent-400" aria-hidden />
-            <div>
-              <p className="font-700 text-ink">{t(`global.${key}Title`)}</p>
-              <p className="mt-1 text-sm leading-relaxed text-slate-soft">{t(`global.${key}Text`)}</p>
-            </div>
-          </Card>
-        ))}
-      </div>
+        {/* The coverage itself. Real flags, real order, real remainder. */}
+        <div className="rounded-2xl bg-surface p-5 ring-1 ring-line sm:p-6">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-sm font-700 text-ink">{t('global.coverageStripTitle')}</p>
+            <p className="text-xs tabular-nums text-slate-soft">
+              {t('global.coverageCount', { count: widest.length })}
+            </p>
+          </div>
+          <ul className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-5 xl:grid-cols-6">
+            {heroFlags.map(({ iso2, name }) => (
+              <li
+                key={iso2}
+                title={name}
+                className="flex flex-col items-center gap-1.5 rounded-lg bg-mist px-1.5 py-2"
+              >
+                <Flag iso2={iso2} className="h-4 w-6 rounded-[2px]" />
+                <span className="line-clamp-2 w-full text-center text-[10px] leading-tight text-slate-soft">
+                  {name}
+                </span>
+              </li>
+            ))}
+          </ul>
+          {widest.length > heroFlags.length && (
+            <p className="mt-3 text-xs text-slate-soft">
+              {t('global.coverageMore', { count: widest.length - heroFlags.length })}
+            </p>
+          )}
+        </div>
+      </section>
 
       {/* The plans */}
       <h2 id="plans" className="mt-12 scroll-mt-24 text-xl font-700 sm:text-2xl">
