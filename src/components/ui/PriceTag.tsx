@@ -14,8 +14,13 @@ const PRIMARY: Record<Size, string> = {
   // decided by stylesheet order, not by the class attribute.
   xs: 'whitespace-nowrap text-[13px] font-700 tracking-tight sm:text-sm sm:tracking-normal',
   sm: 'text-sm font-700',
-  md: 'font-display text-xl font-700',
-  lg: 'font-display text-2xl font-700 sm:text-3xl',
+  // Sans with tabular figures, not the display face. Unbounded is wide by
+  // design — good for a headline, wrong for "297 999 so'm", which broke onto a
+  // second line and made every card a different height. Tabular figures also
+  // line the digits up between cards, so a column of prices can be compared by
+  // eye rather than read one by one.
+  md: 'text-xl font-700 tabular-nums tracking-tight',
+  lg: 'text-2xl font-700 tabular-nums tracking-tight sm:text-3xl',
 }
 
 const SECONDARY: Record<Size, string> = {

@@ -273,7 +273,7 @@ export default function HeroSection() {
             390px screen before, 350px after. */}
         <div className="min-w-0 max-w-2xl">
           <h1
-            className="max-w-full text-balance break-words font-display text-[2rem] font-700 leading-[1.12] text-ink sm:max-w-2xl sm:text-5xl lg:text-6xl rise"
+            className="max-w-full text-balance font-display text-[1.75rem] font-700 leading-[1.14] text-ink sm:max-w-2xl sm:text-4xl lg:text-[3.25rem] lg:leading-[1.08] rise"
             style={{ animationDelay: '80ms' }}
           >
             {t('home.title1')}{' '}
@@ -342,7 +342,6 @@ export default function HeroSection() {
               <div className="relative overflow-hidden rounded-[2.25rem] bg-gradient-to-br from-white/65 via-brand-50/55 to-accent-400/10 p-6 shadow-2xl shadow-brand-900/10 ring-1 ring-inset ring-brand-200/45 backdrop-blur-sm dark:from-[#0b3038]/90 dark:via-[#08272f]/90 dark:to-[#061c28]/95 dark:shadow-black/25 dark:ring-white/8">
                 <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent dark:via-white/20" />
                 <div className="pointer-events-none absolute left-1/2 top-[42%] h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-400/12 blur-3xl dark:bg-accent-400/10" />
-                <div className="hero-grid opacity-30 dark:opacity-70" />
 
                 <div className="relative flex min-h-[430px] flex-col items-center gap-4">
                   <div role="img" aria-label={globeAria}>

@@ -97,17 +97,10 @@ export default function Global() {
           The headline is the offer, not the category: "one eSIM, every country"
           makes someone stop; "Global tariflar" does not. */}
       <div className="relative overflow-hidden rounded-3xl bg-brand-800 text-white">
-        {/* Two glows and a fine grid. Depth without an image to download: a plain
-            gradient over a large area is exactly what looks cheap. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_15%_10%,#0f9b7d_0%,transparent_55%),radial-gradient(90%_80%_at_95%_100%,#0b6b6b_0%,transparent_60%)]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.07] [background-image:linear-gradient(#fff_1px,transparent_1px),linear-gradient(90deg,#fff_1px,transparent_1px)] [background-size:56px_56px]"
-        />
-
+        {/* No glow blobs, no grid overlay. Two radial gradients under a fine
+            mesh is the house style of every generated landing page of the last
+            two years, and it reads as one — the flat brand colour with type on
+            it looks more expensive, not less. */}
         <div className="relative grid items-center gap-10 px-6 py-10 sm:px-10 sm:py-14 lg:grid-cols-[1.15fr_1fr] lg:gap-8">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-600 ring-1 ring-white/20 backdrop-blur">

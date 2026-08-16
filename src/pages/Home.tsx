@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import GlobalTeaser from '../components/GlobalTeaser'
 import HeroSection from '../components/home/HeroSection'
 import DestinationsExplorer from '../components/home/DestinationsExplorer'
 import HowItWorks from '../components/home/HowItWorks'
@@ -41,6 +42,7 @@ export default function Home() {
       {/* HowItWorks carries its own border-y, so it supplies the divider the
           destinations grid needs below it — no wrapper here. */}
       <HowItWorks />
+      <div className="border-t border-line/70"><GlobalTeaser variant="section" /></div>
       <div className="border-t border-line/70"><Testimonials items={content?.testimonials} /></div>
       <div className="border-t border-line/70"><HomeFaq faqs={content?.faqs} /></div>
     </div>

@@ -148,6 +148,11 @@ const ru: Translation = {
     globeAria: 'Интерактивный глобус — выберите страну',
     globeHint: 'Нажмите на страну',
   },
+  globalTeaser: {
+    title: 'Едете в несколько стран?',
+    lead: 'Одна eSIM в 160+ странах. Не нужно покупать отдельную на каждой границе.',
+    all: 'Показать все',
+  },
   global: {
     filterTitle: 'Фильтр',
     filterCountry: 'Поиск по стране',

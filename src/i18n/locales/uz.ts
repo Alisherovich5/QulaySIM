@@ -148,6 +148,11 @@ const uz: Translation = {
     globeAria: 'Interaktiv globus — davlatni tanlang',
     globeHint: 'Davlat ustiga bosing',
   },
+  globalTeaser: {
+    title: 'Bir nechta davlatga borasizmi?',
+    lead: 'Bitta eSIM — 160 dan ortiq davlatda. Har bir chegara uchun alohida sotib olish shart emas.',
+    all: 'Hammasini ko‘rish',
+  },
   global: {
     filterTitle: 'Tanlash',
     filterCountry: 'Davlat bo‘yicha qidirish',

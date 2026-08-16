@@ -146,6 +146,11 @@ const en = {
     globeAria: 'Interactive globe — pick a country',
     globeHint: 'Tap a country',
   },
+  globalTeaser: {
+    title: 'Visiting more than one country?',
+    lead: 'One eSIM across 160+ countries. No separate purchase at every border.',
+    all: 'See all plans',
+  },
   global: {
     filterTitle: 'Filter',
     filterCountry: 'Search by country',

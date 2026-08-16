@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import type { CountryDetail as CountryDetailType, Plan } from '../lib/types'
 import PlanCard from '../components/PlanCard'
+import GlobalTeaser from '../components/GlobalTeaser'
 import Flag from '../components/Flag'
 import Reveal from '../components/Reveal'
 import Seo from '../components/Seo'
@@ -174,6 +175,10 @@ export default function CountryDetail() {
           </Reveal>
         ))}
       </div>
+
+      {/* Worldwide, offered where the question actually comes up: someone
+          reading a country page with two more stops on the same trip. */}
+      <GlobalTeaser />
 
       <RelatedDestinations regionSlug={country.region?.slug} currentSlug={country.slug} />
 

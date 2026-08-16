@@ -53,8 +53,6 @@ export default function ProfileHeader({ summary, onLogout, onSummaryChange }: Pr
           it, which fills it and — more to the point — stops the button
           wrapping onto a line of its own underneath the avatar at 390px. */}
       <div className="relative h-24 overflow-hidden rounded-t-2xl bg-brand-900 sm:h-28">
-        <div className="aurora" style={{ opacity: 0.62 }} />
-        <div className="hero-grid" />
         {/* Sinks the bottom of the banner so it resolves into the card below
             instead of ending as a hard band. */}
         <div
