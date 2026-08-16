@@ -35,6 +35,9 @@ export interface Plan {
   network_type: string
   supports_hotspot: boolean
   is_popular: boolean
+  /** ISO2 codes a multi-country plan covers. Empty for a single country,
+   *  where the page it sits on already names the destination. */
+  coverage?: string[]
 }
 
 export interface Country {

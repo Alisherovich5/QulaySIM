@@ -6,10 +6,9 @@ import Seo from '../components/Seo'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd } from '../lib/structured-data'
 import { api } from '../lib/api'
-import type { Plan, Region, RegionDetail } from '../lib/types'
+import type { Country, Plan, Region, RegionDetail } from '../lib/types'
 import Flag from '../components/Flag'
-import PlanCard from '../components/PlanCard'
-import Reveal from '../components/Reveal'
+import GlobalPlanExplorer from '../components/global/GlobalPlanExplorer'
 import { Card } from '../components/ui'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
@@ -36,6 +35,7 @@ export default function Global() {
 
   const [detail, setDetail] = useState<RegionDetail | null>(null)
   const [regions, setRegions] = useState<Region[]>([])
+  const [countries, setCountries] = useState<Country[]>([])
   const [added, setAdded] = useState<number | null>(null)
 
   useEffect(() => {
@@ -49,6 +49,14 @@ export default function Global() {
       .get<Region[]>('/regions')
       .then((r) => setRegions(r.data))
       .catch(() => setRegions([]))
+    // Our own country names, in the visitor's language. The browser's
+    // Intl.DisplayNames knows Turkey as "Türkiye" and has no Uzbek data at all,
+    // so a customer typing "Turkiya" was told no such country exists — on the
+    // page whose whole job is answering "is my stop included?".
+    api
+      .get<Country[]>('/countries?limit=400')
+      .then((r) => setCountries(r.data))
+      .catch(() => setCountries([]))
   }, [i18n.language])
 
   // Regions that actually sell a multi-country plan. The worldwide one is this
@@ -187,13 +195,7 @@ export default function Global() {
       <p className="mt-1.5 text-sm text-slate-soft">{t('global.plansSubtitle')}</p>
 
       {detail && detail.plans.length > 0 ? (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {detail.plans.map((plan, i) => (
-            <Reveal key={plan.id} delay={i * 50}>
-              <PlanCard plan={plan} onAdd={handleAdd} added={added === plan.id} />
-            </Reveal>
-          ))}
-        </div>
+        <GlobalPlanExplorer plans={detail.plans} onAdd={handleAdd} added={added} countries={countries} />
       ) : (
         <Card className="mt-6 p-6 text-sm text-slate-soft">{t('global.plansEmpty')}</Card>
       )}
