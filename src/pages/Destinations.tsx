@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Check, ChevronDown, Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useCurrency } from '../context/CurrencyContext'
 import Seo from '../components/Seo'
@@ -16,6 +16,22 @@ export default function Destinations() {
   const [params, setParams] = useSearchParams()
   const [countries, setCountries] = useState<Country[]>([])
   const [regions, setRegions] = useState<Region[]>([])
+  const [regionOpen, setRegionOpen] = useState(false)
+  const barRef = useRef<HTMLDivElement>(null)
+
+  // A click anywhere else closes the region menu — otherwise it stays open over
+  // the grid while the visitor scrolls, which reads as a stuck page.
+  useEffect(() => {
+    if (!regionOpen) return
+    const close = (event: MouseEvent) => {
+      if (!barRef.current?.contains(event.target as Node)) setRegionOpen(false)
+    }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [regionOpen])
+
+  const chipClass =
+    'focus-ring inline-flex items-center gap-1.5 rounded-full bg-mist px-2.5 py-1 text-xs font-600 text-ink ring-1 ring-line hover:ring-brand-300'
   const [loading, setLoading] = useState(true)
   const { t, i18n } = useTranslation()
   const search = params.get('search') || ''
@@ -80,43 +96,125 @@ export default function Destinations() {
       <h1 className="text-2xl font-700 sm:text-3xl">{t('destinations.title')}</h1>
       <p className="mt-2 leading-6 text-slate-soft">{t('destinations.subtitle')}</p>
 
-      <div className="mt-7 flex items-center gap-2 rounded-2xl bg-surface p-2 ring-1 ring-line">
-        <div className="flex flex-1 items-center gap-2 pl-3">
-          <Search size={20} className="text-slate-soft" />
-          <input
-            value={search}
-            onChange={(e) => updateParam('search', e.target.value)}
-            placeholder={t('destinations.searchPlaceholder')}
-            className="w-full bg-transparent py-2.5 outline-none placeholder:text-slate-soft/70"
-          />
-        </div>
-      </div>
+      {/* One bar, and it follows the page down.
+          Before: a full-width search box, then a second row of region pills
+          under a "Mintaqa" label — two blocks and four lines of chrome above a
+          grid the visitor came to read, and both scrolled away the moment they
+          started reading. Now the search and the region live on one line, the
+          regions open on demand instead of sitting there permanently, and the
+          bar stays reachable at the top of the screen. The header publishes its
+          own height, so the offset survives the promo banner being dismissed. */}
+      <div
+        ref={barRef}
+        className="sticky top-[var(--header-h,104px)] z-40 -mx-4 mt-6 border-y border-line bg-canvas/95 px-4 py-3 backdrop-blur-md sm:mx-0 sm:rounded-xl sm:border sm:px-4"
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative min-w-[220px] flex-1">
+            <Search size={16} aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-soft" />
+            <input
+              value={search}
+              onChange={(e) => updateParam('search', e.target.value)}
+              placeholder={t('destinations.searchPlaceholder')}
+              aria-label={t('destinations.searchPlaceholder')}
+              className="focus-ring w-full rounded-lg bg-mist py-2 pl-9 pr-9 text-sm text-ink ring-1 ring-line placeholder:text-slate-soft [&::-webkit-search-cancel-button]:hidden"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => updateParam('search', '')}
+                aria-label={t('destinations.all')}
+                className="focus-ring absolute right-1.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-md text-slate-soft hover:bg-surface hover:text-ink"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
 
-      <div className="mobile-scroll-gutter mt-5 flex items-center gap-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:py-0">
-        <span className="flex shrink-0 items-center gap-1.5 pr-1 text-sm font-600 text-slate-soft">
-          <SlidersHorizontal size={15} /> {t('destinations.region')}
-        </span>
-        <button
-          onClick={() => updateParam('region', '')}
-          className={`chip focus-ring min-h-11 shrink-0 ring-1 transition ${
-            !region ? 'bg-brand-500 text-white ring-brand-500' : 'bg-surface text-slate-soft ring-line hover:ring-brand-300'
-          }`}
-        >
-          {t('destinations.all')}
-        </button>
-        {regions.map((r) => (
-          <button
-            key={r.id}
-            onClick={() => updateParam('region', r.slug)}
-            className={`chip focus-ring min-h-11 shrink-0 ring-1 transition ${
-              region === r.slug
-                ? 'bg-brand-500 text-white ring-brand-500'
-                : 'bg-surface text-slate-soft ring-line hover:ring-brand-300'
-            }`}
-          >
-            {r.name}
-          </button>
-        ))}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setRegionOpen((open) => !open)}
+              aria-expanded={regionOpen}
+              className={`focus-ring inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-600 ring-1 transition ${
+                region
+                  ? 'bg-brand-600 text-white ring-brand-600'
+                  : regionOpen
+                    ? 'bg-mist text-ink ring-line'
+                    : 'bg-surface text-slate-soft ring-line hover:text-ink'
+              }`}
+            >
+              {region ? regions.find((r) => r.slug === region)?.name : t('destinations.region')}
+              <ChevronDown size={14} aria-hidden />
+            </button>
+            {regionOpen && (
+              <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-56 rounded-xl bg-surface p-1.5 shadow-xl ring-1 ring-line">
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateParam('region', '')
+                    setRegionOpen(false)
+                  }}
+                  className={`focus-ring flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition ${
+                    !region ? 'bg-brand-50 font-600 text-brand-700 dark:bg-brand-800/40 dark:text-accent-400' : 'text-ink hover:bg-mist'
+                  }`}
+                >
+                  {t('destinations.all')}
+                  {!region && <Check size={14} aria-hidden />}
+                </button>
+                {regions.map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => {
+                      updateParam('region', r.slug)
+                      setRegionOpen(false)
+                    }}
+                    className={`focus-ring flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition ${
+                      region === r.slug
+                        ? 'bg-brand-50 font-600 text-brand-700 dark:bg-brand-800/40 dark:text-accent-400'
+                        : 'text-ink hover:bg-mist'
+                    }`}
+                  >
+                    <span className="truncate">{r.name}</span>
+                    {/* The number of destinations behind the label: the answer
+                        before the click rather than after it. */}
+                    {r.country_count > 0 && (
+                      <span className="shrink-0 text-xs tabular-nums text-slate-soft">{r.country_count}</span>
+                    )}
+                    {region === r.slug && <Check size={14} aria-hidden />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {(search || region) && (
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+            {search && (
+              <button type="button" onClick={() => updateParam('search', '')} className={chipClass}>
+                “{search}”
+                <X size={12} aria-hidden />
+              </button>
+            )}
+            {region && (
+              <button type="button" onClick={() => updateParam('region', '')} className={chipClass}>
+                {regions.find((r) => r.slug === region)?.name}
+                <X size={12} aria-hidden />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                updateParam('search', '')
+                updateParam('region', '')
+              }}
+              className="focus-ring rounded-lg px-2 py-1 text-xs font-600 text-brand-600 hover:underline dark:text-accent-400"
+            >
+              {t('global.filterReset')}
+            </button>
+          </div>
+        )}
       </div>
 
       {loading ? (
