@@ -6,6 +6,7 @@ import Seo from '../components/Seo'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd } from '../lib/structured-data'
 import { api } from '../lib/api'
+import { boot } from '../lib/boot'
 import type { Country, Plan, Region, RegionDetail } from '../lib/types'
 import Flag from '../components/Flag'
 import GlobalPlanExplorer from '../components/global/GlobalPlanExplorer'
@@ -33,7 +34,10 @@ export default function Global() {
   const { add } = useCart()
   const navigate = useNavigate()
 
-  const [detail, setDetail] = useState<RegionDetail | null>(null)
+  // Seeded from what the build baked into this page: the worldwide grid used to
+  // be empty for anyone whose request was lost, on a route where requests are
+  // lost in bursts. The fetch below still runs and replaces it.
+  const [detail, setDetail] = useState<RegionDetail | null>(() => boot<RegionDetail>('global'))
   const [regions, setRegions] = useState<Region[]>([])
   const [countries, setCountries] = useState<Country[]>([])
   const [added, setAdded] = useState<number | null>(null)
@@ -44,7 +48,9 @@ export default function Global() {
     api
       .get<RegionDetail>('/regions/global')
       .then((r) => setDetail(r.data))
-      .catch(() => setDetail(null))
+      // A lost request must not wipe what the page already shows — only a real
+      // empty answer should.
+      .catch(() => setDetail((current) => current ?? boot<RegionDetail>('global')))
     api
       .get<Region[]>('/regions')
       .then((r) => setRegions(r.data))

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowRight } from 'lucide-react'
 import { api } from '../lib/api'
+import { boot } from '../lib/boot'
 import type { Plan, RegionDetail } from '../lib/types'
 import PlanCard from './PlanCard'
 import { useCart } from '../context/CartContext'
@@ -29,14 +30,16 @@ export default function GlobalTeaser({ variant = 'inline', className = '' }: Pro
   const { t, i18n } = useTranslation()
   const { add } = useCart()
   const navigate = useNavigate()
-  const [plans, setPlans] = useState<Plan[]>([])
+  // Same reasoning as the worldwide page: this strip sits on the home page, and
+  // an empty strip under a heading about worldwide coverage reads as broken.
+  const [plans, setPlans] = useState<Plan[]>(() => boot<RegionDetail>('global')?.plans ?? [])
   const [added, setAdded] = useState<number | null>(null)
 
   useEffect(() => {
     api
       .get<RegionDetail>('/regions/global')
       .then((r) => setPlans(r.data.plans ?? []))
-      .catch(() => setPlans([]))
+      .catch(() => setPlans((current) => (current.length ? current : boot<RegionDetail>('global')?.plans ?? [])))
   }, [i18n.language])
 
   // Widest coverage first, then cheapest, one per size.

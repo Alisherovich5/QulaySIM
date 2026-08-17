@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { api } from '../lib/api'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, UserPlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -11,11 +12,17 @@ import LanguageSwitcher from '../components/LanguageSwitcher'
 import ThemeToggle from '../components/ThemeToggle'
 import { Button, Card } from '../components/ui'
 
-// Must match MIN_PASSWORD_LENGTH in the API (app/schemas/auth.py); a lower
-// value here just turns a clear message into an opaque 422 from the server.
-const MIN_PASSWORD_LENGTH = 8
+// The API publishes the rule it enforces (`/auth/providers`), and this reads it.
+// It used to be a copy with a comment asking whoever changed the server to
+// remember this file — an arrangement that holds right up until the day it
+// matters, and then turns a clear message into an opaque 422.
+//
+// The fallback is only for the moment before the request lands; the server
+// remains the one that decides.
+const FALLBACK_MIN_PASSWORD = 8
 
 export default function Register() {
+  const [minPassword, setMinPassword] = useState(FALLBACK_MIN_PASSWORD)
   const { register, customer } = useAuth()
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -23,6 +30,17 @@ export default function Register() {
   const [searchParams] = useSearchParams()
   const referralCode = searchParams.get('ref') || ''
   const from = (location.state as { from?: string })?.from || '/account'
+
+  useEffect(() => {
+    api
+      .get<{ min_password_length?: number }>('/auth/providers')
+      .then((r) => {
+        if (r.data.min_password_length) setMinPassword(r.data.min_password_length)
+      })
+      .catch(() => {
+        // The fallback stands; the server still refuses anything shorter.
+      })
+  }, [])
 
   useEffect(() => {
     if (customer) navigate('/account', { replace: true })
@@ -37,7 +55,7 @@ export default function Register() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    if (password.length < MIN_PASSWORD_LENGTH) {
+    if (password.length < minPassword) {
       setError(t('auth.shortPassword'))
       return
     }

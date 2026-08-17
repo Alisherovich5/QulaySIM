@@ -114,6 +114,10 @@ type FactsBySlug = Map<string, DestinationFacts>
 const STATIC_ROUTES = [
   '/',
   '/destinations',
+  // Missing until now, which meant the worldwide page had no prerendered head
+  // and no baked plans: no title for a crawler, and an empty grid for anyone
+  // whose request was lost on the way.
+  '/global',
   '/device-check',
   '/support',
   '/esim-nima',
@@ -222,6 +226,25 @@ function headFor({ title, description, path, lang, jsonLd, image }: PageMeta): s
  * this is fetched once per language rather than translated here — the Russian
  * name of a country is admin-managed data, not a string in this repository.
  */
+/** The worldwide plans, for the two pages that sell them.
+ *
+ * Baked for the same reason the destination pages are: without it, a visitor
+ * whose request is lost — and on this route requests are lost in bursts — reads
+ * a page with a headline about worldwide coverage and an empty grid under it.
+ * Fetched once rather than per language: the numbers are the same and the plan
+ * titles come from the admin in one language anyway.
+ */
+async function fetchGlobalPlans(apiBase: string): Promise<Record<string, unknown> | null> {
+  const snapshot = await readSnapshot<Record<string, unknown>>("global.json")
+  if (snapshot) return snapshot
+  const res = await fetch(`${apiBase}/regions/global`, {
+    headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(20_000),
+  })
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
+  return (await res.json()) as Record<string, unknown>
+}
+
 async function fetchCatalogue(apiBase: string, lang: SeoLang): Promise<ApiCountry[]> {
   const snapshot = await readSnapshot<ApiCountry[]>(`countries.${lang}.json`)
   if (snapshot) return snapshot
@@ -289,6 +312,8 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
   switch (route) {
     case '/destinations':
       return { ...base, title: s.destinationsTitle, description: s.destinationsDescription, jsonLd: [] }
+    case '/global':
+      return { ...base, title: s.globalPageTitle, description: s.globalPageDescription, jsonLd: [] }
     case '/device-check':
       return { ...base, title: s.deviceTitle, description: s.deviceDescription, jsonLd: [] }
     case '/support':
@@ -468,6 +493,16 @@ export function prerender(): Plugin {
         }
       }
 
+      let globalPlans: Record<string, unknown> | null = null
+      try {
+        globalPlans = await fetchGlobalPlans(apiBase)
+      } catch (error) {
+        this.warn(
+          `worldwide plans unavailable from ${apiBase}: ${(error as Error).message}. ` +
+            "The home and worldwide pages will fetch them at runtime.",
+        )
+      }
+
       // One detail request per destination, shared across all three languages.
       const slugs = [...new Set((catalogues.get(DEFAULT_FACTS_LANG) ?? []).map((c) => c.slug))]
       const facts: FactsBySlug = new Map()
@@ -504,6 +539,14 @@ export function prerender(): Plugin {
           // The destinations index is the one static page whose content is the
           // catalogue, so it is the one that gains from carrying it.
           if (route === '/destinations' && catalogue.length) meta.boot = { countries: catalogue }
+          // The home page shows destination cards and the worldwide strip; the
+          // worldwide page is nothing but those plans. Both went blank when a
+          // request was lost, which is the failure this whole mechanism exists
+          // to prevent — they were simply left out the first time.
+          if (route === '/' && (catalogue.length || globalPlans)) {
+            meta.boot = { countries: catalogue, global: globalPlans ?? undefined }
+          }
+          if (route === '/global' && globalPlans) meta.boot = { global: globalPlans }
           pages.push(meta)
         }
         pages.push(...regionPages(catalogue, lang))

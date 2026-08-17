@@ -8,6 +8,7 @@ import type { Country, Region } from '../../lib/types'
 import Flag from '../Flag'
 import Reveal from '../Reveal'
 import { Button, Card } from '../ui'
+import { boot } from '../../lib/boot'
 
 /**
  * A region with nothing promoted falls back to plain browsing, and a whole
@@ -47,7 +48,9 @@ const CARD_SHAPE =
 /** "Which country is calling you?" — region tabs + popular destination grid. */
 export default function DestinationsExplorer() {
   const { t, i18n } = useTranslation()
-  const [countries, setCountries] = useState<Country[]>([])
+  // Seeded from the build, like the destinations page: the home page's country
+  // strip was blank whenever its request was lost.
+  const [countries, setCountries] = useState<Country[]>(() => boot<Country[]>('countries') ?? [])
   const [loading, setLoading] = useState(true)
 
   // The region filter moved up into the hero, and from there it leads to the
