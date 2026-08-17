@@ -284,6 +284,8 @@ const ru: Translation = {
     keepShopping: 'Продолжить покупки',
   },
   topup: {
+    expired: 'Срок этого eSIM истёк — трафик добавить нельзя.',
+    buyNew: 'Купить новый eSIM',
     button: 'Добавить ГБ',
     title: 'Добавить ГБ на этот eSIM',
     lead: 'Новый QR не нужен — трафик добавится на этот же eSIM.',

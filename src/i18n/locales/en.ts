@@ -282,6 +282,8 @@ const en = {
     keepShopping: 'Keep shopping',
   },
   topup: {
+    expired: 'This eSIM has expired — data can no longer be added to it.',
+    buyNew: 'Buy a new eSIM',
     button: 'Add data',
     title: 'Add data to this eSIM',
     lead: 'No new QR code — the data goes onto this eSIM.',

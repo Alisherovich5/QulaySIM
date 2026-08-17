@@ -29,12 +29,14 @@ interface TopUp {
 
 interface Props {
   esimId: number
+  /** Drives the empty state: an expired profile is refused upstream. */
+  esimStatus: string
   onClose: () => void
   /** Called with the payment URL once the order exists. */
   onPay: (url: string) => void
 }
 
-export default function TopUpSheet({ esimId, onClose, onPay }: Props) {
+export default function TopUpSheet({ esimId, esimStatus, onClose, onPay }: Props) {
   const { t } = useTranslation()
   const [options, setOptions] = useState<TopUp[] | null>(null)
   const [failed, setFailed] = useState(false)
@@ -109,7 +111,22 @@ export default function TopUpSheet({ esimId, onClose, onPay }: Props) {
             <p className="px-2 py-6 text-center text-sm text-slate-soft">{t('topup.unavailable')}</p>
           )}
           {options?.length === 0 && (
-            <p className="px-2 py-6 text-center text-sm text-slate-soft">{t('topup.none')}</p>
+            /* Two different facts, and telling them apart matters. The
+               wholesaler releases a profile once it expires, so an expired eSIM
+               is refused upstream no matter what we do — measured: active and
+               not-yet-installed profiles return seven options, an expired one
+               returns none. Saying "no top-ups" there would leave the customer
+               retrying a button that can never work. */
+            <div className="px-3 py-6 text-center">
+              <p className="text-sm text-slate-soft">
+                {esimStatus === 'expired' ? t('topup.expired') : t('topup.none')}
+              </p>
+              {esimStatus === 'expired' && (
+                <a href="/destinations" className="focus-ring mt-3 inline-block text-sm font-600 text-brand-600 hover:underline dark:text-accent-400">
+                  {t('topup.buyNew')}
+                </a>
+              )}
+            </div>
           )}
 
           <ul className="grid gap-2">

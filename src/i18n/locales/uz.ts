@@ -284,6 +284,8 @@ const uz: Translation = {
     keepShopping: 'Xaridni davom ettirish',
   },
   topup: {
+    expired: 'Bu eSIM‘ning muddati tugagan — unga GB qo‘shib bo‘lmaydi.',
+    buyNew: 'Yangi eSIM olish',
     button: 'GB qo‘shish',
     title: 'Shu eSIM‘ga GB qo‘shish',
     lead: 'Yangi QR kod kerak emas — internet shu eSIM‘ga tushadi.',

@@ -420,6 +420,7 @@ export default function Account() {
       {topUpFor !== null && (
         <TopUpSheet
           esimId={topUpFor}
+          esimStatus={esims.find((e) => e.id === topUpFor)?.status ?? ''}
           onClose={() => setTopUpFor(null)}
           onPay={(url) => {
             setTopUpFor(null)
