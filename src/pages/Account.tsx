@@ -19,6 +19,8 @@ import Seo from '../components/Seo'
 import { useAuth } from '../context/AuthContext'
 import type { AccountSummary, ESIM, Order } from '../lib/types'
 import EsimCard from '../components/EsimCard'
+import TopUpSheet from '../components/account/TopUpSheet'
+import PaymentFrame from '../components/PaymentFrame'
 import Reveal from '../components/Reveal'
 import { Button, Card } from '../components/ui'
 import ProfileHeader from '../components/account/ProfileHeader'
@@ -85,6 +87,11 @@ export default function Account() {
   const navigate = useNavigate()
 
   const [summary, setSummary] = useState<AccountSummary | null>(null)
+  // Which eSIM the customer is topping up, and the payment page for it. Kept on
+  // this page rather than inside the card so the payment sheet covers the screen
+  // rather than opening inside a card.
+  const [topUpFor, setTopUpFor] = useState<number | null>(null)
+  const [topUpPayment, setTopUpPayment] = useState<string | null>(null)
   const [esims, setEsims] = useState<ESIM[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
@@ -227,6 +234,7 @@ export default function Account() {
                   esim={e}
                   onActivate={activate}
                   activating={activating === e.id}
+                  onTopUp={setTopUpFor}
                 />
               </Reveal>
             ))}
@@ -408,6 +416,28 @@ export default function Account() {
             </div>
           </Card>
         </div>
+      )}
+      {topUpFor !== null && (
+        <TopUpSheet
+          esimId={topUpFor}
+          onClose={() => setTopUpFor(null)}
+          onPay={(url) => {
+            setTopUpFor(null)
+            setTopUpPayment(url)
+          }}
+        />
+      )}
+      {topUpPayment && (
+        <PaymentFrame
+          url={topUpPayment}
+          onClose={() => {
+            setTopUpPayment(null)
+            // The eSIM's new allowance appears once the supplier confirms, which
+            // is seconds after the payment — so the list is re-read rather than
+            // left showing the old number.
+            void load()
+          }}
+        />
       )}
     </div>
   )

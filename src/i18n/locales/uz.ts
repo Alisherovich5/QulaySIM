@@ -25,6 +25,7 @@ const uz: Translation = {
     device: 'Qurilma',
   },
   common: {
+    som: 'so‘m',
     rateUnavailable: 'Taxminiy kurs bo‘yicha hisoblandi — Markaziy bank kursi vaqtincha mavjud emas.',
     from: 'dan',
     viewAll: 'Barchasi',
@@ -281,6 +282,18 @@ const uz: Translation = {
     installHint: 'Sozlamalar → Uyali aloqa → eSIM qo‘shish bo‘limini oching va ushbu kodni skanerlang.',
     goToMyEsims: 'Mening eSIM‘larimga',
     keepShopping: 'Xaridni davom ettirish',
+  },
+  topup: {
+    button: 'GB qo‘shish',
+    title: 'Shu eSIM‘ga GB qo‘shish',
+    lead: 'Yangi QR kod kerak emas — internet shu eSIM‘ga tushadi.',
+    loading: 'Variantlar yuklanmoqda…',
+    unavailable: 'Hozir qo‘shimcha paketlarni olib bo‘lmadi. Birozdan keyin urinib ko‘ring.',
+    none: 'Bu eSIM uchun qo‘shimcha paket yo‘q.',
+    days: '{{count}} kun',
+    opening: 'to‘lov ochilyapti…',
+    failed: 'Qo‘shib bo‘lmadi. Boshqa paketni tanlab ko‘ring.',
+    note: 'To‘lovdan keyin GB bir necha soniyada shu eSIM‘ga qo‘shiladi.',
   },
   account: {
     title: 'Mening eSIM‘larim',

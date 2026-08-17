@@ -23,6 +23,7 @@ const en = {
     device: 'Device',
   },
   common: {
+    som: 'som',
     rateUnavailable: 'Converted at an indicative rate — the central bank rate is temporarily unavailable.',
     from: 'from',
     viewAll: 'View all',
@@ -279,6 +280,18 @@ const en = {
     installHint: 'Open Settings → Cellular → Add eSIM, then scan this code.',
     goToMyEsims: 'Go to My eSIMs',
     keepShopping: 'Keep shopping',
+  },
+  topup: {
+    button: 'Add data',
+    title: 'Add data to this eSIM',
+    lead: 'No new QR code — the data goes onto this eSIM.',
+    loading: 'Loading options…',
+    unavailable: 'Top-ups could not be loaded right now. Try again shortly.',
+    none: 'No top-ups available for this eSIM.',
+    days: '{{count}} days',
+    opening: 'opening payment…',
+    failed: 'That did not go through. Try another package.',
+    note: 'After payment the data is added to this eSIM within seconds.',
   },
   account: {
     title: 'My eSIMs',

@@ -3,11 +3,14 @@ import { useTranslation } from 'react-i18next'
 import type { ESIM } from '../lib/types'
 import { formatDate, usedLabel } from '../lib/format'
 import { Button, Card } from './ui'
+import { TopUpButton } from './account/TopUpSheet'
 
 interface Props {
   esim: ESIM
   onActivate: (id: number) => void
   activating?: boolean
+  /** Opens the top-up sheet. Absent where topping up makes no sense. */
+  onTopUp?: (id: number) => void
 }
 
 const STATUS_STYLE: Record<string, string> = {
@@ -21,7 +24,7 @@ function daysUntil(iso: string | null): number | null {
   return Math.max(0, Math.ceil((new Date(iso).getTime() - Date.now()) / 86_400_000))
 }
 
-export default function EsimCard({ esim, onActivate, activating }: Props) {
+export default function EsimCard({ esim, onActivate, activating, onTopUp }: Props) {
   const { t, i18n } = useTranslation()
   const total = esim.data_total_mb
   const unlimited = total === 0
@@ -145,6 +148,13 @@ export default function EsimCard({ esim, onActivate, activating }: Props) {
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
+            {/* Offered on a profile that exists and can still carry data. A
+                pending eSIM has not been installed yet, so extra data on it
+                would be data nobody can reach — and an expired one is exactly
+                the case this feature is for, so it stays offered. */}
+            {onTopUp && esim.status !== 'pending' && (
+              <TopUpButton onClick={() => onTopUp(esim.id)} />
+            )}
             {esim.status === 'pending' && (
               <Button
                 onClick={() => onActivate(esim.id)}
