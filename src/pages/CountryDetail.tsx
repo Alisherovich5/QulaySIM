@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { bootIf } from '../lib/boot'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ShoppingBag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -19,8 +20,13 @@ import { breadcrumbLd, destinationLd } from '../lib/structured-data'
 
 export default function CountryDetail() {
   const { slug } = useParams()
-  const [country, setCountry] = useState<CountryDetailType | null>(null)
-  const [loading, setLoading] = useState(true)
+  // Seeded from the data the build baked into this page, so the prices are on
+  // screen in the first frame instead of ~350 ms later. `bootIf` refuses the
+  // seed when the slug does not match, which is what stops a client-side
+  // navigation from showing the previous country's tariffs.
+  const baked = bootIf<CountryDetailType>('country', slug)
+  const [country, setCountry] = useState<CountryDetailType | null>(baked)
+  const [loading, setLoading] = useState(baked === null)
   /**
    * True only when the API actually said this destination does not exist.
    *
@@ -38,7 +44,10 @@ export default function CountryDetail() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    setLoading(true)
+    const seeded = bootIf<CountryDetailType>('country', slug)
+    setCountry(seeded)
+    // A page that already has prices is not "loading" — it is refreshing.
+    setLoading(seeded === null)
     api
       .get<CountryDetailType>(`/countries/${slug}`)
       .then((r) => {
@@ -46,8 +55,17 @@ export default function CountryDetail() {
         setMissing(false)
       })
       .catch((error: unknown) => {
-        setCountry(null)
-        setMissing((error as { response?: { status?: number } })?.response?.status === 404)
+        const status = (error as { response?: { status?: number } })?.response?.status
+        // Only a real 404 means "no such destination". A timeout or a dropped
+        // connection must leave the baked prices on screen: on the route this
+        // shop is served over, packets are lost in bursts, and blanking a page
+        // that already had the answer is the worst possible response to that.
+        if (status === 404) {
+          setCountry(null)
+          setMissing(true)
+        } else if (seeded === null) {
+          setCountry(null)
+        }
       })
       .finally(() => setLoading(false))
   }, [slug, i18n.language])

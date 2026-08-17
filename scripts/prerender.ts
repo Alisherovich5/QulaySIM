@@ -95,6 +95,7 @@ async function readSnapshot<T>(file: string): Promise<T | null> {
 interface ApiCountry {
   name: string
   slug: string
+  iso2?: string
   starting_price: number | null
   region: { name: string; slug: string } | null
 }
@@ -143,6 +144,17 @@ interface PageMeta {
   jsonLd: Array<Record<string, unknown> | null>
   /** og:image override. Only destinations set one — see metaForCountry. */
   image?: string
+  /**
+   * Data baked into the page for the first render.
+   *
+   * The measured problem: from Tashkent one API request costs ~350 ms of
+   * network, and the app could not ask for anything until the JS had loaded and
+   * run. So a visitor watched an empty tariff grid for roughly a second before
+   * the first price appeared. This carries the answer with the page, so the
+   * first render has prices already and the network request becomes a
+   * background refresh rather than a wait.
+   */
+  boot?: Record<string, unknown>
 }
 
 /**
@@ -155,6 +167,19 @@ interface PageMeta {
  * there is no way to tell the build's tags from React's.
  */
 const BAKED = ' data-prerendered'
+
+/**
+ * The baked data, as a JSON data block rather than executable script.
+ *
+ * `type="application/json"` is not run by the browser and is not governed by
+ * script-src, so this needs no CSP exception — the alternative, assigning to a
+ * global from an inline script, would have required 'unsafe-inline' on every
+ * page and traded a second of latency for a permanent hole.
+ */
+function bootFor({ boot }: PageMeta): string {
+  if (!boot) return ''
+  return `\n    <script type="application/json" id="__DATA__">${escapeJson(boot)}</script>`
+}
 
 function headFor({ title, description, path, lang, jsonLd, image }: PageMeta): string {
   const full = `${title} | ${SITE_NAME}`
@@ -216,16 +241,29 @@ async function fetchCatalogue(apiBase: string, lang: SeoLang): Promise<ApiCountr
  * Language does not matter here — only the numbers are used — so this runs once
  * per country rather than once per country per language.
  */
-async function fetchFacts(apiBase: string, slug: string): Promise<DestinationFacts | null> {
+/** The detail body and the facts derived from it.
+ *
+ * The raw body is kept now as well: the facts feed the description sentence,
+ * and the plans themselves are baked into the page so the first render shows
+ * prices without waiting ~350 ms for the network.
+ */
+interface Detail {
+  /** Null when the destination has no sellable plan — the page then falls back
+   *  to the generic description, exactly as before. */
+  facts: DestinationFacts | null
+  body: Record<string, unknown>
+}
+
+async function fetchFacts(apiBase: string, slug: string): Promise<Detail | null> {
   const snapshot = await readSnapshot<{ plans?: Plan[] }>(`detail/${slug}.json`)
-  if (snapshot) return factsFor(snapshot.plans ?? [])
+  if (snapshot) return { facts: factsFor(snapshot.plans ?? []), body: snapshot as Record<string, unknown> }
   const res = await fetch(`${apiBase}/countries/${slug}`, {
     headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(20_000),
   })
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
   const body = (await res.json()) as { plans?: Plan[] }
-  return factsFor(body.plans ?? [])
+  return { facts: factsFor(body.plans ?? []), body: body as Record<string, unknown> }
 }
 
 /** Run `jobs` with a ceiling on how many are in flight, so a large catalogue
@@ -433,6 +471,7 @@ export function prerender(): Plugin {
       // One detail request per destination, shared across all three languages.
       const slugs = [...new Set((catalogues.get(DEFAULT_FACTS_LANG) ?? []).map((c) => c.slug))]
       const facts: FactsBySlug = new Map()
+      const details = new Map<string, Record<string, unknown>>()
       const fetched = await withConcurrency(
         slugs.map((slug) => async () => {
           try {
@@ -445,7 +484,11 @@ export function prerender(): Plugin {
         }),
         8,
       )
-      for (const [slug, f] of fetched) if (f) facts.set(slug, f)
+      for (const [slug, f] of fetched) {
+        if (!f) continue
+        if (f.facts) facts.set(slug, f.facts)
+        details.set(slug, f.body)
+      }
       if (facts.size < slugs.length) {
         this.warn(
           `plan detail unavailable for ${slugs.length - facts.size} of ${slugs.length} ` +
@@ -455,10 +498,25 @@ export function prerender(): Plugin {
 
       const pages: PageMeta[] = []
       for (const lang of SEO_LANGS) {
-        for (const route of STATIC_ROUTES) pages.push(metaForStaticRoute(route, lang))
-        pages.push(...regionPages(catalogues.get(lang) ?? [], lang))
-        for (const country of catalogues.get(lang) ?? []) {
-          pages.push(metaForCountry(country, lang, facts.get(country.slug)))
+        const catalogue = catalogues.get(lang) ?? []
+        for (const route of STATIC_ROUTES) {
+          const meta = metaForStaticRoute(route, lang)
+          // The destinations index is the one static page whose content is the
+          // catalogue, so it is the one that gains from carrying it.
+          if (route === '/destinations' && catalogue.length) meta.boot = { countries: catalogue }
+          pages.push(meta)
+        }
+        pages.push(...regionPages(catalogue, lang))
+        for (const country of catalogue) {
+          const meta = metaForCountry(country, lang, facts.get(country.slug))
+          const detail = details.get(country.slug)
+          if (detail) {
+            // The numbers come from the shared single-language fetch; the name
+            // comes from this language's catalogue, because it is the only
+            // translated field on the page's data.
+            meta.boot = { country: { ...detail, name: country.name } }
+          }
+          pages.push(meta)
         }
       }
 
@@ -466,7 +524,7 @@ export function prerender(): Plugin {
         pages.map(async (page) => {
           const html = shell
             .replace('<html lang="uz">', `<html lang="${page.lang}">`)
-            .replace(MARKER, headFor(page))
+            .replace(MARKER, headFor(page) + bootFor(page))
           const file = outputFile(outDir, page.path, page.lang)
           await mkdir(dirname(file), { recursive: true })
           await writeFile(file, html, 'utf8')

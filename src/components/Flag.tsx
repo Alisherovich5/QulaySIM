@@ -28,6 +28,9 @@ export default function Flag({ iso2, w = 80, className = '', alt }: Props) {
 
   return (
     <img
+      // A destination list carries dozens of these below the fold; the browser
+      // fetched every one before the visitor had scrolled to any of them.
+      loading="lazy"
       src={flagUrl(iso2, w)}
       srcSet={flagSrcSet(iso2, w)}
       alt={alt ?? `${iso2} flag`}

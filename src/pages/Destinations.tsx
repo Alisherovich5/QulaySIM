@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { boot } from '../lib/boot'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Check, ChevronDown, Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +15,10 @@ import { Card } from '../components/ui'
 
 export default function Destinations() {
   const [params, setParams] = useSearchParams()
-  const [countries, setCountries] = useState<Country[]>([])
+  // Same reasoning as the destination page: the build knows this list, so the
+  // first render shows it. The fetch below still runs and replaces it — the
+  // baked copy is a snapshot from build time, and the live catalogue is larger.
+  const [countries, setCountries] = useState<Country[]>(() => boot<Country[]>('countries') ?? [])
   const [regions, setRegions] = useState<Region[]>([])
   const [regionOpen, setRegionOpen] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
@@ -32,7 +36,7 @@ export default function Destinations() {
 
   const chipClass =
     'focus-ring inline-flex items-center gap-1.5 rounded-full bg-mist px-2.5 py-1 text-xs font-600 text-ink ring-1 ring-line hover:ring-brand-300'
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(() => (boot<Country[]>('countries') ?? []).length === 0)
   const { t, i18n } = useTranslation()
   const search = params.get('search') || ''
   const region = params.get('region') || ''
