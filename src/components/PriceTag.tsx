@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { useCurrency } from '../../context/CurrencyContext'
+import { useCurrency } from '../context/CurrencyContext'
 
 type Size = 'xs' | 'sm' | 'md' | 'lg'
 

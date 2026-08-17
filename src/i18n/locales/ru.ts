@@ -169,6 +169,7 @@ const ru: Translation = {
     filterSort: 'Сортировка',
     filterAll: 'Все',
     filterReset: 'Сбросить',
+    filterClear: 'Очистить',
     filterEmpty: 'Под эти условия тарифов нет. Расширьте фильтр.',
     sort: {
       price: 'Сначала дешёвые',

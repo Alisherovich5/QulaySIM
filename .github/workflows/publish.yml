@@ -20,7 +20,44 @@ env:
   IMAGE: ${{ github.repository_owner }}/qulaysim-storefront
 
 jobs:
+  # The gate. Nothing is published unless every one of these passes — the point
+  # of a budget is that it stops something, and the point of a test is that it
+  # runs without being asked.
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Types
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Layer boundaries
+        run: npm run layers
+      - name: Translations
+        run: npm run i18n:check
+      - name: Unit tests
+        run: npm test
+      - name: Build
+        # PRERENDER_API_BASE is unset here on purpose: the build falls back to
+        # its checked-in snapshot, so CI never depends on production being up.
+        run: npm run build
+      - name: Size budget
+        run: npx size-limit
+      - name: Install browser
+        run: npx playwright install chromium --with-deps
+      - name: Smoke flows
+        # Three flows on a phone and a desktop, with the API mocked at the
+        # network boundary: a failure here means the storefront broke, not that
+        # a database was down.
+        run: npm run e2e
+
   build:
+    needs: checks
     runs-on: ubuntu-latest
     permissions:
       contents: read

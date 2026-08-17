@@ -2,7 +2,7 @@ import { QrCode, Receipt } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Order } from '../../lib/types'
 import { formatDate } from '../../lib/format'
-import { PriceTag } from '../ui'
+import PriceTag from '../PriceTag'
 
 /* Status is carried by a dot plus a word rather than a filled pill. Five
    saturated pills down a list turn the page into a traffic light; a dot reads

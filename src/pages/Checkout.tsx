@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { PriceTag } from '../components/ui'
+import PriceTag from '../components/PriceTag'
 import {
   CreditCard,
   Lock,

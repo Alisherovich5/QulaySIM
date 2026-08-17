@@ -169,6 +169,7 @@ const uz: Translation = {
     filterSort: 'Tartib',
     filterAll: 'Hammasi',
     filterReset: 'Tozalash',
+    filterClear: 'Tozalash',
     filterEmpty: 'Bu shartlarga mos tarif yo‘q. Filtrni kengaytiring.',
     sort: {
       price: 'Arzondan',

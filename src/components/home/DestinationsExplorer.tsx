@@ -1,3 +1,4 @@
+import PriceTag from '../PriceTag'
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -6,7 +7,7 @@ import { api } from '../../lib/api'
 import type { Country, Region } from '../../lib/types'
 import Flag from '../Flag'
 import Reveal from '../Reveal'
-import { Button, Card, PriceTag } from '../ui'
+import { Button, Card } from '../ui'
 
 /**
  * A region with nothing promoted falls back to plain browsing, and a whole

@@ -1,5 +1,5 @@
 import { Check, Zap } from 'lucide-react'
-import { PriceTag } from './ui'
+import PriceTag from './PriceTag'
 import { useTranslation } from 'react-i18next'
 import type { Plan } from '../lib/types'
 import { Badge, Button, Card } from './ui'

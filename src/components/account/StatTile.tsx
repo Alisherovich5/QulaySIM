@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react'
-import Counter from '../Counter'
+import Counter from '../ui/Counter'
 
 export type StatTone = 'brand' | 'accent' | 'violet' | 'amber'
 

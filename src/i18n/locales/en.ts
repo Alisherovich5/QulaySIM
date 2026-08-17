@@ -167,6 +167,7 @@ const en = {
     filterSort: 'Sort',
     filterAll: 'All',
     filterReset: 'Clear',
+    filterClear: 'Clear',
     filterEmpty: 'No plan matches these filters. Try widening them.',
     sort: {
       price: 'Cheapest',
