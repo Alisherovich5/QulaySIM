@@ -386,11 +386,11 @@ const uz: Translation = {
     avatarOptions: 'Rasm amallari',
     avatarRemoving: 'Rasm o‘chirilmoqda…',
     avatarUploading: 'Rasm yuklanmoqda…',
-    esimsSubtitle: 'Faollashtiring, to\’ldiring va QR kodlaringizni skanerlang.',
-    globeAria: 'Sayohat globusi: siz ulangan davlatlar va rejalar mavjud bo\’lgan yo\’nalishlar',
+    esimsSubtitle: 'Faollashtiring, to’ldiring va QR kodlaringizni skanerlang.',
+    globeAria: 'Sayohat globusi: siz ulangan davlatlar va rejalar mavjud bo’lgan yo’nalishlar',
     globeUnavailable: 'Globus bu qurilmada ko‘rsatilmaydi',
     ordersSubtitle: 'Barcha xaridlar, eng yangisidan boshlab.',
-    overview: 'Umumiy ko\’rinish',
+    overview: 'Umumiy ko’rinish',
   },
   device: {
     back: 'Bosh sahifaga',
@@ -430,7 +430,7 @@ const uz: Translation = {
     copied: 'Nusxalandi',
     mockDialLabel: 'Nima teriladi',
     dialHint: '* va # tugmalari raqamlar klaviaturasining eng pastki qatorida.',
-    mockResultLabel: 'Nima ko\’rinadi',
+    mockResultLabel: 'Nima ko’rinadi',
     mockSheetNote: 'Raqamlar — namuna. Sizning ekraningizda o‘z qiymatlaringiz chiqadi.',
   },
 
