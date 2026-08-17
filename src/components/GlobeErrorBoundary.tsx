@@ -20,6 +20,13 @@ export class GlobeErrorBoundary extends Component<
 > {
   state = { failed: false }
 
+  componentDidCatch(error: unknown) {
+    // The boundary keeps the page alive, which also means nobody would ever
+    // learn the globe had failed. A blank hero for every WebGL-less visitor is
+    // exactly the kind of silent breakage that lasts for months.
+    void import('../lib/report-error').then(({ reportError }) => reportError(error, 'globe'))
+  }
+
   static getDerivedStateFromError() {
     return { failed: true }
   }

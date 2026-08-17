@@ -14,3 +14,7 @@ createRoot(document.getElementById('root')!).render(
 // the plan is a p75 of real visits, and only the visitor's browser can report
 // that. Started last and dynamically, so it cannot delay what it measures.
 void import('./lib/vitals').then(({ startVitals }) => startVitals())
+
+// Crashes the error boundaries never see — a listener, not a 30 KB SDK. See
+// lib/report-error.ts for why.
+void import('./lib/report-error').then(({ installErrorReporting }) => installErrorReporting())

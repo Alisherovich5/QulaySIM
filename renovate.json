@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Asia/Tashkent",
+  "schedule": ["before 6am on monday"],
+  "prConcurrentLimit": 3,
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Patch and minor updates ride together — one review a week instead of twenty.",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "kichik yangilanishlar"
+    },
+    {
+      "description": "A major update changes behaviour; it gets its own pull request and its own reading.",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Security fixes do not wait for Monday.",
+      "matchDatasources": ["npm"],
+      "vulnerabilityAlerts": { "enabled": true },
+      "schedule": ["at any time"]
+    }
+  ]
+}

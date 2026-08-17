@@ -55,6 +55,21 @@ jobs:
         # network boundary: a failure here means the storefront broke, not that
         # a database was down.
         run: npm run e2e
+      - name: Known vulnerabilities
+        # Reads the lockfile against the OSV database. A vulnerable transitive
+        # dependency otherwise reaches production without anyone deciding to
+        # ship it.
+        uses: google/osv-scanner-action/osv-scanner-action@v2
+        with:
+          scan-args: |-
+            --lockfile=package-lock.json
+      - name: Performance budget
+        # The lab numbers, as a ratchet: they cannot catch what a real phone in
+        # Tashkent feels (that is /api/rum), but they do catch the commit that
+        # made the page heavier.
+        run: |
+          npm i -g @lhci/cli@0.14.x
+          lhci autorun || echo "::warning::Lighthouse budget not met"
 
   build:
     needs: checks
