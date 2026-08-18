@@ -211,6 +211,8 @@ const en = {
     seoDescription: 'Buy once and use it worldwide. QulaySIM global eSIM plans from 1 GB to 50 GB, with support in Uzbek.',
   },
   destinations: {
+    worldwide: 'Worldwide plans',
+    worldwideNotAList: '“Worldwide” is not a list of countries — it is the plans that cover many of them at once.',
     title: 'Destinations',
     subtitle: 'Choose where you are travelling and pick a data plan that fits your trip.',
     searchPlaceholder: 'Search a country…',

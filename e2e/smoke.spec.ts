@@ -1,10 +1,10 @@
 import { expect, test, type Page } from '@playwright/test'
 
 /**
- * The three flows worth a browser.
+ * The flows worth a browser, and each earned its place by breaking once.
  *
- * Everything here is mocked at the network boundary, so a failure means the
- * storefront broke — not that Postgres was down or a supplier was slow.
+ * Everything is mocked at the network boundary, so a failure means the storefront
+ * broke — not that Postgres was down or a supplier was slow.
  */
 
 const COUNTRIES = [
@@ -103,4 +103,26 @@ test('the worldwide filter narrows by country', async ({ page }) => {
   // One plan covers Turkey, the other does not — and the one that does not is
   // removed rather than quietly ranked lower.
   await expect(page.getByText(/2 tarifdan 1 tasi/)).toBeVisible()
+})
+
+test('the region filter never offers a region that empties the page', async ({ page }) => {
+  // What "the countries disappeared" turned out to mean: the worldwide region
+  // holds plans rather than countries, so picking it filtered the catalogue down
+  // to nothing. It is now offered as what it is — a different page.
+  await page.route('**/api/regions', (route) =>
+    route.fulfill({
+      json: [
+        { id: 1, name: 'Yevropa', slug: 'europe', country_count: 55, starting_price: 1.5 },
+        { id: 8, name: 'Butun dunyo', slug: 'global', country_count: 0, starting_price: 10.5 },
+      ],
+    }),
+  )
+  await page.goto('/destinations')
+  await page.getByRole('button', { name: /Mintaqa/i }).click()
+
+  const menu = page.locator('div.absolute')
+  await expect(menu.getByRole('button', { name: 'Yevropa' })).toBeVisible()
+  await expect(menu.getByRole('button', { name: 'Butun dunyo' })).toHaveCount(0)
+  // Offered instead as a link to the page that actually sells those plans.
+  await expect(menu.getByRole('link')).toHaveAttribute('href', '/global')
 })

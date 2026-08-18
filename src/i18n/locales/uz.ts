@@ -213,6 +213,8 @@ const uz: Translation = {
     seoDescription: 'Bir marta sotib oling va butun dunyoda ishlatavering. QulaySIM global eSIM tariflari: 1 GB dan 50 GB gacha, o‘zbek tilida qo‘llab-quvvatlash.',
   },
   destinations: {
+    worldwide: 'Butun dunyo tariflari',
+    worldwideNotAList: '«Butun dunyo» — bu davlatlar ro‘yxati emas, balki bir nechta davlatni qamrab oladigan tariflar.',
     title: 'Yo‘nalishlar',
     subtitle: 'Qayerga sayohat qilayotganingizni tanlang va mos tarifni oling.',
     searchPlaceholder: 'Davlatni qidiring…',

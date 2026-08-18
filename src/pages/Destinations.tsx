@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { boot } from '../lib/boot'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Check, ChevronDown, Search, X } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useCurrency } from '../context/CurrencyContext'
 import Seo from '../components/Seo'
@@ -165,7 +165,15 @@ export default function Destinations() {
                   {t('destinations.all')}
                   {!region && <Check size={14} aria-hidden />}
                 </button>
-                {regions.map((r) => (
+                {/* Only regions that can actually filter something. The
+                    worldwide region holds no countries — it exists for the
+                    multi-country plans — so picking it emptied the page
+                    completely, which is what "the countries disappeared" turns
+                    out to mean. It is offered below as what it really is: a
+                    different page. */}
+                {regions
+                  .filter((r) => r.country_count > 0)
+                  .map((r) => (
                   <button
                     key={r.id}
                     type="button"
@@ -187,7 +195,15 @@ export default function Destinations() {
                     )}
                     {region === r.slug && <Check size={14} aria-hidden />}
                   </button>
-                ))}
+                  ))}
+                <Link
+                  to="/global"
+                  onClick={() => setRegionOpen(false)}
+                  className="focus-ring mt-1 flex w-full items-center justify-between gap-3 rounded-lg border-t border-line px-3 py-2 text-sm font-600 text-brand-600 hover:bg-mist dark:text-accent-400"
+                >
+                  {t('destinations.worldwide')}
+                  <ArrowUpRight size={14} aria-hidden />
+                </Link>
               </div>
             )}
           </div>
@@ -228,7 +244,24 @@ export default function Destinations() {
           <h2 className="mt-10 text-lg font-700">{heading}</h2>
           {countries.length === 0 ? (
             <Card className="mt-5 p-10 text-center text-slate-soft">
-              {t('destinations.noMatch')}
+              {/* A region with no destinations is not "no match" — it is the
+                  worldwide region, which holds plans rather than countries.
+                  Reachable by a shared or bookmarked link even now that the
+                  filter no longer offers it, and a bare "nothing found" would
+                  read as a broken catalogue. */}
+              {regions.some((r) => r.slug === region && r.country_count === 0) ? (
+                <>
+                  <p>{t('destinations.worldwideNotAList')}</p>
+                  <Link
+                    to="/global"
+                    className="focus-ring mt-3 inline-block font-600 text-brand-600 hover:underline dark:text-accent-400"
+                  >
+                    {t('destinations.worldwide')}
+                  </Link>
+                </>
+              ) : (
+                t('destinations.noMatch')
+              )}
             </Card>
           ) : (
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
