@@ -80,16 +80,27 @@ self.addEventListener('activate', (event) => {
   )
 })
 
-/** A response, or the cache if the network takes too long. */
-async function networkFirst(request, cacheName, timeoutMs) {
+/**
+ * A response, or the cache if the network takes too long.
+ *
+ * `keepAlive` is the fetch event's own waitUntil. Every background write here
+ * needs it: once respondWith settles, the browser is free to kill this worker,
+ * and on iOS it does — so a refresh that was not registered as work in progress
+ * is a refresh that silently never lands, and the cache stays at whatever it
+ * held on the day the page was first opened.
+ */
+async function networkFirst(request, cacheName, timeoutMs, keepAlive) {
   const cache = await caches.open(cacheName)
   const cached = await cache.match(request)
 
-  const network = fetch(request)
-    .then((response) => {
-      if (response.ok) void cache.put(request, response.clone())
-      return response
-    })
+  const network = fetch(request).then(async (response) => {
+    if (response.ok) {
+      const write = cache.put(request, response.clone())
+      keepAlive(write)
+      await write
+    }
+    return response
+  })
 
   if (!cached) return network
 
@@ -98,32 +109,33 @@ async function networkFirst(request, cacheName, timeoutMs) {
   return winner ?? cached
 }
 
-async function cacheFirst(request, cacheName) {
+async function cacheFirst(request, cacheName, keepAlive) {
   const cache = await caches.open(cacheName)
   const cached = await cache.match(request)
   if (cached) return cached
   const response = await fetch(request)
-  if (response.ok) void cache.put(request, response.clone())
+  if (response.ok) keepAlive(cache.put(request, response.clone()))
   return response
 }
 
 /** The cached answer now, a fresh one for next time. */
-async function staleWhileRevalidate(request) {
+async function staleWhileRevalidate(request, keepAlive) {
   const cache = await caches.open(DATA)
   const key = dataKey(request)
   const cached = await cache.match(key)
 
   const refresh = fetch(request)
-    .then((response) => {
-      if (response.ok) void cache.put(key, response.clone())
+    .then(async (response) => {
+      if (response.ok) await cache.put(key, response.clone())
       return response
     })
     .catch(() => null)
 
   if (cached) {
-    // The refresh is deliberately not awaited: the page gets the old answer in
-    // a millisecond, and the new one lands before the next visit.
-    void refresh
+    // The refresh is deliberately not awaited — the page gets the old answer in
+    // a millisecond — but it is registered as work in progress, so the browser
+    // keeps this worker alive until the new answer is stored.
+    keepAlive(refresh)
     return cached
   }
   const fresh = await refresh
@@ -146,16 +158,18 @@ self.addEventListener('fetch', (event) => {
   }
   if (url.origin !== self.location.origin) return
 
+  const keepAlive = (promise) => event.waitUntil(promise)
+
   if (request.mode === 'navigate') {
-    event.respondWith(networkFirst(request, SHELL, NAV_TIMEOUT_MS))
+    event.respondWith(networkFirst(request, SHELL, NAV_TIMEOUT_MS, keepAlive))
     return
   }
   if (isAsset(url)) {
-    event.respondWith(cacheFirst(request, ASSETS))
+    event.respondWith(cacheFirst(request, ASSETS, keepAlive))
     return
   }
   if (isPublicApi(url)) {
-    event.respondWith(staleWhileRevalidate(request))
+    event.respondWith(staleWhileRevalidate(request, keepAlive))
   }
   // Anything else — /api/auth, /api/account, /api/checkout, third parties —
   // falls through to the network with no involvement from this file.
