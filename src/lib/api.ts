@@ -1,5 +1,7 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios'
 
+import { installResilience } from './resilient'
+
 export const api = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
@@ -127,6 +129,15 @@ api.interceptors.response.use(
     }
   },
 )
+
+/**
+ * A lossy network must not empty a page.
+ *
+ * Registered after the refresh interceptor because it only ever concerns the
+ * public catalogue, where a 401 cannot happen. See lib/resilient.ts for the
+ * measurements that made this necessary.
+ */
+installResilience(api, () => language)
 
 /**
  * Turn a 429 into a message that says how long to wait.

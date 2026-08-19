@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { basenameFor, langFromPath } from './lib/seo'
 import Layout from './components/Layout'
+import StaleNotice from './components/StaleNotice'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
@@ -68,6 +69,8 @@ export default function App() {
         <AuthProvider>
           <CartProvider>
             <ScrollToTop />
+            {/* Announces a page drawn from the last-good cache. See lib/resilient.ts. */}
+            <StaleNotice />
             <Suspense fallback={<RouteFallback />}>
               <Routes>
                 <Route element={<Layout />}>

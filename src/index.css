@@ -245,6 +245,13 @@
 .mobile-scroll-gutter::-webkit-scrollbar {
   display: none;
 }
+.account-tab-rail {
+  /* The scrolling rails — account tabs, brand chips on the device check. A
+     visible scrollbar under a row of chips reads as a broken layout on a phone;
+     the row's own overflow is the affordance. Firefox needs the property, the
+     rest need the pseudo-element. */
+  scrollbar-width: none;
+}
 .account-tab-rail::-webkit-scrollbar {
   display: none;
 }

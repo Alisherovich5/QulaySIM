@@ -54,7 +54,11 @@ export default function Global() {
     api
       .get<Region[]>('/regions')
       .then((r) => setRegions(r.data))
-      .catch(() => setRegions([]))
+      // Same rule as the plans above: keep what is on screen. Losing this list
+      // used to remove the "other regions" strip entirely.
+      .catch(() => {
+        // Nothing: keep the strip that is already on screen.
+      })
     // Our own country names, in the visitor's language. The browser's
     // Intl.DisplayNames knows Turkey as "Türkiye" and has no Uzbek data at all,
     // so a customer typing "Turkiya" was told no such country exists — on the
@@ -62,7 +66,11 @@ export default function Global() {
     api
       .get<Country[]>('/countries?limit=400')
       .then((r) => setCountries(r.data))
-      .catch(() => setCountries([]))
+      // Without these names the coverage search falls back to Intl, which has
+      // no Uzbek data — so an empty list here is worse than a stale one.
+      .catch(() => {
+        // Nothing: a stale name list beats no names at all.
+      })
   }, [i18n.language])
 
   // Regions that actually sell a multi-country plan. The worldwide one is this

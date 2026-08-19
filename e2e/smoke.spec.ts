@@ -126,3 +126,44 @@ test('the region filter never offers a region that empties the page', async ({ p
   // Offered instead as a link to the page that actually sells those plans.
   await expect(menu.getByRole('link')).toHaveAttribute('href', '/global')
 })
+
+test('the device check answers by typing, and refuses to overstate', async ({ page }) => {
+  // The page a customer reaches before spending anything, so both directions of
+  // being wrong are expensive: telling somebody with a Redmi Note that it works
+  // costs a refund, and telling an iPhone 13 owner it does not costs the sale.
+  await page.goto('/device-check')
+
+  const search = page.getByRole('combobox')
+  await search.fill('Redmi Note 13')
+  await page.getByRole('option').first().click()
+  await expect(page.getByRole('heading', { name: 'Xiaomi Redmi Note 13' })).toBeVisible()
+  await expect(page.getByText(/eSIM moduli yo‘q/)).toBeVisible()
+
+  await search.fill('iPhone 13')
+  // Keyboard, because the suggestion list is a combobox and the first thing a
+  // desktop visitor does after typing is press Enter.
+  await search.press('Enter')
+  await expect(page.getByRole('heading', { name: 'Apple iPhone 13' })).toBeVisible()
+  await expect(page.getByText(/eSIM ishlaydi/)).toBeVisible()
+  // A model sold in both forms says so; nothing on this page turns "probably"
+  // into "yes".
+  await expect(page.getByText(/\*#06#/).first()).toBeVisible()
+
+  // The certain method is still here, one tap in.
+  await page.getByRole('button', { name: /Telefonning o‘zidan tekshirish/ }).click()
+  await expect(page.getByLabel(/\*#06#/).first()).toBeVisible()
+})
+
+test('a dropped catalogue request never empties a page that was baked with one', async ({ page }) => {
+  // Twice reported as "the countries disappeared", and this is the mechanism:
+  // the home page carries its catalogue in the HTML, then replaced it with the
+  // empty state as soon as one request was lost. On a link measured at 40%
+  // packet loss that is a coin flip on every visit.
+  await page.route('**/api/countries*', (route) => route.abort())
+  await page.goto('/')
+
+  const cards = page.locator('a[href*="/destinations/"]')
+  await expect(cards.first()).toBeVisible()
+  expect(await cards.count()).toBeGreaterThan(0)
+  await expect(page.getByText(/hozircha yo‘nalish yo‘q/)).toHaveCount(0)
+})

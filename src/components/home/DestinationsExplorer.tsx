@@ -60,9 +60,15 @@ export default function DestinationsExplorer() {
     api
       .get<Country[]>('/countries')
       .then((r) => setCountries(r.data))
-      // A catalogue that never arrives should land on the empty state, not sit
-      // on the placeholders forever.
-      .catch(() => setCountries([]))
+      // A lost request must not wipe the catalogue baked into this page at
+      // build time. It did, and this is what "the destinations disappeared"
+      // was on the home page: 25 countries in the HTML, replaced by "no
+      // destinations in this region" the moment one request was dropped on a
+      // link with 40% packet loss. Only an answer that actually arrived and
+      // was empty may empty the section.
+      .catch(() => {
+        // Nothing: keeping the baked list is the whole point.
+      })
       .finally(() => setLoading(false))
   }, [i18n.language])
 
