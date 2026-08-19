@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, MapPinOff, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
+import { boot } from '../../lib/boot'
 import type { Country } from '../../lib/types'
 import type { HeroGlobePick } from './HeroGlobe'
 import Flag from '../Flag'
@@ -126,7 +127,11 @@ export default function HeroSection() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const [countries, setCountries] = useState<Country[]>([])
+  // Seeded from the build, like every other place the catalogue is drawn: the
+  // globe raises the countries we sell, so an empty list is a globe with nothing
+  // on it — reported as "the countries on the globe have gone down". The home
+  // page's HTML already carries the catalogue; this is what reads it.
+  const [countries, setCountries] = useState<Country[]>(() => boot<Country[]>('countries') ?? [])
   // The country the visitor asked about that we do not sell. Clicking such a
   // place has to answer something; silence reads as a broken globe. `at` is the
   // moment of the click — clicking the same country twice has to restart the

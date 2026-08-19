@@ -30,6 +30,14 @@ export const ISO2_TO_NUMERIC: Record<string, number> = {
   TL: 626, TG: 768, TO: 776, TT: 780, TV: 798,
   US: 840, UY: 858, UZ: 860, VE: 862, VN: 704, YE: 887, ZM: 894, ZW: 716,
   VU: 548, VA: 336,
+
+  // Sold, drawn by the globe, and missing from this table until somebody
+  // counted: 207 destinations went in and 175 came out lit. These six were the
+  // ones whose land is actually in world-110m.json — the other 25 are
+  // territories a 110m map does not draw at all (Aruba, Guam, Gibraltar,
+  // Réunion…), which is a property of the map file, not of this list. Kosovo is
+  // absent too: the topology has no geometry for it under any id.
+  BT: 64, GL: 304, NC: 540, PR: 630, RW: 646, SN: 686,
 }
 
 export function numericFor(iso2: string): number | undefined {
