@@ -1,6 +1,6 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios'
 
-import { installResilience } from './resilient'
+import { installResilience, isPublicRead } from './resilient'
 
 export const api = axios.create({
   baseURL: '/api',
@@ -52,6 +52,18 @@ api.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${accessToken}`
   }
   config.headers['Accept-Language'] = language
+  // …and in the address too, for the catalogue.
+  //
+  // The header is what the API reads; this is what a shared cache reads. A CDN
+  // keys its cache on the URL, and of the `Vary` header Cloudflare honours only
+  // `Accept-Encoding` — so three languages sharing one URL means whichever
+  // language asked first is what the next visitor gets, in Tashkent, where we
+  // cannot see it happening. Putting the language in the query makes the three
+  // answers three addresses, which every cache in the chain already understands.
+  // The API ignores the parameter; the header still decides the translation.
+  if (isPublicRead(config)) {
+    config.params = { ...(config.params as Record<string, unknown> | undefined), lang: language }
+  }
   // A FormData body must not inherit the instance's JSON content type. Axios
   // sets multipart/form-data itself, with the boundary the parser needs to find
   // the parts at all — but only if nothing has already set the header. With the

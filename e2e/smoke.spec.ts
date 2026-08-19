@@ -83,7 +83,7 @@ test('the language prefix decides the edition, whatever is stored', async ({ pag
 
 test('the worldwide filter narrows by country', async ({ page }) => {
   // The filter that stops a customer buying a bundle that omits their stop.
-  await page.route('**/api/regions/global', (route) =>
+  await page.route('**/api/regions/global*', (route) =>
     route.fulfill({
       json: {
         id: 8, name: 'Global', slug: 'global', country_count: 0, starting_price: 10.5,
@@ -109,7 +109,7 @@ test('the region filter never offers a region that empties the page', async ({ p
   // What "the countries disappeared" turned out to mean: the worldwide region
   // holds plans rather than countries, so picking it filtered the catalogue down
   // to nothing. It is now offered as what it is — a different page.
-  await page.route('**/api/regions', (route) =>
+  await page.route('**/api/regions*', (route) =>
     route.fulfill({
       json: [
         { id: 1, name: 'Yevropa', slug: 'europe', country_count: 55, starting_price: 1.5 },
