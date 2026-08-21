@@ -25,7 +25,12 @@
  * somebody twice.
  */
 
-const VERSION = 'v1'
+/* Bumping this deletes every cache the previous version wrote, on the next
+   visit. Needed because a slow network makes the worker serve the last copy of
+   a page it has — which on a persistently bad link can keep somebody on a build
+   from before a fix for far longer than the fix took to ship. A version bump is
+   the switch that ends that. */
+const VERSION = 'v2'
 const SHELL = `qs-shell-${VERSION}`
 const ASSETS = `qs-assets-${VERSION}`
 const DATA = `qs-data-${VERSION}`
