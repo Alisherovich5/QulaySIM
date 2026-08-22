@@ -39,6 +39,7 @@ const uz: Translation = {
     currencySwitchTo: '{{code}} valyutasiga o‘tish',
   },
   home: {
+    quickDestinations: 'Tez yo‘nalishlar',
     badge: '200+ yo‘nalishdagi sayohatchilar ishonadi',
     title1: 'Ko‘plab sayohatchilar duch keladigan internet muammosiga —',
     title2: 'QulaySIM orqali yechim.',

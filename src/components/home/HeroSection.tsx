@@ -10,6 +10,7 @@ import { ArrowRight, MapPinOff, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import { boot } from '../../lib/boot'
+import { useCatalogue } from '../../lib/useCatalogue'
 import type { Country } from '../../lib/types'
 import type { HeroGlobePick } from './HeroGlobe'
 import Flag from '../Flag'
@@ -127,11 +128,6 @@ export default function HeroSection() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  // Seeded from the build, like every other place the catalogue is drawn: the
-  // globe raises the countries we sell, so an empty list is a globe with nothing
-  // on it — reported as "the countries on the globe have gone down". The home
-  // page's HTML already carries the catalogue; this is what reads it.
-  const [countries, setCountries] = useState<Country[]>(() => boot<Country[]>('countries') ?? [])
   // The country the visitor asked about that we do not sell. Clicking such a
   // place has to answer something; silence reads as a broken globe. `at` is the
   // moment of the click — clicking the same country twice has to restart the
@@ -139,21 +135,20 @@ export default function HeroSection() {
   const [missing, setMissing] = useState<{ name: string; at: number } | null>(null)
   const { isDesktop, webgl, reduced } = useHeroGlobe()
 
-  // Only the desktop panel can be clicked, so only the desktop panel pays for
-  // the catalogue. The names are localised server-side, hence the language dep.
-  useEffect(() => {
-    if (!isDesktop) return
-    let cancelled = false
-    api
-      .get<Country[]>('/countries')
-      .then((r) => !cancelled && setCountries(r.data))
-      // The globe stays decorative and the panel keeps its "browse everything"
-      // link: a catalogue that never arrives must not break the hero.
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [isDesktop, i18n.language])
+  // The globe raises the countries we sell, so an empty list is a globe with
+  // nothing on it — reported as "the countries on the globe have gone down".
+  // This call site used to read the network only; useCatalogue makes the baked
+  // copy and the keep-on-failure rule impossible to forget. See lib/catalogue.ts.
+  const { data: fetched } = useCatalogue<Country[]>({
+    seed: () => boot<Country[]>('countries'),
+    load: () => api.get<Country[]>('/countries').then((r) => r.data),
+    // Only the desktop panel can be clicked, so only it pays for the catalogue.
+    // The names are localised server-side, hence the language dep.
+    enabled: isDesktop,
+    deps: [i18n.language],
+  })
+  const countries = fetched ?? []
+
 
   // The region chips live in the hero now, so the hero needs the region list
   // The notice is an answer, not a state to live in — it steps aside for the
@@ -392,7 +387,15 @@ export default function HeroSection() {
                     {/* Two rows' worth of height whether or not the catalogue
                         has arrived, so the panel does not jump under the
                         cursor when it does. */}
-                    <ul className="mt-2 grid min-h-24 grid-cols-2 content-start gap-2">
+                    <ul
+                      /* Named so a browser test can assert on *this* list. The
+                         home page has a second grid of destination links lower
+                         down, and a test that matched both passed while this one
+                         was empty — which is the exact failure it was written to
+                         catch. */
+                      aria-label={t('home.quickDestinations')}
+                      className="mt-2 grid min-h-24 grid-cols-2 content-start gap-2"
+                    >
                       {quickLinks.map((c) => (
                         <li key={c.id}>
                           <Link

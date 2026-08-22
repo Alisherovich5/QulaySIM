@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowRight } from 'lucide-react'
 import { api } from '../lib/api'
 import { boot } from '../lib/boot'
+import { useCatalogue } from '../lib/useCatalogue'
 import type { Plan, RegionDetail } from '../lib/types'
 import PlanCard from './PlanCard'
 import { useCart } from '../context/CartContext'
@@ -30,17 +31,17 @@ export default function GlobalTeaser({ variant = 'inline', className = '' }: Pro
   const { t, i18n } = useTranslation()
   const { add } = useCart()
   const navigate = useNavigate()
-  // Same reasoning as the worldwide page: this strip sits on the home page, and
-  // an empty strip under a heading about worldwide coverage reads as broken.
-  const [plans, setPlans] = useState<Plan[]>(() => boot<RegionDetail>('global')?.plans ?? [])
   const [added, setAdded] = useState<number | null>(null)
 
-  useEffect(() => {
-    api
-      .get<RegionDetail>('/regions/global')
-      .then((r) => setPlans(r.data.plans ?? []))
-      .catch(() => setPlans((current) => (current.length ? current : boot<RegionDetail>('global')?.plans ?? [])))
-  }, [i18n.language])
+  // This strip sits on the home page, and an empty strip under a heading about
+  // worldwide coverage reads as broken. The keep-on-failure rule lives in
+  // useCatalogue; see lib/catalogue.ts.
+  const { data: fetchedPlans } = useCatalogue<Plan[]>({
+    seed: () => boot<RegionDetail>('global')?.plans ?? null,
+    load: () => api.get<RegionDetail>('/regions/global').then((r) => r.data.plans ?? []),
+    deps: [i18n.language],
+  })
+  const plans = fetchedPlans ?? []
 
   // Widest coverage first, then cheapest, one per size.
   //

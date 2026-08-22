@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowRight, Check } from 'lucide-react'
@@ -7,6 +7,7 @@ import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd } from '../lib/structured-data'
 import { api } from '../lib/api'
 import { boot } from '../lib/boot'
+import { useCatalogue } from '../lib/useCatalogue'
 import type { Country, Plan, Region, RegionDetail } from '../lib/types'
 import Flag from '../components/Flag'
 import GlobalPlanExplorer from '../components/global/GlobalPlanExplorer'
@@ -37,41 +38,33 @@ export default function Global() {
   // Seeded from what the build baked into this page: the worldwide grid used to
   // be empty for anyone whose request was lost, on a route where requests are
   // lost in bursts. The fetch below still runs and replaces it.
-  const [detail, setDetail] = useState<RegionDetail | null>(() => boot<RegionDetail>('global'))
-  const [regions, setRegions] = useState<Region[]>([])
-  const [countries, setCountries] = useState<Country[]>([])
   const [added, setAdded] = useState<number | null>(null)
 
-  useEffect(() => {
-    // Independent requests: the worldwide plans are the page, and losing the
-    // region list should cost a section rather than the whole thing.
-    api
-      .get<RegionDetail>('/regions/global')
-      .then((r) => setDetail(r.data))
-      // A lost request must not wipe what the page already shows — only a real
-      // empty answer should.
-      .catch(() => setDetail((current) => current ?? boot<RegionDetail>('global')))
-    api
-      .get<Region[]>('/regions')
-      .then((r) => setRegions(r.data))
-      // Same rule as the plans above: keep what is on screen. Losing this list
-      // used to remove the "other regions" strip entirely.
-      .catch(() => {
-        // Nothing: keep the strip that is already on screen.
-      })
-    // Our own country names, in the visitor's language. The browser's
-    // Intl.DisplayNames knows Turkey as "Türkiye" and has no Uzbek data at all,
-    // so a customer typing "Turkiya" was told no such country exists — on the
-    // page whose whole job is answering "is my stop included?".
-    api
-      .get<Country[]>('/countries?limit=400')
-      .then((r) => setCountries(r.data))
-      // Without these names the coverage search falls back to Intl, which has
-      // no Uzbek data — so an empty list here is worse than a stale one.
-      .catch(() => {
-        // Nothing: a stale name list beats no names at all.
-      })
-  }, [i18n.language])
+  // Three independent requests: losing the region list should cost a section,
+  // not the page. Each keeps what is on screen when its request is lost — the
+  // rule lives in useCatalogue now, stated once. See lib/catalogue.ts.
+  const { data: detail } = useCatalogue<RegionDetail>({
+    seed: () => boot<RegionDetail>('global'),
+    load: () => api.get<RegionDetail>('/regions/global').then((r) => r.data),
+    deps: [i18n.language],
+  })
+  const { data: fetchedRegions } = useCatalogue<Region[]>({
+    seed: () => null,
+    load: () => api.get<Region[]>('/regions').then((r) => r.data),
+    deps: [i18n.language],
+  })
+  const regions = fetchedRegions ?? []
+  // Our own country names, in the visitor's language. The browser's
+  // Intl.DisplayNames knows Turkey as "Türkiye" and has no Uzbek data at all,
+  // so a customer typing "Turkiya" was told no such country exists — on the
+  // page whose whole job is answering "is my stop included?". A stale name list
+  // beats no names at all, which is exactly what keep-on-failure gives.
+  const { data: fetchedCountries } = useCatalogue<Country[]>({
+    seed: () => null,
+    load: () => api.get<Country[]>('/countries?limit=400').then((r) => r.data),
+    deps: [i18n.language],
+  })
+  const countries = fetchedCountries ?? []
 
   // Regions that actually sell a multi-country plan. The worldwide one is this
   // page, so it is not offered again as an alternative to itself.

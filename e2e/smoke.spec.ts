@@ -167,3 +167,23 @@ test('a dropped catalogue request never empties a page that was baked with one',
   expect(await cards.count()).toBeGreaterThan(0)
   await expect(page.getByText(/hozircha yo‘nalish yo‘q/)).toHaveCount(0)
 })
+
+test('the globe keeps its countries when the catalogue request is lost', async ({ page }) => {
+  // The second call site that got this wrong, and the one the browser had to
+  // catch: the hero read the catalogue from the network only, so a dropped
+  // request left the globe with nothing raised. Reported as "the countries on
+  // the globe have gone down". Both call sites go through useCatalogue now, and
+  // this asserts the one a unit test cannot reach.
+  await page.route('**/api/countries*', (route) => route.abort())
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/')
+
+  // The hero's quick links are drawn from the same list the globe raises, so
+  // they are the visible proof that the baked copy survived the failure. Scoped
+  // to that list by name: an unscoped locator also matched the popular-
+  // destinations grid further down the page, so it passed while the hero was
+  // empty — checked by removing the seed and watching this test go red.
+  const quick = page.getByLabel('Tez yo‘nalishlar').locator('a[href^="/destinations/"]')
+  await expect(quick.first()).toBeVisible()
+  expect(await quick.count()).toBeGreaterThan(0)
+})

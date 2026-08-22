@@ -1,5 +1,5 @@
 import PriceTag from '../PriceTag'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -9,6 +9,7 @@ import Flag from '../Flag'
 import Reveal from '../Reveal'
 import { Button, Card } from '../ui'
 import { boot } from '../../lib/boot'
+import { useCatalogue } from '../../lib/useCatalogue'
 
 /**
  * A region with nothing promoted falls back to plain browsing, and a whole
@@ -48,29 +49,17 @@ const CARD_SHAPE =
 /** "Which country is calling you?" — region tabs + popular destination grid. */
 export default function DestinationsExplorer() {
   const { t, i18n } = useTranslation()
-  // Seeded from the build, like the destinations page: the home page's country
-  // strip was blank whenever its request was lost.
-  const [countries, setCountries] = useState<Country[]>(() => boot<Country[]>('countries') ?? [])
-  const [loading, setLoading] = useState(true)
+  // The three steps — baked copy, fresh request, keep what is on screen when
+  // the request is lost — live in useCatalogue now. This call site had the
+  // third one wrong: it replaced 25 baked countries with an empty list the
+  // moment a request was dropped. See lib/catalogue.ts.
+  const { data, loading } = useCatalogue<Country[]>({
+    seed: () => boot<Country[]>('countries'),
+    load: () => api.get<Country[]>('/countries').then((r) => r.data),
+    deps: [i18n.language],
+  })
+  const countries = data ?? []
 
-  // The region filter moved up into the hero, and from there it leads to the
-  // full catalogue — so this section stopped being a browser and went back to
-  // being what its data actually is: the promoted list, curated in the admin.
-  useEffect(() => {
-    api
-      .get<Country[]>('/countries')
-      .then((r) => setCountries(r.data))
-      // A lost request must not wipe the catalogue baked into this page at
-      // build time. It did, and this is what "the destinations disappeared"
-      // was on the home page: 25 countries in the HTML, replaced by "no
-      // destinations in this region" the moment one request was dropped on a
-      // link with 40% packet loss. Only an answer that actually arrived and
-      // was empty may empty the section.
-      .catch(() => {
-        // Nothing: keeping the baked list is the whole point.
-      })
-      .finally(() => setLoading(false))
-  }, [i18n.language])
 
   // Region names are admin-owned catalogue data and arrive in English, which is
   // wrong on an Uzbek page. The slug is the stable key; the API's own name is

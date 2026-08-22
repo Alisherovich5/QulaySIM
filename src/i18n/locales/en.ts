@@ -37,6 +37,7 @@ const en = {
     currencySwitchTo: 'Switch currency to {{code}}',
   },
   home: {
+    quickDestinations: 'Quick destinations',
     badge: 'Trusted by travellers in 200+ destinations',
     title1: 'A solution to the connectivity problem many travellers face —',
     title2: 'with QulaySIM.',

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { bootIf } from '../lib/boot'
+import { useCatalogue } from '../lib/useCatalogue'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ShoppingBag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -20,55 +21,37 @@ import { breadcrumbLd, destinationLd } from '../lib/structured-data'
 
 export default function CountryDetail() {
   const { slug } = useParams()
-  // Seeded from the data the build baked into this page, so the prices are on
-  // screen in the first frame instead of ~350 ms later. `bootIf` refuses the
-  // seed when the slug does not match, which is what stops a client-side
-  // navigation from showing the previous country's tariffs.
-  const baked = bootIf<CountryDetailType>('country', slug)
-  const [country, setCountry] = useState<CountryDetailType | null>(baked)
-  const [loading, setLoading] = useState(baked === null)
-  /**
-   * True only when the API actually said this destination does not exist.
-   *
-   * The difference matters now that this page carries its own indexing
-   * instructions. Treating every failure as "not found" meant a momentary API
-   * outage turned a real destination page into a noindex 404 — and if a crawler
-   * happened to render it during that window, it would be told to drop a page
-   * that is perfectly fine. A request that simply failed leaves this false, and
-   * the metadata the build baked into the page stays untouched.
-   */
-  const [missing, setMissing] = useState(false)
   const [added, setAdded] = useState<number | null>(null)
   const { add } = useCart()
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const seeded = bootIf<CountryDetailType>('country', slug)
-    setCountry(seeded)
-    // A page that already has prices is not "loading" — it is refreshing.
-    setLoading(seeded === null)
-    api
-      .get<CountryDetailType>(`/countries/${slug}`)
-      .then((r) => {
-        setCountry(r.data)
-        setMissing(false)
-      })
-      .catch((error: unknown) => {
-        const status = (error as { response?: { status?: number } })?.response?.status
-        // Only a real 404 means "no such destination". A timeout or a dropped
-        // connection must leave the baked prices on screen: on the route this
-        // shop is served over, packets are lost in bursts, and blanking a page
-        // that already had the answer is the worst possible response to that.
-        if (status === 404) {
-          setCountry(null)
-          setMissing(true)
-        } else if (seeded === null) {
-          setCountry(null)
-        }
-      })
-      .finally(() => setLoading(false))
-  }, [slug, i18n.language])
+  /**
+   * Seeded from the data the build baked into this page, so the prices are on
+   * screen in the first frame instead of ~350 ms later. `bootIf` refuses the
+   * seed when the slug does not match, which is what stops a client-side
+   * navigation from showing the previous country's tariffs — and `key` below is
+   * what re-seeds when the visitor moves to another destination.
+   *
+   * `missing` is true only when the API actually said this destination does not
+   * exist. The difference matters because this page carries its own indexing
+   * instructions: treating every failure as "not found" meant a momentary API
+   * outage turned a real destination page into a noindex 404, and a crawler
+   * rendering it in that window would be told to drop a page that is fine. A
+   * request that simply failed leaves the baked prices and metadata untouched.
+   * See lib/catalogue.ts for the rule and its tests.
+   */
+  const {
+    data: country,
+    loading,
+    missing,
+  } = useCatalogue<CountryDetailType>({
+    seed: () => bootIf<CountryDetailType>('country', slug),
+    load: () => api.get<CountryDetailType>(`/countries/${slug}`).then((r) => r.data),
+    key: slug,
+    deps: [i18n.language],
+    clearOnMissing: true,
+  })
 
   const handleAdd = (plan: Plan) => {
     if (!country) return

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { boot } from '../lib/boot'
+import { useCatalogue } from '../lib/useCatalogue'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowUpRight, Check, ChevronDown, Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -15,11 +16,6 @@ import { Card } from '../components/ui'
 
 export default function Destinations() {
   const [params, setParams] = useSearchParams()
-  // Same reasoning as the destination page: the build knows this list, so the
-  // first render shows it. The fetch below still runs and replaces it — the
-  // baked copy is a snapshot from build time, and the live catalogue is larger.
-  const [countries, setCountries] = useState<Country[]>(() => boot<Country[]>('countries') ?? [])
-  const [regions, setRegions] = useState<Region[]>([])
   const [regionOpen, setRegionOpen] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
 
@@ -36,24 +32,33 @@ export default function Destinations() {
 
   const chipClass =
     'focus-ring inline-flex items-center gap-1.5 rounded-full bg-mist px-2.5 py-1 text-xs font-600 text-ink ring-1 ring-line hover:ring-brand-300'
-  const [loading, setLoading] = useState(() => (boot<Country[]>('countries') ?? []).length === 0)
   const { t, i18n } = useTranslation()
   const search = params.get('search') || ''
   const region = params.get('region') || ''
 
-  useEffect(() => {
-    api.get<Region[]>('/regions').then((r) => setRegions(r.data))
-  }, [i18n.language])
+  // The build knows this list, so the first render shows it; the request below
+  // replaces it, because the live catalogue is larger than the build's snapshot.
+  // Both fetches previously had no `.catch` at all — a dropped request became an
+  // unhandled rejection that our own error reporter then posted. useCatalogue
+  // owns the whole rule; see lib/catalogue.ts.
+  const { data: fetchedCountries, loading } = useCatalogue<Country[]>({
+    seed: () => boot<Country[]>('countries'),
+    load: () =>
+      api
+        .get<Country[]>('/countries', {
+          params: { search: search || undefined, region: region || undefined },
+        })
+        .then((r) => r.data),
+    deps: [search, region, i18n.language],
+  })
+  const countries = fetchedCountries ?? []
 
-  useEffect(() => {
-    setLoading(true)
-    api
-      .get<Country[]>('/countries', {
-        params: { search: search || undefined, region: region || undefined },
-      })
-      .then((r) => setCountries(r.data))
-      .finally(() => setLoading(false))
-  }, [search, region, i18n.language])
+  const { data: fetchedRegions } = useCatalogue<Region[]>({
+    seed: () => null,
+    load: () => api.get<Region[]>('/regions').then((r) => r.data),
+    deps: [i18n.language],
+  })
+  const regions = fetchedRegions ?? []
 
   const updateParam = (key: string, value: string) => {
     const next = new URLSearchParams(params)
