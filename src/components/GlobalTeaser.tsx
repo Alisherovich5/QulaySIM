@@ -8,6 +8,13 @@ import { useCatalogue } from '../lib/useCatalogue'
 import type { Plan, RegionDetail } from '../lib/types'
 import PlanCard from './PlanCard'
 import { useCart } from '../context/CartContext'
+/* A stable identity for "nothing yet".
+ *
+ * `?? []` builds a new array on every render, which quietly defeats every
+ * useMemo downstream — the filters and sorts below re-run on each keystroke
+ * elsewhere in the page. One frozen constant costs nothing and keeps them memoised. */
+const NO_PLANS: Plan[] = []
+
 
 /**
  * Worldwide plans, offered where the customer already is.
@@ -41,7 +48,7 @@ export default function GlobalTeaser({ variant = 'inline', className = '' }: Pro
     load: () => api.get<RegionDetail>('/regions/global').then((r) => r.data.plans ?? []),
     deps: [i18n.language],
   })
-  const plans = fetchedPlans ?? []
+  const plans = fetchedPlans ?? NO_PLANS
 
   // Widest coverage first, then cheapest, one per size.
   //

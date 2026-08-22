@@ -10,6 +10,13 @@ import Reveal from '../Reveal'
 import { Button, Card } from '../ui'
 import { boot } from '../../lib/boot'
 import { useCatalogue } from '../../lib/useCatalogue'
+/* A stable identity for "nothing yet".
+ *
+ * `?? []` builds a new array on every render, which quietly defeats every
+ * useMemo downstream — the filters and sorts below re-run on each keystroke
+ * elsewhere in the page. One frozen constant costs nothing and keeps them memoised. */
+const NO_COUNTRIES: Country[] = []
+
 
 /**
  * A region with nothing promoted falls back to plain browsing, and a whole
@@ -58,7 +65,7 @@ export default function DestinationsExplorer() {
     load: () => api.get<Country[]>('/countries').then((r) => r.data),
     deps: [i18n.language],
   })
-  const countries = data ?? []
+  const countries = data ?? NO_COUNTRIES
 
 
   // Region names are admin-owned catalogue data and arrive in English, which is

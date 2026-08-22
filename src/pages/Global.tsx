@@ -14,6 +14,14 @@ import GlobalPlanExplorer from '../components/global/GlobalPlanExplorer'
 import { Card } from '../components/ui'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
+/* A stable identity for "nothing yet".
+ *
+ * `?? []` builds a new array on every render, which quietly defeats every
+ * useMemo downstream — the filters and sorts below re-run on each keystroke
+ * elsewhere in the page. One frozen constant costs nothing and keeps them memoised. */
+const NO_REGIONS: Region[] = []
+const NO_COUNTRIES: Country[] = []
+
 
 /**
  * The page for the product a traveller with several stops actually wants.
@@ -53,7 +61,7 @@ export default function Global() {
     load: () => api.get<Region[]>('/regions').then((r) => r.data),
     deps: [i18n.language],
   })
-  const regions = fetchedRegions ?? []
+  const regions = fetchedRegions ?? NO_REGIONS
   // Our own country names, in the visitor's language. The browser's
   // Intl.DisplayNames knows Turkey as "Türkiye" and has no Uzbek data at all,
   // so a customer typing "Turkiya" was told no such country exists — on the
@@ -64,7 +72,7 @@ export default function Global() {
     load: () => api.get<Country[]>('/countries?limit=400').then((r) => r.data),
     deps: [i18n.language],
   })
-  const countries = fetchedCountries ?? []
+  const countries = fetchedCountries ?? NO_COUNTRIES
 
   // Regions that actually sell a multi-country plan. The worldwide one is this
   // page, so it is not offered again as an alternative to itself.

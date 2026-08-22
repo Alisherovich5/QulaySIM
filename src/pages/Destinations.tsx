@@ -13,6 +13,14 @@ import type { Country, Region } from '../lib/types'
 import CountryCard from '../components/CountryCard'
 import Reveal from '../components/Reveal'
 import { Card } from '../components/ui'
+/* A stable identity for "nothing yet".
+ *
+ * `?? []` builds a new array on every render, which quietly defeats every
+ * useMemo downstream — the filters and sorts below re-run on each keystroke
+ * elsewhere in the page. One frozen constant costs nothing and keeps them memoised. */
+const NO_COUNTRIES: Country[] = []
+const NO_REGIONS: Region[] = []
+
 
 export default function Destinations() {
   const [params, setParams] = useSearchParams()
@@ -51,14 +59,14 @@ export default function Destinations() {
         .then((r) => r.data),
     deps: [search, region, i18n.language],
   })
-  const countries = fetchedCountries ?? []
+  const countries = fetchedCountries ?? NO_COUNTRIES
 
   const { data: fetchedRegions } = useCatalogue<Region[]>({
     seed: () => null,
     load: () => api.get<Region[]>('/regions').then((r) => r.data),
     deps: [i18n.language],
   })
-  const regions = fetchedRegions ?? []
+  const regions = fetchedRegions ?? NO_REGIONS
 
   const updateParam = (key: string, value: string) => {
     const next = new URLSearchParams(params)

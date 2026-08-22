@@ -16,6 +16,13 @@ import type { HeroGlobePick } from './HeroGlobe'
 import Flag from '../Flag'
 import { GlobeErrorBoundary } from '../GlobeErrorBoundary'
 import { Button } from '../ui'
+/* A stable identity for "nothing yet".
+ *
+ * `?? []` builds a new array on every render, which quietly defeats every
+ * useMemo downstream — the filters and sorts below re-run on each keystroke
+ * elsewhere in the page. One frozen constant costs nothing and keeps them memoised. */
+const NO_COUNTRIES: Country[] = []
+
 
 const HeroGlobe = lazy(() => import('./HeroGlobe'))
 
@@ -147,7 +154,7 @@ export default function HeroSection() {
     enabled: isDesktop,
     deps: [i18n.language],
   })
-  const countries = fetched ?? []
+  const countries = fetched ?? NO_COUNTRIES
 
 
   // The region chips live in the hero now, so the hero needs the region list
