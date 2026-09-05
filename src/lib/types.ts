@@ -170,9 +170,13 @@ export interface LandingContent {
 
 export interface ReferralEntry {
   referred_email: string
+  /** Odam ro'yxatdan o'tganda kiritgan ismi. Bo'sh bo'lishi mumkin: taklif
+   *  yuborilgan, lekin hali hech kim qabul qilmagan bo'lsa. */
+  referred_name: string
   status: string
   reward_code: string
   created_at: string
+  completed_at: string | null
 }
 
 export interface ReferralSummary {
@@ -180,6 +184,12 @@ export interface ReferralSummary {
   invited: number
   completed: number
   pending: number
+  /** Bitta sotib olgan mijoz uchun tegadigan summa, so'mda. */
+  commission_uzs: number
+  /** Sotib olganlar soni × komissiya. Serverda hisoblanadi, chunki foydalanuvchi
+   *  ochadigan savol shu -- ko'paytirishni odamning zimmasiga qoldirish nizoga
+   *  olib keladi. */
+  earned_uzs: number
   rewards: string[]
   entries: ReferralEntry[]
 }
