@@ -186,12 +186,22 @@ export default function Account() {
     )
   }
 
+  // Referal bo'limi hamma uchun ochiq bo'lmasligi mumkin: stavka raqamlari
+  // kelishilmagan paytda uni butun mijozlar bazasiga ko'rsatish keyin orqaga
+  // qaytarib bo'lmaydigan va'da bo'lardi. Server kim ko'rishini aytadi.
+  const showReferral = summary.referral_enabled !== false
+  // `?tab=referral` bilan kelgan odam bo'sh sahifaga tushmasin: bo'lim yopiq
+  // bo'lsa, xaritaga qaytadi.
+  const openTab: Tab = tab === 'referral' && !showReferral ? 'map' : tab
+
   const tabs: { key: Tab; label: string; icon: typeof QrCode }[] = [
     { key: 'map', label: t('account.tabMap'), icon: MapIcon },
     { key: 'esims', label: t('account.tabEsims'), icon: QrCode },
     { key: 'orders', label: t('account.tabOrders'), icon: Receipt },
     { key: 'review', label: t('account.tabReview'), icon: MessageSquareText },
-    { key: 'referral', label: t('referral.tab'), icon: Gift },
+    ...(showReferral
+      ? [{ key: 'referral' as Tab, label: t('referral.tab'), icon: Gift }]
+      : []),
     { key: 'settings', label: t('account.tabSettings'), icon: SignalHigh },
   ]
 
@@ -312,7 +322,7 @@ export default function Account() {
             inside the padding or the first and last tab lose their ring. */}
         <div className="account-tab-rail flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain rounded-2xl bg-surface-2 p-1.5 ring-1 ring-line [scrollbar-width:none] dark:bg-canvas">
           {tabs.map((tb) => {
-            const active = tab === tb.key
+            const active = openTab === tb.key
             return (
               <button
                 key={tb.key}
@@ -335,7 +345,7 @@ export default function Account() {
 
       {/* Panel ----------------------------------------------------------- */}
       <div key={tab} className="page-in mt-6 sm:mt-8">
-        {tab === 'map' && (
+        {openTab === 'map' && (
           // The passport panel is gone: it was a second box below the globe
           // saying what the globe already said, and its one useful line — which
           // countries, how many eSIMs — now sits under the globe itself.
@@ -350,9 +360,9 @@ export default function Account() {
           </div>
         )}
 
-        {tab === 'esims' && esimsSection}
+        {openTab === 'esims' && esimsSection}
 
-        {tab === 'orders' && (
+        {openTab === 'orders' && (
           <div>
             <SectionHead
               title={t('account.tabOrders')}
@@ -377,11 +387,11 @@ export default function Account() {
           </div>
         )}
 
-        {tab === 'referral' && <ReferralPanel />}
+        {openTab === 'referral' && <ReferralPanel />}
 
-        {tab === 'review' && <ReviewPanel />}
+        {openTab === 'review' && <ReviewPanel />}
 
-        {tab === 'settings' && (
+        {openTab === 'settings' && (
           <SettingsForm initialName={summary.full_name} onSaved={load} onLogout={handleLogout} />
         )}
       </div>

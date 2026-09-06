@@ -243,5 +243,8 @@ export interface AccountSummary {
   orders_count: number
   /** Inline data URI, or null when the customer has not set a photo. */
   avatar_url: string | null
+  /** Referal bo'limi shu mijozga ochiqmi. Eski serverda bu maydon yo'q, shuning
+   *  uchun yo'qligi "ochiq" deb o'qiladi -- bo'lim jimgina g'oyib bo'lmasin. */
+  referral_enabled?: boolean
   passport: PassportCountry[]
 }
