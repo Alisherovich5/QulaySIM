@@ -15,6 +15,8 @@ import Home from './pages/Home'
  * dashboard, checkout and support pages before seeing the hero.
  */
 const Destinations = lazy(() => import('./pages/Destinations'))
+const V2Home = lazy(() => import('./v2/Home'))
+const V2Country = lazy(() => import('./v2/Country'))
 const Global = lazy(() => import('./pages/Global'))
 const CountryDetail = lazy(() => import('./pages/CountryDetail'))
 const RegionDetail = lazy(() => import('./pages/RegionDetail'))
@@ -73,6 +75,13 @@ export default function App() {
             <StaleNotice />
             <Suspense fallback={<RouteFallback />}>
               <Routes>
+                {/* Yangi interfeys -- o'z ramkasi bilan, Layout'siz.
+                    Ataylab alohida manzilda: hozirgi sayt bir piksel ham
+                    o'zgarmaydi va ikkalasini telefonda navbat bilan ochib
+                    solishtirish mumkin. */}
+                <Route path="/yangi" element={<V2Home />} />
+                <Route path="/yangi/:slug" element={<V2Country />} />
+
                 <Route element={<Layout />}>
                   <Route path="/" element={<Home />} />
                   <Route path="/destinations" element={<Destinations />} />
