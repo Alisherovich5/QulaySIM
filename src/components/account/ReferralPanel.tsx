@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react'
-import { Check, Copy, Send, Users, Wallet } from 'lucide-react'
+import { Check, Copy, Send, TrendingUp, Users, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
-import type { ReferralEntry, ReferralSummary } from '../../lib/types'
+import type {
+  ReferralEntry,
+  ReferralNextRate,
+  ReferralRate,
+  ReferralSummary,
+} from '../../lib/types'
 import { Badge, Button, Card } from '../ui'
 
 /** Odam yozadigan joy, kanal emas: pulni yechish — suhbat, e'lon emas. */
@@ -22,7 +27,7 @@ export default function ReferralPanel() {
   const [copied, setCopied] = useState<'code' | 'link' | null>(null)
 
   useEffect(() => {
-    api.get<ReferralSummary>('/account/referrals').then((r) => setData(r.data))
+    api.get<ReferralSummary>('/account/referrals').then((r) => setData(withRate(r.data)))
   }, [])
 
   if (!data) {
@@ -43,8 +48,10 @@ export default function ReferralPanel() {
       {started ? (
         <EarningsCard data={data} />
       ) : (
-        <StartCard rate={formatSom(data.commission_uzs)} />
+        <StartCard rate={data.rate} />
       )}
+
+      {(data.rate.percent !== null || data.rate.flat_uzs !== null) && <RateCard data={data} />}
 
       <ShareCard
         link={link}
@@ -79,14 +86,18 @@ export default function ReferralPanel() {
 }
 
 /** Hali hech kim kirmagan holat: raqam emas, yo'riqnoma. */
-function StartCard({ rate }: { rate: string }) {
-  const { t } = useTranslation()
-  const steps = [t('referral.step1'), t('referral.step2'), t('referral.step3', { rate })]
+function StartCard({ rate }: { rate: ReferralRate }) {
+  const { t, i18n } = useTranslation()
+  const steps = [
+    t('referral.step1'),
+    t('referral.step2'),
+    t('referral.step3', { rate: rateText(rate, t, i18n.language) }),
+  ]
 
   return (
     <Card className="p-6">
       <h2 className="text-2xl font-800 tracking-tight text-ink">{t('referral.startTitle')}</h2>
-      <p className="mt-2 text-slate-soft">{t('referral.startSubtitle', { rate })}</p>
+      <p className="mt-2 text-slate-soft">{t('referral.startSubtitle')}</p>
 
       <ol className="mt-5 space-y-3">
         {steps.map((step, index) => (
@@ -117,9 +128,7 @@ function EarningsCard({ data }: { data: ReferralSummary }) {
         <span className="text-lg font-600 text-slate-soft">{t('referral.som')}</span>
       </p>
       <p className="mt-2 text-sm text-slate-soft">
-        {bought > 0
-          ? t('referral.earnedHint', { count: bought, rate: formatSom(data.commission_uzs) })
-          : t('referral.notYetBought', { rate: formatSom(data.commission_uzs) })}
+        {bought > 0 ? t('referral.earnedHint', { count: bought }) : t('referral.notYetBought')}
       </p>
 
       {/* Ikkita son alohida: pul faqat ikkinchisidan keladi. */}
@@ -137,6 +146,44 @@ function EarningsCard({ data }: { data: ReferralSummary }) {
           hint={t('referral.boughtHint')}
         />
       </div>
+    </Card>
+  )
+}
+
+/** Stavka va keyingi pog'ona.
+ *
+ *  Alohida karta, chunki bu ikkita boshqa savol: "menga hozir qancha tegadi?"
+ *  va "ko'proq olish uchun nima qilishim kerak?". Ikkinchisi bo'lmasa,
+ *  pog'onali stavka shunchaki mayda shrift bo'lib qoladi -- odam o'zi
+ *  hisoblab, keyingi chegara qayerdaligini bilib olishi kerak bo'lardi.
+ */
+function RateCard({ data }: { data: ReferralSummary }) {
+  const { t, i18n } = useTranslation()
+  const percent = data.rate.percent !== null
+
+  return (
+    <Card className="p-6">
+      <p className="text-sm text-slate-soft">{t('referral.rateTitle')}</p>
+      {/* Stavka va uning izohi ustma-ust: yonma-yon qo'yilganda "6 000 so'm"
+          telefonda ikki qatorga bo'linib ketardi. */}
+      <p className="mt-1 text-3xl font-800 tracking-tight text-ink">
+        {rateText(data.rate, t, i18n.language)}
+      </p>
+      <p className="mt-1 text-slate-soft">
+        {percent ? t('referral.rateHintPercent') : t('referral.rateHintFlat')}
+      </p>
+
+      <p className="mt-4 flex items-start gap-2 border-t border-line pt-4 text-sm text-ink">
+        <TrendingUp size={18} className="mt-0.5 shrink-0 text-accent-500" />
+        <span>
+          {data.next_rate
+            ? t('referral.nextRate', {
+                needed: data.next_rate.needed,
+                rate: rateText(data.next_rate, t, i18n.language),
+              })
+            : t('referral.topRate')}
+        </span>
+      </p>
     </Card>
   )
 }
@@ -272,11 +319,60 @@ function PersonRow({ entry }: { entry: ReferralEntry }) {
           {entry.referred_name?.trim() ? entry.referred_email : t('referral.waiting')}
         </p>
       </div>
-      <Badge tone={bought ? 'accent' : 'muted'}>
-        {bought ? t('referral.statusBought') : t('referral.statusJoined')}
-      </Badge>
+      {/* Summa VA "sotib oldi" yorlig'i birga turmaydi: ikkalasi bir xil
+          gapni aytadi, lekin ikkovi birga telefonda ismni qisqartirib
+          yuboradi. Pul aniqroq, shuning uchun u qoladi. */}
+      {bought && entry.commission_uzs > 0 ? (
+        <span className="shrink-0 font-700 tabular-nums text-ink">
+          {formatSom(entry.commission_uzs)} {t('referral.som')}
+        </span>
+      ) : (
+        <Badge tone={bought ? 'accent' : 'muted'}>
+          {bought ? t('referral.statusBought') : t('referral.statusJoined')}
+        </Badge>
+      )}
     </li>
   )
+}
+
+/** Eski javob shakliga chidash.
+ *
+ *  Server va sayt alohida joylashtiriladi, ya'ni bir necha daqiqa yangi sayt
+ *  eski server bilan gaplashishi mumkin. Eski javobda `rate` yo'q, bitta
+ *  `commission_uzs` bor edi -- shundan stavka yasaladi va sahifa yiqilmaydi.
+ */
+function withRate(data: ReferralSummary): ReferralSummary {
+  if (data.rate) return data
+  const legacy = (data as ReferralSummary & { commission_uzs?: number }).commission_uzs ?? null
+  return {
+    ...data,
+    rate: { label: '', percent: null, flat_uzs: legacy },
+    next_rate: data.next_rate ?? null,
+  }
+}
+
+/** Stavkani ekranga chiqarish.
+ *
+ *  Server ham tayyor `label` yuboradi, lekin so'z "so'm" u yerda ingliz
+ *  apostrofi bilan yoziladi va sahifadagi qolgan summalardan boshqacha
+ *  ko'rinadi. Raqamlar ham shu yerda ajratiladi, xuddi boshqa summalardek.
+ */
+function rateText(
+  rate: ReferralRate | ReferralNextRate,
+  t: (k: string) => string,
+  lang: string,
+): string {
+  if (rate.flat_uzs !== null) return `${formatSom(rate.flat_uzs)} ${t('referral.som')}`
+  // O'zbekcha va ruschada kasr vergul bilan yoziladi -- "6,5%", "6.5%" emas.
+  // Sozlamada nuqta turadi, chunki uni mashina o'qiydi; ekranda esa odam.
+  //
+  // Intl.NumberFormat('uz') ishlatilmadi: Chrome'da u nuqta qaytardi, Node'da
+  // vergul. Ajratuvchi brauzerga qarab o'zgarib turmasligi kerak.
+  if (rate.percent !== null) {
+    const text = String(rate.percent)
+    return `${lang.startsWith('en') ? text : text.replace('.', ',')}%`
+  }
+  return rate.label
 }
 
 /** 12000 -> "12 000". Bo'shliq bilan, chunki so'm summalari uzun bo'ladi va
