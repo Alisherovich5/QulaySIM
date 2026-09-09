@@ -68,7 +68,31 @@ describe('usedLabel', () => {
   })
 
   it('reports megabytes below a gigabyte', () => {
-    expect(usedLabel(472)).toMatch(/472/)
+    expect(usedLabel(472)).toBe('472 MB')
+  })
+
+  it('does not turn one megabyte into "0.0 GB"', () => {
+    // Aynan shu yozuv tufayli mijoz "sayt qolgan MB ni ko'rsatmayapti" deb
+    // yozdi -- holbuki raqam to'g'ri edi, shunchaki 1 MB gigabaytda nolga
+    // aylanib qolgan edi.
+    expect(usedLabel(1)).toBe('1 MB')
+    expect(usedLabel(0)).toBe('0 MB')
+  })
+
+  it('reads a large allowance in gigabytes, not four-digit megabytes', () => {
+    expect(usedLabel(3071)).toBe('2.9 GB')
+    expect(usedLabel(1024)).toBe('1 GB')
+    expect(usedLabel(20480)).toBe('20 GB')
+  })
+
+  it('does not show a negative remainder', () => {
+    // Ta'minotchi tugagan tarifda 3073/3072 qaytaradi, ya'ni qoldiq -1 MB.
+    expect(usedLabel(-1)).toBe('0 MB')
+  })
+
+  it('rounds down at the gigabyte boundary too', () => {
+    // 2047 MB -- deyarli 2 GB, lekin 2 GB emas.
+    expect(usedLabel(2047)).toBe('1.9 GB')
   })
 })
 

@@ -13,9 +13,25 @@ export const dataLabel = (mb: number, unlimited: boolean) => {
   return `${mb} MB`
 }
 
+/**
+ * Traffik miqdorini odam o'qiydigan ko'rinishda.
+ *
+ * Ikki tomonlama muammoni yechadi. Bir tomondan "3071 MB" -- to'g'ri, lekin
+ * bir qarashda 3 GB ekani ko'rinmaydi. Ikkinchi tomondan "0.0 GB" -- 1 MB
+ * sarflanganda chiqadigan yozuv, va u SOTIB OLGAN mijozga "hisob ishlamayapti"
+ * deb ko'rinadi: aynan shu yozuv tufayli shikoyat keldi.
+ *
+ * Shuning uchun chegara 1 GB: pastda -- megabaytda, yuqorida -- gigabaytda,
+ * bitta kasr bilan. Va yaxlitlash HAR DOIM pastga: mijozga 0,96 ni 1 GB deb
+ * aytish -- chet eldan keladigan shikoyatning eng qisqa yo'li.
+ *
+ * Nolga qisish ham kerak: ta'minotchi tugagan tarifda sarfni jamidan bitta
+ * ko'p qaytaradi (3073 / 3072), ya'ni qoldiq "-1 MB" bo'lib chiqadi.
+ */
 export const usedLabel = (mb: number) => {
-  if (mb % 1024 === 0) return `${mb / 1024} GB`
-  return `${mb} MB`
+  if (mb < 1024) return `${Math.max(0, mb)} MB`
+  const gb = Math.floor((mb / 1024) * 10) / 10
+  return `${Number.isInteger(gb) ? gb : gb.toFixed(1)} GB`
 }
 
 /**
