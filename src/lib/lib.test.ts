@@ -10,7 +10,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { charmUzs } from './charm'
-import { dataLabel, usedLabel } from './format'
+import { dataLabel, usedLabel, usedTile } from './format'
 import { numericFor } from './isoNumeric'
 import { langFromPath, pathForLang } from './seo'
 
@@ -93,6 +93,21 @@ describe('usedLabel', () => {
   it('rounds down at the gigabyte boundary too', () => {
     // 2047 MB -- deyarli 2 GB, lekin 2 GB emas.
     expect(usedLabel(2047)).toBe('1.9 GB')
+  })
+})
+
+describe('usedTile', () => {
+  it('bir megabaytni megabaytda beradi, "0.0 GB" emas', () => {
+    // Mijozning skrinshotidagi aynan o'sha plitka.
+    expect(usedTile(1)).toEqual({ value: 1, suffix: ' MB', decimals: 0 })
+  })
+
+  it('gigabaytdan oshsa gigabaytga o‘tadi', () => {
+    expect(usedTile(2582)).toEqual({ value: 2582 / 1024, suffix: ' GB', decimals: 1 })
+  })
+
+  it('manfiy qiymatni nolga qisadi', () => {
+    expect(usedTile(-5).value).toBe(0)
   })
 })
 

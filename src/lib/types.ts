@@ -72,6 +72,9 @@ export interface ESIM {
   paid_usd: string | null
   paid_uzs: string | null
   plan: Plan
+  /** Traffik oxirgi marta qachon so'ralgani. Eski serverda bu maydon yo'q,
+   *  shuning uchun yo'qligi "hali tekshirilmagan" deb o'qiladi. */
+  last_synced_at?: string | null
 }
 
 export interface Order {

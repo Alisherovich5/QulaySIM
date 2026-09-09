@@ -5,6 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import { setApiLanguage } from '../lib/api'
 import { DEFAULT_LANG, langFromPath } from '../lib/seo'
 import en from './locales/en'
+import { ESIM_STATUS_COPY } from './locales/esim-status'
 import ru from './locales/ru'
 import uz from './locales/uz'
 
@@ -32,9 +33,11 @@ i18n
   .init({
     ...(pathLang === DEFAULT_LANG ? {} : { lng: pathLang }),
     resources: {
-      en: { translation: en },
-      ru: { translation: ru },
-      uz: { translation: uz },
+      // eSIM holati matnlari alohida modulda -- sababi o'sha faylning
+      // boshida yozilgan.
+      en: { translation: { ...en, ...ESIM_STATUS_COPY.en } },
+      ru: { translation: { ...ru, ...ESIM_STATUS_COPY.ru } },
+      uz: { translation: { ...uz, ...ESIM_STATUS_COPY.uz } },
     },
     // Uzbek, because the unprefixed URLs are the Uzbek edition and the audience
     // is in Uzbekistan. It used to be English, which meant a missing key showed

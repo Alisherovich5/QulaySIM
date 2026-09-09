@@ -47,6 +47,70 @@ const SAME_IS_FINE = [
   /^auth\.email$/, // "Email" is used as-is in Uzbek; Russian does differ
 ]
 
+/**
+ * Qo'shimcha modullar: kalitlarning bir qismi asosiy fayldan tashqarida
+ * yashaydi. Audit ularni ham hisobga olishi kerak -- aks holda ishlab
+ * turgan kalitni "aniqlanmagan" deb ko'rsatadi.
+ *
+ * Har biri `{ uz: {...}, ru: {...}, en: {...} }` shaklida eksport qiladi,
+ * shuning uchun til bo'yicha kesib olinadi.
+ */
+const EXTRA_MODULES = [
+  { path: 'src/i18n/locales/esim-status.ts', perLanguage: true },
+]
+
+function sliceObjectLiteral(raw, label) {
+  const start = raw.indexOf('= {') + 2
+  if (start < 2) throw new Error(`${label}: could not find the object literal`)
+  let depth = 0
+  let end = -1
+  let inString = null
+  let inComment = null
+  for (let i = start; i < raw.length; i++) {
+    const ch = raw[i]
+    // Izohlar o'tkazib yuboriladi. Ularsiz "ko'rinadi" ichidagi apostrof
+    // satr boshi deb o'qilib, qavs sanog'i chalkashadi va butun fayl
+    // "unbalanced braces" bo'lib chiqadi.
+    if (inComment) {
+      if (inComment === 'line' && ch === '\n') inComment = null
+      else if (inComment === 'block' && ch === '*' && raw[i + 1] === '/') {
+        inComment = null
+        i++
+      }
+      continue
+    }
+    if (inString) {
+      if (ch === '\\') i++
+      else if (ch === inString) inString = null
+      continue
+    }
+    if (ch === '/' && raw[i + 1] === '/') {
+      inComment = 'line'
+      i++
+    } else if (ch === '/' && raw[i + 1] === '*') {
+      inComment = 'block'
+      i++
+    } else if (ch === "'" || ch === '"' || ch === '`') inString = ch
+    else if (ch === '{') depth++
+    else if (ch === '}' && --depth === 0) {
+      end = i + 1
+      break
+    }
+  }
+  if (end < 0) throw new Error(`${label}: unbalanced braces in the object literal`)
+  return runInNewContext(`(${raw.slice(start, end)})`, Object.create(null))
+}
+
+function loadExtras(lang) {
+  let merged = {}
+  for (const mod of EXTRA_MODULES) {
+    const parsed = sliceObjectLiteral(readFileSync(mod.path, 'utf8'), mod.path)
+    const forLang = mod.perLanguage ? parsed[lang] : parsed
+    if (forLang) merged = { ...merged, ...forLang }
+  }
+  return merged
+}
+
 function loadLocale(lang) {
   const raw = readFileSync(`src/i18n/locales/${lang}.ts`, 'utf8')
   // The file is `const x: Translation = { … }` plus an import and, in en.ts,
@@ -77,7 +141,10 @@ function loadLocale(lang) {
   // runs a source file as code, and an empty context means the snippet
   // cannot reach this script's scope or Node's globals if one ever grows
   // something other than a plain data literal.
-  return runInNewContext(`(${raw.slice(start, end)})`, Object.create(null))
+  return {
+    ...runInNewContext(`(${raw.slice(start, end)})`, Object.create(null)),
+    ...loadExtras(lang),
+  }
 }
 
 const flatten = (obj, prefix = '') =>

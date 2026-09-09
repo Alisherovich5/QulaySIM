@@ -68,3 +68,37 @@ export const formatDate = (iso: string | null, lang = 'en') => {
     day: 'numeric',
   })
 }
+
+/**
+ * "15:20" — traffik oxirgi marta qachon so'ralgani.
+ *
+ * Faqat soat va daqiqa: sana kerak emas, chunki sinxron har 20 daqiqada
+ * ishlaydi va mijoz bugungi raqamga qaraydi. Sana kerak bo'ladigan holat --
+ * sinxron kunlab to'xtab qolgani -- adminkadagi ustunda ko'rinadi, mijozning
+ * sahifasida emas.
+ *
+ * Vaqt mijozning o'z mintaqasida ko'rsatiladi: server UTC'da yozadi, lekin
+ * "15:20 da yangilandi" degan yozuv odam o'z soatiga qarab tekshiradigan
+ * gap.
+ */
+export const formatClock = (iso: string | null | undefined, locale: string) => {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return new Intl.DateTimeFormat(locale === 'uz' ? 'ru' : locale, {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(d)
+}
+
+/**
+ * StatTile raqamni son sifatida oladi, matn sifatida emas -- shuning uchun
+ * `usedLabel` ni to'g'ridan-to'g'ri berib bo'lmaydi. Bu yordamchi o'sha
+ * qoidani (1 GB dan pastda megabayt) plitka kutgan uchta bo'lakka ajratadi,
+ * ya'ni qoida ikki joyda takrorlanmaydi.
+ */
+export const usedTile = (mb: number) => {
+  const safe = Math.max(0, mb)
+  if (safe < 1024) return { value: safe, suffix: ' MB', decimals: 0 }
+  return { value: safe / 1024, suffix: ' GB', decimals: 1 }
+}
