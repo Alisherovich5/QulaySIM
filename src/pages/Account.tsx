@@ -25,6 +25,7 @@ import Reveal from '../components/Reveal'
 import { Button, Card } from '../components/ui'
 import ProfileHeader from '../components/account/ProfileHeader'
 import StatTile from '../components/account/StatTile'
+import { usedLabel, usedTile } from '../lib/format'
 import OrderRow from '../components/account/OrderRow'
 import SettingsForm from '../components/account/SettingsForm'
 import WorldMap from '../components/account/WorldMap'
@@ -206,7 +207,6 @@ export default function Account() {
   ]
 
   const hasQuota = summary.data_total_mb > 0
-  const gbLeft = Math.max(0, (summary.data_total_mb - summary.data_used_mb) / 1024)
 
   /* The eSIM list, kept in one place because it is now shown twice: on its own
      tab, and under the globe on the overview. Duplicating forty lines of JSX is
@@ -274,11 +274,12 @@ export default function Account() {
             />
           </Reveal>
           <Reveal delay={60} className="h-full">
+            {/* Birlik qiymatga qarab tanlanadi: 1 MB sarflagan mijoz bu
+                plitkada "0.0 GB" ni ko'rib, hisob ishlamayapti deb o'ylagan va
+                shikoyat yozgan. Qoida lib/format.ts da, bitta joyda. */}
             <StatTile
               icon={QrCode}
-              value={summary.data_used_mb / 1024}
-              decimals={1}
-              suffix=" GB"
+              {...usedTile(summary.data_used_mb)}
               label={t('account.statData')}
               tone="brand"
               featured
@@ -286,7 +287,9 @@ export default function Account() {
                 hasQuota
                   ? {
                       ratio: summary.data_used_mb / summary.data_total_mb,
-                      caption: t('account.statDataLeft', { gb: gbLeft.toFixed(1) }),
+                      caption: t('esim.leftCaption', {
+                        amount: usedLabel(summary.data_total_mb - summary.data_used_mb),
+                      }),
                     }
                   : undefined
               }

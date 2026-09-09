@@ -1,7 +1,8 @@
 import { CalendarClock, CheckCircle2, CircleDot, Power, ShoppingBag } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { ESIM } from '../lib/types'
-import { formatDate, usedLabel } from '../lib/format'
+import { hasNotStarted } from '../lib/esim-progress'
+import { formatClock, formatDate, usedLabel } from '../lib/format'
 import { Button, Card } from './ui'
 import { TopUpButton } from './account/TopUpSheet'
 
@@ -117,7 +118,31 @@ export default function EsimCard({ esim, onActivate, activating, onTopUp }: Prop
                     used: usedLabel(esim.data_used_mb),
                     total: usedLabel(total),
                   })}
+                  {/* Raqam yonida qachon so'ralgani. Yolg'iz turgan "1 MB"
+                      buzuq raqamdek o'qiladi; vaqt bilan birga -- javob. */}
+                  {' · '}
+                  {esim.last_synced_at
+                    ? t('esim.checkedAt', {
+                        time: formatClock(esim.last_synced_at, i18n.language),
+                      })
+                    : t('esim.checkedNever')}
                 </p>
+              )}
+
+              {/* 3-band: nol sarfni tushuntirish. Sabab -- lib/esim-progress.ts. */}
+              {hasNotStarted(esim) && (
+                <div className="mt-2 rounded-lg border-l-[3px] border-brand-500 bg-brand-50/70 px-3 py-2 dark:bg-brand-900/25">
+                  <p className="font-600 text-ink">{t('esim.notStartedTitle')}</p>
+                  <p className="mt-0.5 text-xs text-slate-soft">{t('esim.notStartedBody')}</p>
+                </div>
+              )}
+              {/* 4-band: muddat o'rnatilgan kundan ketadi, ya'ni bu yerda pul
+                  yonadi. Hali o'rnatilmagan eSIMda, sana yonida turadi. */}
+              {esim.status === 'pending' && (
+                <div className="mt-2 rounded-lg border-l-[3px] border-amber-signal bg-amber-signal/10 px-3 py-2">
+                  <p className="font-600 text-ink">{t('esim.installWarnTitle')}</p>
+                  <p className="mt-0.5 text-xs text-slate-soft">{t('esim.installWarnBody')}</p>
+                </div>
               )}
               <p className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-soft">
                 <CalendarClock size={13} />
