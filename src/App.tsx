@@ -15,8 +15,6 @@ import Home from './pages/Home'
  * dashboard, checkout and support pages before seeing the hero.
  */
 const Destinations = lazy(() => import('./pages/Destinations'))
-const V2Home = lazy(() => import('./v2/Home'))
-const V2Country = lazy(() => import('./v2/Country'))
 const Global = lazy(() => import('./pages/Global'))
 const CountryDetail = lazy(() => import('./pages/CountryDetail'))
 const RegionDetail = lazy(() => import('./pages/RegionDetail'))
@@ -75,12 +73,14 @@ export default function App() {
             <StaleNotice />
             <Suspense fallback={<RouteFallback />}>
               <Routes>
-                {/* Yangi interfeys -- o'z ramkasi bilan, Layout'siz.
-                    Ataylab alohida manzilda: hozirgi sayt bir piksel ham
-                    o'zgarmaydi va ikkalasini telefonda navbat bilan ochib
-                    solishtirish mumkin. */}
-                <Route path="/yangi" element={<V2Home />} />
-                <Route path="/yangi/:slug" element={<V2Country />} />
+                {/* The prototype in src/v2 is DELIBERATELY not mounted. It is
+                    unfinished -- its buy button does nothing -- and a new design
+                    is not what this release is for. Two lines bring it back:
+
+                      const V2Home = lazy(() => import('./v2/Home'))
+                      <Route path="/yangi" element={<V2Home />} />
+
+                    The code and its tests stay; only the address is gone. */}
 
                 <Route element={<Layout />}>
                   <Route path="/" element={<Home />} />
