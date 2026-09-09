@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   AlertTriangle,
@@ -15,6 +15,8 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
+import { usedLabel, usedTile } from '../lib/format'
+import { useDialog } from '../lib/useDialog'
 import Seo from '../components/Seo'
 import { useAuth } from '../context/AuthContext'
 import type { AccountSummary, ESIM, Order } from '../lib/types'
@@ -111,7 +113,18 @@ export default function Account() {
     return known.includes(wanted as Tab) ? (wanted as Tab) : 'map'
   })
   const [activating, setActivating] = useState<number | null>(null)
+  const [activationError, setActivationError] = useState<string | null>(null)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
+  const logoutRef = useDialog(() => setShowLogoutConfirm(false), showLogoutConfirm)
+  const tabRail = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (loading || !window.matchMedia('(max-width: 767px)').matches) return
+    const rail = tabRail.current
+    const selected = rail?.querySelector<HTMLElement>('[aria-pressed="true"]')
+    if (!rail || !selected) return
+    rail.scrollLeft += selected.getBoundingClientRect().left - rail.getBoundingClientRect().left - 8
+  }, [tab, loading])
 
   const load = () => {
     setLoading(true)
@@ -141,11 +154,14 @@ export default function Account() {
 
   const activate = async (id: number) => {
     setActivating(id)
+    setActivationError(null)
     try {
       const { data } = await api.post<ESIM>(`/account/esims/${id}/activate`)
       setEsims((prev) => prev.map((e) => (e.id === id ? data : e)))
       const s = await api.get<AccountSummary>('/account/summary')
       setSummary(s.data)
+    } catch {
+      setActivationError(t('account.errorSubtitle'))
     } finally {
       setActivating(null)
     }
@@ -199,69 +215,71 @@ export default function Account() {
     { key: 'esims', label: t('account.tabEsims'), icon: QrCode },
     { key: 'orders', label: t('account.tabOrders'), icon: Receipt },
     { key: 'review', label: t('account.tabReview'), icon: MessageSquareText },
-    ...(showReferral
-      ? [{ key: 'referral' as Tab, label: t('referral.tab'), icon: Gift }]
-      : []),
+    ...(showReferral ? [{ key: 'referral' as Tab, label: t('referral.tab'), icon: Gift }] : []),
     { key: 'settings', label: t('account.tabSettings'), icon: SignalHigh },
   ]
 
   const hasQuota = summary.data_total_mb > 0
-  const gbLeft = Math.max(0, (summary.data_total_mb - summary.data_used_mb) / 1024)
 
   /* The eSIM list, kept in one place because it is now shown twice: on its own
      tab, and under the globe on the overview. Duplicating forty lines of JSX is
      how the two copies start disagreeing. */
   const esimsSection = (
-      <div>
-        <SectionHead
-          title={t('account.tabEsims')}
-          subtitle={t('account.esimsSubtitle')}
-          count={esims.length || undefined}
-          action={
-            esims.length > 0 ? (
-              <Button to="/destinations" variant="ghost" className="focus-ring min-h-11 py-0 text-sm">
-                <Plus size={16} /> {t('account.buyAnother')}
-              </Button>
-            ) : undefined
-          }
-        />
-        {esims.length === 0 ? (
-          <Card className="elev-1 px-6 py-12 text-center">
-            <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-500/10 text-brand-600 ring-1 ring-brand-500/15 dark:text-brand-300">
-              <QrCode size={26} />
-            </span>
-            <h3 className="mt-4 font-display text-xl font-700">{t('account.emptyTitle')}</h3>
-            <p className="mx-auto mt-2 max-w-sm text-slate-soft">{t('account.emptySubtitle')}</p>
-            <Button to="/destinations" className="focus-ring mx-auto mt-5 w-fit px-6 py-3">
+    <div>
+      {activationError && (
+        <p role="alert" className="mb-4 rounded-xl bg-red-500/10 p-4 text-status-bad-ink">
+          {activationError}
+        </p>
+      )}
+      <SectionHead
+        title={t('account.tabEsims')}
+        subtitle={t('account.esimsSubtitle')}
+        count={esims.length || undefined}
+        action={
+          esims.length > 0 ? (
+            <Button to="/destinations" variant="ghost" className="focus-ring min-h-11 py-0 text-sm">
               <Plus size={16} /> {t('account.buyAnother')}
             </Button>
-          </Card>
-        ) : (
-          <div className="grid gap-4 lg:grid-cols-2">
-            {esims.map((e, i) => (
-              <Reveal key={e.id} delay={i * 50}>
-                <EsimCard
-                  esim={e}
-                  onActivate={activate}
-                  activating={activating === e.id}
-                  onTopUp={setTopUpFor}
-                />
-              </Reveal>
-            ))}
-          </div>
-        )}
-      </div>
+          ) : undefined
+        }
+      />
+      {esims.length === 0 ? (
+        <Card className="elev-1 px-6 py-12 text-center">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-brand-500/10 text-brand-600 ring-1 ring-brand-500/15 dark:text-brand-300">
+            <QrCode size={26} />
+          </span>
+          <h3 className="mt-4 font-display text-xl font-700">{t('account.emptyTitle')}</h3>
+          <p className="mx-auto mt-2 max-w-sm text-slate-soft">{t('account.emptySubtitle')}</p>
+          <Button to="/destinations" className="focus-ring mx-auto mt-5 w-fit px-6 py-3">
+            <Plus size={16} /> {t('account.buyAnother')}
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {esims.map((e, i) => (
+            <Reveal key={e.id} delay={i * 50}>
+              <EsimCard
+                esim={e}
+                onActivate={activate}
+                activating={activating === e.id}
+                onTopUp={setTopUpFor}
+              />
+            </Reveal>
+          ))}
+        </div>
+      )}
+    </div>
   )
 
   return (
-    <div className="container-page py-6 sm:py-10">
+    <div className="qs-page qs-account container-page">
       <Seo title={t('seo.accountTitle')} description={t('seo.homeDescription')} noindex />
       <Reveal>
         <ProfileHeader summary={summary} onLogout={handleLogout} onSummaryChange={setSummary} />
       </Reveal>
 
       {/* Overview -------------------------------------------------------- */}
-      <div className="mt-7 sm:mt-9">
+      <div className="account-overview mt-7 sm:mt-9">
         <Eyebrow>{t('account.overview')}</Eyebrow>
         <div className="mt-3 grid grid-cols-2 items-stretch gap-3 sm:gap-4 lg:grid-cols-4">
           <Reveal delay={0} className="h-full">
@@ -274,11 +292,12 @@ export default function Account() {
             />
           </Reveal>
           <Reveal delay={60} className="h-full">
+            {/* Birlik qiymatga qarab tanlanadi: 1 MB sarflagan mijoz bu
+                plitkada "0.0 GB" ni ko'rib, hisob ishlamayapti deb o'ylagan
+                va shikoyat yozgan. Qoida lib/format.ts da, bitta joyda. */}
             <StatTile
               icon={QrCode}
-              value={summary.data_used_mb / 1024}
-              decimals={1}
-              suffix=" GB"
+              {...usedTile(summary.data_used_mb)}
               label={t('account.statData')}
               tone="brand"
               featured
@@ -286,7 +305,9 @@ export default function Account() {
                 hasQuota
                   ? {
                       ratio: summary.data_used_mb / summary.data_total_mb,
-                      caption: t('account.statDataLeft', { gb: gbLeft.toFixed(1) }),
+                      caption: t('esim.leftCaption', {
+                        amount: usedLabel(summary.data_total_mb - summary.data_used_mb),
+                      }),
                     }
                   : undefined
               }
@@ -316,111 +337,140 @@ export default function Account() {
       {/* Tabs ------------------------------------------------------------ */}
       {/* Labels are no longer clipped to a fixed 112px on a phone — the rail
           scrolls and each tab is as wide as its word. */}
-      <div className="-mx-5 mt-7 px-5 sm:mx-0 sm:px-0 md:mt-9">
-        {/* p-1.5 is load-bearing: the rail is a scroll container, so it clips
+      <div className="account-layout">
+        <div className="account-sidebar">
+          {/* p-1.5 is load-bearing: the rail is a scroll container, so it clips
             its children — the 2px focus outline plus its 2px offset has to fit
             inside the padding or the first and last tab lose their ring. */}
-        <div className="account-tab-rail flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain rounded-2xl bg-surface-2 p-1.5 ring-1 ring-line [scrollbar-width:none] dark:bg-canvas">
-          {tabs.map((tb) => {
-            const active = openTab === tb.key
-            return (
-              <button
-                key={tb.key}
-                type="button"
-                onClick={() => setTab(tb.key)}
-                aria-pressed={active}
-                className={`focus-ring flex min-h-11 shrink-0 snap-start items-center justify-center gap-2 rounded-xl px-3.5 text-sm font-600 whitespace-nowrap transition-[background-color,color,box-shadow] duration-200 md:min-w-0 md:flex-1 ${
-                  active
-                    ? 'elev-1 bg-surface text-brand-600 dark:bg-surface-2 dark:text-accent-400'
-                    : 'text-slate-soft hover:text-ink'
-                }`}
-              >
-                <tb.icon size={16} className="shrink-0" aria-hidden />
-                <span className="md:truncate">{tb.label}</span>
-              </button>
-            )
-          })}
+          <div
+            ref={tabRail}
+            className="account-tab-rail flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain rounded-2xl bg-surface-2 p-1.5 ring-1 ring-line [scrollbar-width:none] dark:bg-canvas"
+          >
+            {tabs.map((tb) => {
+              const active = openTab === tb.key
+              return (
+                <button
+                  key={tb.key}
+                  type="button"
+                  onClick={() => {
+                    setTab(tb.key)
+                    navigate('?tab=' + tb.key, { replace: true })
+                  }}
+                  aria-pressed={active}
+                  className={`focus-ring flex min-h-11 shrink-0 snap-start items-center justify-center gap-2 rounded-xl px-3.5 text-sm font-600 whitespace-nowrap transition-[background-color,color,box-shadow] duration-200 md:min-w-0 md:flex-1 ${
+                    active
+                      ? 'elev-1 bg-surface text-brand-600 dark:bg-surface-2 dark:text-accent-400'
+                      : 'text-slate-soft hover:text-ink'
+                  }`}
+                >
+                  <tb.icon size={16} className="shrink-0" aria-hidden />
+                  <span className="md:truncate">{tb.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Panel ----------------------------------------------------------- */}
+        <div key={tab} className="page-in mt-6 sm:mt-8">
+          {openTab === 'map' && (
+            // The passport panel is gone: it was a second box below the globe
+            // saying what the globe already said, and its one useful line — which
+            // countries, how many eSIMs — now sits under the globe itself.
+            // One page rather than one panel: the globe, then the eSIMs the
+            // customer came for, then the referral offer. The tabs still work — this
+            // is the overview showing what a customer opening their account wants
+            // to see without hunting for a tab.
+            <div className="space-y-10 sm:space-y-12">
+              <WorldMap passport={summary.passport} />
+              {esimsSection}
+              <ReferralPanel />
+            </div>
+          )}
+
+          {openTab === 'esims' && esimsSection}
+
+          {openTab === 'orders' && (
+            <div>
+              <SectionHead
+                title={t('account.tabOrders')}
+                subtitle={t('account.ordersSubtitle')}
+                count={orders.length || undefined}
+              />
+              {orders.length === 0 ? (
+                <Card className="elev-1 px-6 py-12 text-center text-slate-soft">
+                  {t('account.noOrders')}
+                </Card>
+              ) : (
+                /* One card with hairline dividers instead of five detached
+                 boxes: an order history is a list, and reads as one. */
+                <Reveal>
+                  <ul className="card elev-1 divide-y divide-line overflow-hidden">
+                    {orders.map((o, i) => (
+                      <OrderRow key={o.id} order={o} index={i} />
+                    ))}
+                  </ul>
+                </Reveal>
+              )}
+            </div>
+          )}
+
+          {openTab === 'referral' && <ReferralPanel />}
+
+          {openTab === 'review' && <ReviewPanel />}
+
+          {openTab === 'settings' && (
+            <SettingsForm initialName={summary.full_name} onSaved={load} onLogout={handleLogout} />
+          )}
         </div>
       </div>
-
-      {/* Panel ----------------------------------------------------------- */}
-      <div key={tab} className="page-in mt-6 sm:mt-8">
-        {openTab === 'map' && (
-          // The passport panel is gone: it was a second box below the globe
-          // saying what the globe already said, and its one useful line — which
-          // countries, how many eSIMs — now sits under the globe itself.
-          // One page rather than one panel: the globe, then the eSIMs the
-          // customer came for, then the referral offer. The tabs still work — this
-          // is the overview showing what a customer opening their account wants
-          // to see without hunting for a tab.
-          <div className="space-y-10 sm:space-y-12">
-            <WorldMap passport={summary.passport} />
-            {esimsSection}
-            <ReferralPanel />
-          </div>
-        )}
-
-        {openTab === 'esims' && esimsSection}
-
-        {openTab === 'orders' && (
-          <div>
-            <SectionHead
-              title={t('account.tabOrders')}
-              subtitle={t('account.ordersSubtitle')}
-              count={orders.length || undefined}
-            />
-            {orders.length === 0 ? (
-              <Card className="elev-1 px-6 py-12 text-center text-slate-soft">
-                {t('account.noOrders')}
-              </Card>
-            ) : (
-              /* One card with hairline dividers instead of five detached
-                 boxes: an order history is a list, and reads as one. */
-              <Reveal>
-                <ul className="card elev-1 divide-y divide-line overflow-hidden">
-                  {orders.map((o, i) => (
-                    <OrderRow key={o.id} order={o} index={i} />
-                  ))}
-                </ul>
-              </Reveal>
-            )}
-          </div>
-        )}
-
-        {openTab === 'referral' && <ReferralPanel />}
-
-        {openTab === 'review' && <ReviewPanel />}
-
-        {openTab === 'settings' && (
-          <SettingsForm initialName={summary.full_name} onSaved={load} onLogout={handleLogout} />
-        )}
-      </div>
-
       {showLogoutConfirm && (
         <div
+          ref={logoutRef}
+          tabIndex={-1}
           className="fixed inset-0 z-[120] flex items-end bg-slate-950/60 backdrop-blur-sm sm:grid sm:place-items-center sm:p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="logout-title"
           aria-describedby="logout-description"
-          onMouseDown={(event) => { if (event.target === event.currentTarget) setShowLogoutConfirm(false) }}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setShowLogoutConfirm(false)
+          }}
         >
           <Card className="logout-sheet motion-safe:animate-[fs-sheet-in_280ms_cubic-bezier(0.22,1,0.36,1)_both] w-full rounded-b-none rounded-t-[1.75rem] border-x-0 border-b-0 p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-2xl sm:max-w-sm sm:rounded-3xl sm:border sm:p-6">
-            <span aria-hidden className="mx-auto mb-5 block h-1.5 w-11 rounded-full bg-line sm:hidden" />
+            <span
+              aria-hidden
+              className="mx-auto mb-5 block h-1.5 w-11 rounded-full bg-line sm:hidden"
+            />
             <div className="flex items-start gap-3 sm:block">
               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-red-500/10 text-red-500 ring-1 ring-red-500/15 sm:h-14 sm:w-14">
                 <AlertTriangle size={24} />
               </span>
               <div>
-                <h2 id="logout-title" className="text-xl font-700 sm:mt-4">{t('account.logoutConfirmTitle')}</h2>
-                <p id="logout-description" className="mt-1.5 text-sm leading-6 text-slate-soft sm:mt-2">{t('account.logoutConfirmText')}</p>
+                <h2 id="logout-title" className="text-xl font-700 sm:mt-4">
+                  {t('account.logoutConfirmTitle')}
+                </h2>
+                <p
+                  id="logout-description"
+                  className="mt-1.5 text-sm leading-6 text-slate-soft sm:mt-2"
+                >
+                  {t('account.logoutConfirmText')}
+                </p>
               </div>
             </div>
             <div className="mt-6 grid gap-3 sm:flex sm:flex-row-reverse sm:justify-end">
-              <Button onClick={confirmLogout} className="focus-ring min-h-12 w-full bg-red-500 px-5 hover:bg-red-600 sm:w-auto">
+              <Button
+                onClick={confirmLogout}
+                className="focus-ring min-h-12 w-full bg-red-500 px-5 hover:bg-red-600 sm:w-auto"
+              >
                 {t('account.logoutConfirm')}
               </Button>
-              <Button variant="ghost" onClick={() => setShowLogoutConfirm(false)} className="focus-ring min-h-12 w-full px-5 sm:w-auto">
+              <Button
+                variant="ghost"
+                data-dialog-focus
+                onClick={() => setShowLogoutConfirm(false)}
+                className="focus-ring min-h-12 w-full px-5 sm:w-auto"
+              >
                 {t('account.logoutCancel')}
               </Button>
             </div>
