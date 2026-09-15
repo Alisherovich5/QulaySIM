@@ -140,12 +140,17 @@ def main() -> int:
     # that is never seen through that does not need to be encoded: 900px at a
     # lower quality and a gentler sharpen than the hero, which is the only one
     # of these drawn at full strength.
+    #
+    # 16:9 rather than the photographs' own shapes: the card is 350x188 and the
+    # country page heading is wider still, so `cover` was cropping away a third
+    # of the height of every 3:2 file we encoded. The crop happens here once
+    # instead of in every browser on every visit.
     photos = SOURCES / 'photos'
     if photos.is_dir():
         for src in sorted(photos.glob('*.jpg')):
             jobs.append(Job(src, public / 'media' / 'photos' / src.name,
-                            widths=(480, 900), avif_quality=44, webp_quality=66,
-                            sharpen=55, ratio=(3, 2)))
+                            widths=(480, 900), avif_quality=40, webp_quality=62,
+                            sharpen=45, ratio=(16, 9)))
 
     if not jobs:
         print(f'no sources under {SOURCES}', file=sys.stderr)

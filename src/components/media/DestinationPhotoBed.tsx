@@ -14,7 +14,17 @@ import Photo from './Photo'
  */
 export default function DestinationPhotoBed({
   slug,
-  sizes = '(min-width: 1024px) 380px, (min-width: 640px) 45vw, 92vw',
+  /* Measured against the grid these sit in, not guessed.
+   *
+   * DestinationsExplorer is three columns from 360px upward and two below it,
+   * which works out at very close to 31vw for a card at every width above
+   * 360px — measured in the browser at 435px in a 1440px viewport, not derived
+   * from the container's max-width, which the gaps and padding make wrong.
+   *
+   * The first version of this said 92vw for phones, which is the width of the
+   * whole screen: every phone fetched the 900px variant for a picture drawn
+   * 103px wide, four times the bytes for no pixels anyone can see. */
+  sizes = '(min-width: 360px) 31vw, 46vw',
 }: {
   slug: string | undefined
   sizes?: string
