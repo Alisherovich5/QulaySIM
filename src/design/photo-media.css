@@ -14,7 +14,7 @@
   /* The colour the artwork's own sky settles to. It is painted before the
      photograph arrives and stays behind its transparent edges, so the hero
      never flashes the page canvas through a half-decoded image. */
-  background-color: #dff3f8;
+  background-color: #e1f7fa;
 }
 :root.dark .hero-photo {
   background-color: #061c27;
@@ -63,19 +63,19 @@
   inset: 0;
   background: linear-gradient(
     96deg,
-    rgb(242 250 252 / 0.9) 0%,
-    rgb(242 250 252 / 0.74) 32%,
-    rgb(242 250 252 / 0.2) 58%,
-    rgb(242 250 252 / 0) 74%
+    rgb(244 250 252 / 0.9) 0%,
+    rgb(244 250 252 / 0.74) 32%,
+    rgb(244 250 252 / 0.2) 58%,
+    rgb(244 250 252 / 0) 74%
   );
 }
 :root.dark .hero-art-scrim {
   background: linear-gradient(
     96deg,
-    rgb(4 20 27 / 0.95) 0%,
-    rgb(4 20 27 / 0.88) 34%,
-    rgb(4 20 27 / 0.42) 60%,
-    rgb(4 20 27 / 0) 78%
+    rgb(4 22 29 / 0.95) 0%,
+    rgb(4 22 29 / 0.88) 34%,
+    rgb(4 22 29 / 0.42) 60%,
+    rgb(4 22 29 / 0) 78%
   );
 }
 
@@ -91,20 +91,20 @@
   .hero-art-scrim {
     background: linear-gradient(
       178deg,
-      rgb(242 250 252 / 0.93) 0%,
-      rgb(242 250 252 / 0.88) 46%,
-      rgb(242 250 252 / 0.62) 78%,
-      rgb(242 250 252 / 0.5) 100%
+      rgb(244 250 252 / 0.93) 0%,
+      rgb(244 250 252 / 0.88) 46%,
+      rgb(244 250 252 / 0.62) 78%,
+      rgb(244 250 252 / 0.5) 100%
     );
   }
 
   :root.dark .hero-art-scrim {
     background: linear-gradient(
       178deg,
-      rgb(4 20 27 / 0.95) 0%,
-      rgb(4 20 27 / 0.9) 46%,
-      rgb(4 20 27 / 0.68) 78%,
-      rgb(4 20 27 / 0.55) 100%
+      rgb(4 22 29 / 0.95) 0%,
+      rgb(4 22 29 / 0.9) 46%,
+      rgb(4 22 29 / 0.68) 78%,
+      rgb(4 22 29 / 0.55) 100%
     );
   }
 }

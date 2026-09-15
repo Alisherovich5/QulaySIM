@@ -91,7 +91,16 @@
   --color-brand-700: #005a4e;
   --color-brand-800: #004038;
   --color-brand-900: #002823;
+  --color-brand-950: #001a17;
 
+  /* Five of these are here because the classes were already being written
+     and rendering nothing. Tailwind v4 generates a utility only for a token
+     that exists, so `text-brand-950`, `dark:text-accent-300`, `bg-accent-50`,
+     `dark:text-gold-300` and `bg-status-warn-bg` were silently no-ops — the
+     promo pill's label fell back to inherited white on mint (2.54:1), and the
+     dark-theme fact chip fell back to its light-theme ink (3.29:1). */
+  --color-accent-50: #eefdf8;
+  --color-accent-300: #8ae5cf;
   --color-accent-400: #34e3b0;
   --color-accent-500: #10b981;
   --color-accent-600: #059669;
@@ -104,15 +113,22 @@
   --color-status-good-ink: #0c875e;
   --color-status-warn-ink: #9e6d14;
   --color-status-bad-ink: #d73d3d;
-  --color-accent-700: #04875e;
+  --color-status-warn-bg: #fefaf0;
+  /* One step darker than it was. #04875e is exactly 4.53:1 on pure white,
+     which leaves nothing for the tinted chip it is actually drawn on — on
+     accent-50 it measured 4.33:1. This clears 4.5 on both, and white on it as
+     a button goes from 4.53 to 5.36. */
+  --color-accent-700: #047a55;
   --color-accent-800: #024a34;
 
   /* eSIMCard-style gold — used for stars, ratings and "popular" highlights */
   --color-gold-400: #f1d98a;
   --color-gold-500: #d4af37;
   --color-gold-600: #b8941f;
-  /* The first gold that carries text on white: 600 is 2.9:1. */
-  --color-gold-700: #907318;
+  --color-gold-300: #eed489;
+  /* The first gold that carries text on white: 600 is 2.9:1. 700 was #907318,
+     which is 4.51:1 there and 4.21:1 on the gold-tinted chip it is used on. */
+  --color-gold-700: #856a15;
 
   --color-amber-signal: #ffb020;
   /* Violet accent. Existed only as a bare hex inside IconBadge, which meant it
@@ -140,6 +156,7 @@
     --color-status-good-ink: #34e3b0;
     --color-status-warn-ink: #ffb020;
     --color-status-bad-ink: #fb4747;
+    --color-status-warn-bg: #3a2a08;
   --color-canvas: #06141a;
   --color-surface: #0d2730;
   --color-surface-2: #123440;

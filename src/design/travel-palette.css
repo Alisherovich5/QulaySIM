@@ -1,0 +1,127 @@
+/* The palette of the approved design, over the production build.
+ *
+ * Tokens only. No grid, spacing, sizing, font, order or breakpoint is touched
+ * here — every component keeps the geometry it already had, and the colour it
+ * resolves through `var(--color-…)` changes underneath it. That is why this
+ * file is last in main.tsx: it is the layer that wins, and it is the only
+ * thing anyone has to read to know what colour the site is.
+ *
+ * What changes: the neutrals go from warm and green (canvas #f8faf7, ink
+ * #21362c) to cool and marine (canvas #f4fafc, ink #10283e). The brand green
+ * is untouched — #008e7c is QulaySIM and does not move — but it now sits on a
+ * blue-grey rather than a green-grey, which is the whole difference between
+ * the two designs and the reason the site did not look like the mock-up after
+ * the structure had been ported.
+ *
+ * Source: ~/Desktop/newqulaysimdesign/src/design/travel.css, :root and
+ * :root.dark. Two deliberate departures from it, both in the dark theme and
+ * both noted at the line.
+ */
+
+:root {
+  --color-ink: #10283e;
+  /* travel.css says #61768a. On its own canvas that is 4.46:1, and this is
+     the colour every secondary line on the site is set in — the card subtitles,
+     the "dan" before a price, the section notes. Eleven percent darker clears
+     4.5:1 on every light surface it is drawn on, including the worst of them —
+     the 90%-opaque sticky header composited over the page's dark outer band,
+     where the original measured 3.85:1 (5.68 white / 5.39 canvas / 5.17 the
+     recessed one / 4.65 the header). Same hue, and indistinguishable from the
+     original unless the two are laid side by side. */
+  --color-slate-soft: #56697a;
+  --color-canvas: #f4fafc;
+  --color-surface: #ffffff;
+  --color-surface-2: #edf6f7;
+  --color-mist: #edf6f7;
+  --color-line: #dcebee;
+
+  --color-brand-50: #e7f8f4;
+  --color-brand-100: #c9f0e8;
+  --color-brand-200: #99dfd2;
+  --color-brand-300: #62cbb7;
+  --color-brand-400: #24ae97;
+  --color-brand-500: #008e7c;
+  --color-brand-600: #007365;
+  --color-brand-700: #005a4e;
+  --color-brand-800: #004038;
+  --color-brand-900: #002823;
+
+  --color-accent-400: #65e0c4;
+  --color-accent-500: #10b981;
+
+  /* journey.css's own three neutrals, moved to the same cool family. They are
+     not in travel.css because that design has no journey.css under it — but
+     this build does, and the footer and the page's outer band are painted with
+     them. Left warm, they were the one green rectangle on an otherwise marine
+     page. */
+  --departure: #062230;
+  --cabin: #0a242d;
+  --paper: #f4fafc;
+  --signal: #24ae97;
+}
+
+.dark {
+  --color-ink: #e7f3f4;
+  --color-slate-soft: #a0b7c1;
+  --color-canvas: #04161d;
+  --color-surface: #0a242d;
+  --color-surface-2: #10313b;
+  --color-mist: #10313b;
+  --color-line: #21434d;
+
+  --color-brand-50: #123b38;
+  --color-brand-100: #194b43;
+  --color-brand-200: #246455;
+  --color-brand-300: #7dd9c8;
+  --color-brand-400: #2eb49b;
+  --color-brand-500: #159d87;
+  /* The brand greens carry two jobs, and in the dark theme one token cannot
+     do both: white on a fill needs a luminance under 0.183, the same green as
+     text on the dark surface needs one over 0.254.
+
+     The token takes the TEXT job, because that is the one written both ways —
+     `text-brand-600` in components and `color: var(--color-brand-600)` in
+     twenty places in journey.css. The fill job is always written as a `bg-`
+     class, so it is pinned by one rule at the foot of this file. */
+  --color-brand-600: #7dd9c8;
+  --color-brand-700: #91e4d2;
+  --color-brand-800: #174038;
+  --color-brand-900: #062c2b;
+
+  --color-accent-300: #a2ecdb;
+  --color-accent-400: #76dfc5;
+
+  --departure: #04161d;
+  --cabin: #0a242d;
+  --paper: #e7f3f4;
+
+  /* Cards on a dark marine surface are separated by their own lightness, not
+     by a shadow — a grey shadow is invisible there and a black one only makes
+     the card look cut out. */
+  --fs-e1: inset 0 1px 0 0 rgb(255 255 255 / 0.04);
+  --fs-e2: inset 0 1px 0 0 rgb(255 255 255 / 0.05);
+}
+
+
+/* The fill role of the brand greens in the dark theme.
+ *
+ * The tokens above took the text job. A solid brand fill has a white label on
+ * it in seventeen places — the primary button, the active currency pill, the
+ * selected region chip, the device verdict — and white on the mint those
+ * tokens now hold is 1.66:1. It was 2.24:1 before this file existed, so this
+ * is a repair rather than a regression: the active "UZS" pill has never been
+ * readable in the dark theme.
+ *
+ * `~=` and not `*=` on purpose. It matches the whole class token, so
+ * `bg-brand-500` is pinned and `bg-brand-500/10` — a ten-percent wash used
+ * behind icons in eleven places — is left alone. `*=` would have turned every
+ * one of those washes into a solid block.
+ *
+ * White on #007365 is 5.77:1. It is the same green the light theme fills with,
+ * which is also why a button does not change colour when the theme does.
+ */
+.dark [class~='bg-brand-500'],
+.dark [class~='bg-brand-600'],
+.dark [class~='bg-brand-700'] {
+  background-color: #007365;
+}

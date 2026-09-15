@@ -4,6 +4,8 @@ import './index.css'
 import './design/journey.css'
 import './design/navigation.css'
 import './design/photo-media.css'
+/* Last: it is the layer that decides what colour the site is. */
+import './design/travel-palette.css'
 import './i18n'
 import App from './App.tsx'
 
