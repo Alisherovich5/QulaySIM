@@ -27,6 +27,16 @@
          handshake off the critical path, which is the part of the sign-in delay
          that is actually ours to remove — the account chooser itself is Google's. -->
     <link rel="preconnect" href="https://accounts.google.com" crossorigin />
+    <!-- The one font file every page needs, started by the parser rather than
+         discovered from the stylesheet.
+
+         The site is one family now, so there is exactly one of these to name.
+         Without it the font is not requested until the CSS has downloaded and
+         been parsed, and `font-display: swap` then repaints every word on the
+         page when it arrives. The Cyrillic and Latin-Extended cuts are left to
+         be discovered: only the Russian pages need the first, and almost
+         nothing needs the second. -->
+    <link rel="preload" href="/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin />
     <!-- Blocking on purpose: it must run before paint. Kept in its own file
          because the site's CSP (script-src 'self') blocks inline scripts. -->
     <script src="/theme-init.js"></script>

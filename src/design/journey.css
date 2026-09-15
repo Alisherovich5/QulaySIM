@@ -1,7 +1,7 @@
 /* QulaySIM / Departure. One visual system, replacing the previous redesign.
    The interactive globe is the signature; the remaining surfaces serve the task. */
 :root {
-  --font-display: 'Unbounded', 'Inter', sans-serif;
+  --font-display: 'Manrope', ui-sans-serif, system-ui, sans-serif;
   --color-canvas: #f8faf7;
   --color-surface: #ffffff;
   --color-surface-2: #eef2ec;
@@ -33,10 +33,9 @@
 body {
   background: var(--departure);
   color: var(--color-ink);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.6;
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
 }
 button,
 a {
@@ -111,29 +110,44 @@ h4 {
   font-family: var(--font-display);
   font-size: 42px;
   line-height: 1.2;
-  font-weight: 600;
+  /* 800, where it used to be 600.
+   *
+   * Two families are not weight-comparable, and the 600 here was measured
+   * against Unbounded, a chunky geometric whose semibold reads as a bold.
+   * Ink coverage per unit of text width, same string at 42px: Unbounded 600
+   * is 0.0226, Manrope 600 is 0.0166 — a quarter lighter. 800 is the top of
+   * Manrope's axis at 0.0195, the closest this family gets, and it is where
+   * the type brief puts headings anyway. */
+  font-weight: 800;
   letter-spacing: -0.045em;
 }
 .site-shell h2 {
   font-family: var(--font-display);
   font-size: 28px;
   line-height: 1.3;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: -0.035em;
 }
 .site-shell h3 {
   font-size: 20px;
   line-height: 1.4;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.025em;
 }
 .site-shell p {
   font-size: 16px;
   text-wrap: pretty;
 }
+/* `font-700` means 700 again.
+ *
+ * It was flattened to 600 because Unbounded and Inter at 700 were too heavy
+ * for this layout — a rule tuned to the faces that are no longer here. Manrope
+ * at 700 is an ordinary bold, and flattening it took the emphasis off the
+ * three things that most need it: the price on a card, the label on the
+ * primary button, and the name of a destination. */
 .site-shell .font-700,
 .auth-page .font-700 {
-  font-weight: 600;
+  font-weight: 700;
 }
 .site-shell .card {
   background: var(--color-surface);
@@ -797,7 +811,7 @@ h4 {
   border-top: 1px solid var(--color-line);
 }
 .faq-item h3 {
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--font-sans) !important;
   font-size: 16px !important;
   letter-spacing: -0.01em;
 }
@@ -1113,7 +1127,7 @@ h4 {
   align-items: center;
   gap: 14px;
   margin-bottom: 6px;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 14px;
   font-weight: 700;
   color: var(--color-slate-soft);
@@ -1228,7 +1242,7 @@ h4 {
   min-width: 0;
 }
 .country-card h3 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 17px;
   line-height: 1.35;
   margin: 0;
@@ -1562,7 +1576,7 @@ h4 {
   color: var(--color-slate-soft);
 }
 .destination-facts dd {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.6;
   letter-spacing: 0;
@@ -1706,7 +1720,7 @@ h4 {
   z-index: 130;
 }
 .qs-global [role='dialog'] h3 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 20px;
 }
 .qs-global [role='dialog'] p {
@@ -1956,7 +1970,7 @@ h4 {
   box-shadow: none;
 }
 .qs-guide .card h2 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 24px;
 }
 .qs-guide .card.text-center {
@@ -1992,13 +2006,13 @@ h4 {
   color: var(--color-slate-soft);
 }
 .qs-legal h2 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 24px;
   line-height: 1.5;
   margin-bottom: 16px;
 }
 .qs-legal h3 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 19px;
 }
 .legal-document {
@@ -2037,7 +2051,7 @@ h4 {
   font-size: 36px;
 }
 .qs-checkout .card h2 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 22px;
 }
 .qs-checkout .card {
@@ -2088,7 +2102,7 @@ h4 {
   margin-bottom: 8px;
 }
 .profile-identity h1 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 32px;
   letter-spacing: -0.035em;
   overflow-wrap: anywhere;
@@ -2149,7 +2163,7 @@ h4 {
 }
 .stat-value {
   font-size: 30px !important;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.045em;
@@ -2222,11 +2236,11 @@ h4 {
   min-width: 0;
 }
 .qs-account h2 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 24px;
 }
 .qs-account h3 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
 }
 .qs-account .grid:has(> .reveal .esim-card) {
   grid-template-columns: 1fr;
@@ -2390,7 +2404,7 @@ h4 {
   outline-offset: 3px;
 }
 .site-shell .logout-sheet h2 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 24px;
 }
 .site-shell .logout-sheet .btn-primary {
@@ -2400,7 +2414,7 @@ h4 {
   background: #96362d;
 }
 .topup-dialog h3 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 22px !important;
 }
 .site-shell .topup-dialog p,
@@ -2601,7 +2615,7 @@ h4 {
   margin-top: 40px;
 }
 .footer-columns h3 {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   color: #819884;
