@@ -6,7 +6,6 @@ import Logo from './Logo'
 import CurrencySwitcher from './CurrencySwitcher'
 import LanguageSwitcher from './LanguageSwitcher'
 import ThemeToggle from './ThemeToggle'
-import PromoStrip from './PromoStrip'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 
@@ -70,10 +69,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Inside the sticky header, so the offer stays on screen while someone
-          browses. I had moved it out to reclaim ~40px per screen; that was the
-          wrong call for a storefront whose main lever is the discount code —
-          a promotion nobody can see while choosing a plan is not a promotion. */}
       {/* One pixel at the very top of the document, watched rather than
           measured. It is what tells the header it is no longer at rest. */}
       <div ref={sentinelRef} aria-hidden className="absolute left-0 top-0 h-px w-px" />
@@ -82,7 +77,17 @@ export default function Navbar() {
         data-detached={detached ? 'true' : 'false'}
         className="site-header sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md"
       >
-      <PromoStrip />
+      {/* The promo strip is off the header, by the owner's instruction.
+
+          It was a dark band across the top of every page, and over the
+          photographic hero it cut the artwork off before the visitor had seen
+          it. The component and its styles stay; one line brings it back:
+
+            import PromoStrip from './PromoStrip'
+            <PromoStrip />   — here, directly inside <header>
+
+          The header also loses ~44px of height on every screen, which the
+          --header-h publisher below picks up on its own. */}
       <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
         <div className="shrink-0">
           <Logo />
