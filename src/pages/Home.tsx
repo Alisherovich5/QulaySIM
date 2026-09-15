@@ -7,6 +7,7 @@ import Testimonials from '../components/home/Testimonials'
 import HomeFaq from '../components/home/HomeFaq'
 import Seo from '../components/Seo'
 import { useLandingContent } from '../lib/useLandingContent'
+import { HOME_GEO } from '../lib/geo'
 import { faqLd, organisationLd, webSiteLd } from '../lib/structured-data'
 import type { SeoLang } from '../lib/seo'
 
@@ -31,6 +32,10 @@ export default function Home() {
       <Seo
         title={t('seo.homeTitle')}
         description={t('seo.homeDescription')}
+        // The storefront itself is about Uzbekistan — that is the market it is
+        // written for, priced in and supported in. Each destination page then
+        // says which country *it* is about.
+        geo={HOME_GEO}
         jsonLd={[
           organisationLd(),
           webSiteLd((i18n.resolvedLanguage ?? 'uz') as SeoLang),

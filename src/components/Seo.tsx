@@ -1,12 +1,14 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
+import type { GeoFacts } from '../lib/geo'
 import {
   alternatesFor,
   absoluteUrl,
   langFromPath,
   OG_IMAGE,
   OG_LOCALE,
+  SEO_LANGS,
   SITE_NAME,
   xDefaultFor,
   type SeoLang,
@@ -54,6 +56,20 @@ interface Props {
   type?: string
   /** Structured data, already shaped. One object or several. */
   jsonLd?: JsonLd | JsonLd[]
+  /**
+   * The place this page is about.
+   *
+   * A catalogue of travel data plans is a geographic product, and every page of
+   * it was shipping without a single geographic signal: nothing said that
+   * /destinations/turkiye is about Türkiye rather than about a SIM card. The
+   * `geo.*` trio and ICBM are the long-standing way to say it, still read by
+   * several crawlers and by every tool that builds a map from a site.
+   *
+   * Left off a page that is about no particular place — the checkout, the
+   * account — rather than defaulted to the company's own address, which would
+   * claim each of those pages is about Tashkent.
+   */
+  geo?: GeoFacts
 }
 
 export default function Seo({
@@ -63,6 +79,7 @@ export default function Seo({
   image = OG_IMAGE,
   type = 'website',
   jsonLd,
+  geo,
 }: Props) {
   const { pathname } = useLocation()
 
@@ -127,10 +144,30 @@ export default function Seo({
       <meta property="og:image:width" content="1200" />
       <meta property="og:image:height" content="630" />
       <meta property="og:locale" content={OG_LOCALE[lang]} />
+      {/* The other two languages of the same page. Facebook and every scraper
+          that follows it treat a missing alternate as "this page exists in one
+          language", which is the opposite of what the hreflang set above
+          says — and the two disagreeing is worse than either alone. */}
+      {SEO_LANGS.filter((l) => l !== lang).map((l) => (
+        <meta key={l} property="og:locale:alternate" content={OG_LOCALE[l]} />
+      ))}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={full} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+
+      {geo && (
+        <>
+          <meta name="geo.region" content={geo.iso2} />
+          <meta name="geo.placename" content={geo.name} />
+          {/* Two spellings of one fact, because the two tags are read by
+              different consumers and neither is a superset of the other.
+              Semicolon for geo.position, comma for ICBM — that difference is
+              in the specifications, not a typo. */}
+          <meta name="geo.position" content={`${geo.lat};${geo.lon}`} />
+          <meta name="ICBM" content={`${geo.lat}, ${geo.lon}`} />
+        </>
+      )}
 
       {/* Not hoisted by React the way meta and link are, but Google reads
           structured data anywhere in the document, and a JSON-LD block is a

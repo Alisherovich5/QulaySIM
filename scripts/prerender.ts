@@ -62,6 +62,7 @@ import {
   interpolate,
   type DestinationFacts,
 } from '../src/lib/destination-facts'
+import { geoFor, HOME_GEO, type GeoFacts } from '../src/lib/geo'
 import type { Plan } from '../src/lib/types'
 
 /** The same locale objects the app uses, so the copy cannot drift. */
@@ -149,6 +150,9 @@ interface PageMeta {
   jsonLd: Array<Record<string, unknown> | null>
   /** og:image override. Only destinations set one — see metaForCountry. */
   image?: string
+  /** The place this page is about — see src/lib/geo.ts. Omitted for pages that
+      are about no particular place. */
+  geo?: GeoFacts
   /**
    * Data baked into the page for the first render.
    *
@@ -186,7 +190,7 @@ function bootFor({ boot }: PageMeta): string {
   return `\n    <script type="application/json" id="__DATA__">${escapeJson(boot)}</script>`
 }
 
-function headFor({ title, description, path, lang, jsonLd, image }: PageMeta): string {
+function headFor({ title, description, path, lang, jsonLd, image, geo }: PageMeta): string {
   const full = `${title} | ${SITE_NAME}`
   const canonical = absoluteUrl(path, lang)
   const card = image ?? OG_IMAGE
@@ -209,11 +213,26 @@ function headFor({ title, description, path, lang, jsonLd, image }: PageMeta): s
     `<meta property="og:image:width" content="1200"${BAKED} />`,
     `<meta property="og:image:height" content="630"${BAKED} />`,
     `<meta property="og:locale" content="${OG_LOCALE[lang]}"${BAKED} />`,
+    ...SEO_LANGS.filter((l) => l !== lang).map(
+      (l) => `<meta property="og:locale:alternate" content="${OG_LOCALE[l]}"${BAKED} />`,
+    ),
     `<meta name="twitter:card" content="summary_large_image"${BAKED} />`,
     `<meta name="twitter:title" content="${escapeAttr(full)}"${BAKED} />`,
     `<meta name="twitter:description" content="${escapeAttr(description)}"${BAKED} />`,
     `<meta name="twitter:image" content="${card}"${BAKED} />`,
   )
+  /* Kept in step with <Seo> by hand, because this file does not run React — it
+     writes the head itself, which is the whole reason it exists. Anything added
+     to one and not the other is a tag a crawler sees only after the JavaScript
+     runs, which for the crawlers this is aimed at is never. */
+  if (geo) {
+    tags.push(
+      `<meta name="geo.region" content="${geo.iso2}"${BAKED} />`,
+      `<meta name="geo.placename" content="${escapeAttr(geo.name)}"${BAKED} />`,
+      `<meta name="geo.position" content="${geo.lat};${geo.lon}"${BAKED} />`,
+      `<meta name="ICBM" content="${geo.lat}, ${geo.lon}"${BAKED} />`,
+    )
+  }
   for (const block of jsonLd) {
     if (block) tags.push(`<script type="application/ld+json"${BAKED}>${escapeJson(block)}</script>`)
   }
@@ -359,6 +378,9 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
         ...base,
         title: s.homeTitle,
         description: s.homeDescription,
+        // The storefront is about Uzbekistan: the market it is written for,
+        // priced in and supported in. Destination pages each name their own.
+        geo: HOME_GEO,
         jsonLd: [organisationLd(), webSiteLd(lang)],
       }
   }
@@ -442,6 +464,7 @@ function metaForCountry(
     // price — instead of the one generic banner. Same URL for every
     // language: the card is in Uzbek, the audience's shared language.
     image: `${SITE_URL}/api/og/${country.slug}.png`,
+    geo: geoFor(country.iso2),
     title: s.countryTitle.replace('{{country}}', country.name),
     description,
     jsonLd: [
@@ -455,6 +478,7 @@ function metaForCountry(
         path,
         lang,
         [{ name: country.name, price: country.starting_price ?? 0, currency: 'USD' }],
+        geoFor(country.iso2),
       ),
       breadcrumbLd(
         [

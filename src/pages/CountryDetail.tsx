@@ -17,6 +17,7 @@ import RelatedDestinations from '../components/RelatedDestinations'
 import { useCart } from '../context/CartContext'
 import { SITE_URL, type SeoLang } from '../lib/seo'
 import { descriptionParams, factsFor } from '../lib/destination-facts'
+import { geoFor } from '../lib/geo'
 import { breadcrumbLd, destinationLd } from '../lib/structured-data'
 
 export default function CountryDetail() {
@@ -100,12 +101,14 @@ export default function CountryDetail() {
   // Prices come from the plans this page is rendering, so the "from $x" in the
   // search result is the same number the visitor sees on arrival. A cached or
   // guessed figure here would be a promise the page then breaks.
+  const geo = geoFor(country.iso2)
   const product = destinationLd(
     t('seo.countryProductName', { country: country.name }),
     description,
     path,
     lang,
     country.plans.map((p) => ({ name: p.title, price: p.price_usd, currency: 'USD' })),
+    geo,
   )
 
   return (
@@ -114,6 +117,7 @@ export default function CountryDetail() {
         title={t('seo.countryTitle', { country: country.name })}
         description={description}
         image={`${SITE_URL}/api/og/${country.slug}.png`}
+        geo={geo}
         jsonLd={[
           ...(product ? [product] : []),
           breadcrumbLd(

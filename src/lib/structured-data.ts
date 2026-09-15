@@ -11,6 +11,7 @@
  * misrepresentation Google penalises, and it is also just a lie to a customer.
  */
 
+import { allGeo, type GeoFacts } from './geo'
 import { absoluteUrl, OG_IMAGE, SITE_NAME, SITE_URL, type SeoLang } from './seo'
 
 const LOGO = `${SITE_URL}/qulaysim-logo.svg`
@@ -32,7 +33,17 @@ export function organisationLd(): Record<string, unknown> {
     logo: LOGO,
     image: OG_IMAGE,
     sameAs: ['https://t.me/qulaysimuz', 'https://www.instagram.com/qulaysim'],
-    areaServed: 'UZ',
+    /* Every country the data works in, not the one country the customers are
+       in. This was the bare string 'UZ', which described the audience and said
+       nothing about the product: a search engine reading it learned that a
+       company selling travel data for twenty-five countries serves one. Codes
+       only — the coordinates belong on the page that is about a place, not on
+       a list of thirty of them. */
+    areaServed: allGeo().map((g) => ({
+      '@type': 'Country',
+      name: g.name,
+      identifier: g.iso2,
+    })),
     contactPoint: [
       {
         '@type': 'ContactPoint',
@@ -105,6 +116,9 @@ export function destinationLd(
   path: string,
   lang: SeoLang,
   offers: OfferInput[],
+  /** Where this destination is. Omitted for a country the geo table does not
+      cover yet, rather than guessed at. */
+  geo?: GeoFacts,
 ): Record<string, unknown> | null {
   const priced = offers.filter((o) => Number.isFinite(o.price) && o.price > 0)
   if (priced.length === 0) return null
@@ -120,6 +134,7 @@ export function destinationLd(
     brand: { '@type': 'Brand', name: SITE_NAME },
     category: 'Prepaid mobile data',
     url: absoluteUrl(path, lang),
+    ...(geo ? { areaServed: countryLd(geo) } : {}),
     offers: {
       '@type': 'AggregateOffer',
       offerCount: priced.length,
@@ -129,6 +144,29 @@ export function destinationLd(
       availability: 'https://schema.org/InStock',
       seller: { '@id': `${SITE_URL}/#organization` },
     },
+  }
+}
+
+/**
+ * The place a destination page is about.
+ *
+ * A `Country` with real coordinates, so the page declares a geography and not
+ * only a price. `identifier` carries the ISO 3166-1 alpha-2 code, which is what
+ * lets a consumer join this to its own map data instead of matching on a name
+ * that is spelled differently in each of our three languages.
+ */
+export function countryLd(geo: GeoFacts): Record<string, unknown> {
+  return {
+    '@type': 'Country',
+    name: geo.name,
+    identifier: geo.iso2,
+    alternateName: geo.iso3,
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: geo.lat,
+      longitude: geo.lon,
+    },
+    containedInPlace: { '@type': 'Continent', name: geo.continent },
   }
 }
 
