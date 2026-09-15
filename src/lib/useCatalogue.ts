@@ -59,6 +59,20 @@ export function useCatalogue<T>(
     load()
       .then((fresh) => {
         if (!alive) return
+        /* A string is never an answer.
+         *
+         * Every endpoint behind this returns an object or an array. A bare
+         * string means something in front of the backend answered instead of
+         * the backend — a proxy that fell through to index.html, a Cloudflare
+         * error page served with 200 — and handing that to a call site that
+         * expects a list takes the whole page down with `filter is not a
+         * function`, which is a white screen on a site whose API is merely
+         * unreachable. Treated as a failed request, so the baked catalogue
+         * stays on screen: exactly what a lost request already does. */
+        if (typeof fresh === 'string') {
+          setData((current) => nextData(current, { kind: 'failed' }, { clearOnMissing }))
+          return
+        }
         setData((current) => nextData(current, { kind: 'ok', data: fresh }, { clearOnMissing }))
         setMissing(false)
       })

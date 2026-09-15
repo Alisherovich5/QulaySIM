@@ -7,7 +7,8 @@ import { useCatalogue } from '../../lib/useCatalogue'
 import type { Country } from '../../lib/types'
 import { useCurrency } from '../../context/CurrencyContext'
 import { useDesignCopy } from '../../lib/design-copy'
-import { destinationMedia } from '../../lib/destination-media'
+import { destinationMedia, destinationPhoto } from '../../lib/destination-media'
+import Photo from '../media/Photo'
 import Flag from '../Flag'
 
 export default function TravelDestinations() {
@@ -45,12 +46,10 @@ export default function TravelDestinations() {
               className="travel-photo-card"
             >
               <div className="photo-window">
-                <img
-                  src={destinationMedia[country.slug].src}
-                  alt={destinationMedia[country.slug].place}
-                  loading="lazy"
-                  width="600"
-                  height="450"
+                <Photo
+                  name={destinationPhoto(country.slug)!.name}
+                  alt={destinationPhoto(country.slug)!.place}
+                  sizes="(min-width: 1024px) 300px, 45vw"
                 />
                 <span className="photo-arrow">
                   <ArrowUpRight size={21} />

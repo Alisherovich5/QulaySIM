@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
 import type { Country, Region } from '../../lib/types'
+import { destinationPhoto } from '../../lib/destination-media'
+import DestinationPhotoBed from '../media/DestinationPhotoBed'
 import Flag from '../Flag'
 import Reveal from '../Reveal'
 import { Button, Card } from '../ui'
@@ -151,14 +153,24 @@ export default function DestinationsExplorer() {
                   to={`/destinations/${c.slug}`}
                   className={`${CARD_SHAPE} group relative isolate flex h-full flex-col justify-between overflow-hidden bg-surface p-2.5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:bg-brand-50/45 hover:shadow-xl hover:shadow-brand-900/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas active:translate-y-0 active:scale-[0.99] sm:p-4 lg:p-5 dark:shadow-black/20 dark:hover:border-accent-400/45 dark:hover:bg-white/[0.04] dark:hover:shadow-black/35 dark:focus-visible:ring-accent-400`}
                 >
-                  <span
-                    aria-hidden
-                    className={`absolute -right-5 -top-5 -z-10 h-24 w-24 rounded-full opacity-80 transition duration-500 group-hover:scale-125 group-hover:opacity-100 sm:-right-7 sm:-top-7 sm:h-36 sm:w-36 ${
-                      i % 3 === 1
-                        ? 'bg-[radial-gradient(circle,rgba(241,217,138,.30)_0%,transparent_68%)]'
-                        : 'bg-[radial-gradient(circle,rgba(52,227,176,.28)_0%,transparent_68%)]'
-                    }`}
-                  />
+                  {/* The photograph of the place, where we have one, and the
+                      abstract wash where we do not. The wash was standing in
+                      for a picture on every card; on a page whose whole job is
+                      "where do you want to go", a real photograph of Istanbul
+                      answers the question and a mint-coloured circle does not.
+                      Lazy-loaded and scrimmed — see DestinationPhotoBed. */}
+                  {destinationPhoto(c.slug) ? (
+                    <DestinationPhotoBed slug={c.slug} />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className={`absolute -right-5 -top-5 -z-10 h-24 w-24 rounded-full opacity-80 transition duration-500 group-hover:scale-125 group-hover:opacity-100 sm:-right-7 sm:-top-7 sm:h-36 sm:w-36 ${
+                        i % 3 === 1
+                          ? 'bg-[radial-gradient(circle,rgba(241,217,138,.30)_0%,transparent_68%)]'
+                          : 'bg-[radial-gradient(circle,rgba(52,227,176,.28)_0%,transparent_68%)]'
+                      }`}
+                    />
+                  )}
                   <Flag
                     iso2={c.iso2}
                     alt=""

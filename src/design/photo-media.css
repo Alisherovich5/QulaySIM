@@ -1,0 +1,159 @@
+/* Photographic surfaces: the home hero, and the destination photographs.
+ *
+ * Kept out of index.css deliberately. index.css is the design system — tokens,
+ * type, the component primitives — and this is one art direction laid over it.
+ * If the photography is ever replaced, this is the file that changes and
+ * nothing else is touched.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Home hero                                                           */
+/* ------------------------------------------------------------------ */
+
+.hero-photo {
+  /* The colour the artwork's own sky settles to. It is painted before the
+     photograph arrives and stays behind its transparent edges, so the hero
+     never flashes the page canvas through a half-decoded image. */
+  background-color: #dff3f8;
+}
+:root.dark .hero-photo {
+  background-color: #061c27;
+}
+
+.hero-art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-art picture {
+  display: block;
+  height: 100%;
+}
+
+.hero-art-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The subject — the traveller and the skyline — is on the right of the
+     frame, and the copy is on the left. Anchoring the crop right means that
+     when a narrow viewport takes a slice out of the middle, the slice it keeps
+     is the half with something in it. */
+  object-position: 72% 50%;
+}
+
+/* The scrim is a contrast budget, not a mood.
+ *
+ * Measured on the artwork itself, in the rectangle the headline, the search
+ * box and the destination links actually occupy at 1440x590. The light frame
+ * needed almost nothing — its left third is flat pale sky, and brand-700 on it
+ * measures 6.64:1 unaided. The dark frame is a night scene with an aeroplane,
+ * its contrail and a sunset band crossing the same rectangle: the brightest
+ * pixel under the text reaches L=0.875, where near-white ink is 1.00:1. So the
+ * two scrims are not the same gradient at two opacities; they are sized to
+ * what is behind them.
+ *
+ * Both fade out well before the subject. A flat overlay across the whole frame
+ * would buy the text its contrast with the photograph's, which is the thing we
+ * are paying 144 KB to show. */
+.hero-art-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    96deg,
+    rgb(242 250 252 / 0.9) 0%,
+    rgb(242 250 252 / 0.74) 32%,
+    rgb(242 250 252 / 0.2) 58%,
+    rgb(242 250 252 / 0) 74%
+  );
+}
+:root.dark .hero-art-scrim {
+  background: linear-gradient(
+    96deg,
+    rgb(4 20 27 / 0.95) 0%,
+    rgb(4 20 27 / 0.88) 34%,
+    rgb(4 20 27 / 0.42) 60%,
+    rgb(4 20 27 / 0) 78%
+  );
+}
+
+/* Below the two-column breakpoint the copy runs across the whole frame, so a
+   gradient that clears the right side clears the text with it. The scrim turns
+   vertical: opaque behind the headline at the top, thinning towards the
+   bottom, where the artwork keeps its subject. */
+@media (max-width: 1023px) {
+  .hero-art-image {
+    object-position: 62% 38%;
+  }
+
+  .hero-art-scrim {
+    background: linear-gradient(
+      178deg,
+      rgb(242 250 252 / 0.93) 0%,
+      rgb(242 250 252 / 0.88) 46%,
+      rgb(242 250 252 / 0.62) 78%,
+      rgb(242 250 252 / 0.5) 100%
+    );
+  }
+
+  :root.dark .hero-art-scrim {
+    background: linear-gradient(
+      178deg,
+      rgb(4 20 27 / 0.95) 0%,
+      rgb(4 20 27 / 0.9) 46%,
+      rgb(4 20 27 / 0.68) 78%,
+      rgb(4 20 27 / 0.55) 100%
+    );
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Destination photographs                                             */
+/* ------------------------------------------------------------------ */
+
+/* A card with a photograph in it, where the photograph is the background and
+   the name, flag and price sit on top. The image is a real <img> rather than a
+   CSS background so that it can be lazy-loaded, offered in three formats and
+   two widths, and given an intrinsic size — none of which a background-image
+   can do. */
+.photo-bed {
+  position: absolute;
+  inset: 0;
+  /* Behind the card's text but in front of its own background. A positioned
+     child at z-index 0 paints ABOVE static in-flow content, which put the
+     photograph over the country name; -1 is the layer between the element's
+     background and its children, which is exactly where a bed belongs. */
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.photo-bed picture {
+  display: block;
+  height: 100%;
+}
+
+.photo-bed img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center right;
+}
+
+/* The same argument as the hero, one scale down: opaque where the text is,
+   clear where the picture is. The text in these cards starts at the left
+   edge. */
+.photo-bed::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 6%,
+    color-mix(in srgb, var(--color-surface) 96%, transparent) 38%,
+    color-mix(in srgb, var(--color-surface) 46%, transparent) 100%
+  );
+}

@@ -87,9 +87,18 @@ textarea:focus-visible {
   min-width: 0;
 }
 .site-shell[data-page='home'] > main {
+  /* The home page's hero runs to the top edge of the viewport, so it loses the
+     rounded inset every other page gets. It does NOT lose its surface.
+
+     This rule used to paint the home page's <main> in `--departure`, the
+     near-black of a "departure scene" hero (`.travel-hero`) that this page no
+     longer renders. What was left was a black band behind the one home section
+     that does not set its own surface — the destinations grid — while its
+     heading stayed `text-ink`, a dark ink in the light theme. "200 dan ortiq
+     mamlakatlar" measured 1.15:1 against it: a section title nobody could read,
+     on the default theme, in production. */
   margin-top: 0;
   border-radius: 0;
-  background: var(--departure);
 }
 h1,
 h2,

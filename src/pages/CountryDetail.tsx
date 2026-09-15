@@ -8,7 +8,8 @@ import { api } from '../lib/api'
 import type { CountryDetail as CountryDetailType, Plan } from '../lib/types'
 import PlanPicker from '../components/PlanPicker'
 import { useDesignCopy } from '../lib/design-copy'
-import { destinationMedia } from '../lib/destination-media'
+import { destinationPhoto } from '../lib/destination-media'
+import Photo from '../components/media/Photo'
 import Flag from '../components/Flag'
 import Seo from '../components/Seo'
 import DestinationFacts from '../components/DestinationFacts'
@@ -92,6 +93,7 @@ export default function CountryDetail() {
   // destinations share a search snippet. The plain template is the fallback for
   // a country whose plans have not been priced yet.
   const facts = factsFor(country.plans)
+  const photo = destinationPhoto(country.slug)
   const description = facts
     ? t('seo.countryDescriptionRich', descriptionParams(country.name, facts))
     : t('seo.countryDescription', { country: country.name })
@@ -156,11 +158,24 @@ export default function CountryDetail() {
             <span>{t('country.plansAvailable', { count: country.plans.length })}</span>
           </div>
         </div>
-        <div className={'destination-photo' + (destinationMedia[country.slug] ? '' : ' is-globe')}>
-          <img
-            src={destinationMedia[country.slug]?.src || '/hero-globe@2x.webp'}
-            alt={destinationMedia[country.slug]?.place || ''}
-          />
+        {/* The photograph is the subject of this heading, not decoration
+            behind it, so it keeps its alt text — "Istanbul" tells a screen
+            reader something the country name beside it does not. Destinations
+            we have no photograph of fall back to the still globe, which is what
+            `is-globe` restyles: contained rather than cropped, and no scrim. */}
+        <div className={'destination-photo' + (photo ? '' : ' is-globe')}>
+          {photo ? (
+            <Photo
+              name={photo.name}
+              alt={photo.place}
+              // Half the width of a page that is itself capped, so the small
+              // variant is right up to tablet size.
+              sizes="(min-width: 1024px) 560px, 56vw"
+              priority
+            />
+          ) : (
+            <img src="/hero-globe@2x.webp" alt="" width={512} height={512} />
+          )}
         </div>
       </div>
       <h2>{c.planTitle}</h2>

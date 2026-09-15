@@ -27,6 +27,7 @@ const TYPES = {
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.webp': 'image/webp',
+  '.avif': 'image/avif',
   '.woff2': 'font/woff2',
   '.xml': 'application/xml; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
@@ -34,6 +35,20 @@ const TYPES = {
 
 createServer((req, res) => {
   const url = new URL(req.url ?? '/', 'http://localhost')
+
+  /* /api belongs to the backend, and there isn't one here.
+   *
+   * Falling through to index.html for it — which the try_files rule below
+   * would otherwise do — hands the app an HTML document where it expects a
+   * JSON array, and the page white-screens. That is a property of this
+   * harness, not of the site: nginx proxies /api to uvicorn and answers 502
+   * when it is down, never 200 with a page in it. Answering JSON 404 keeps
+   * the difference from being mistaken for a bug in the site. */
+  if (url.pathname.startsWith('/api/')) {
+    res.writeHead(404, { 'Content-Type': 'application/json' }).end('{"detail":"no backend"}')
+    return
+  }
+
   // normalize() before join() so "../" in a request cannot walk out of dist/.
   const asked = join(ROOT, normalize(url.pathname))
   const candidates = [asked, join(asked, 'index.html'), join(ROOT, 'index.html')]
