@@ -30,7 +30,7 @@
    a page it has — which on a persistently bad link can keep somebody on a build
    from before a fix for far longer than the fix took to ship. A version bump is
    the switch that ends that. */
-const VERSION = 'v2'
+const VERSION = 'v3'
 const SHELL = `qs-shell-${VERSION}`
 const ASSETS = `qs-assets-${VERSION}`
 const DATA = `qs-data-${VERSION}`
@@ -44,10 +44,17 @@ const PUBLIC_API = ['/api/countries', '/api/regions', '/api/plans', '/api/curren
  *  does not hold a blank page open. Measured: a good load is under 200 ms. */
 const NAV_TIMEOUT_MS = 4000
 
+/* `/media/` is here and its names do NOT carry a build hash — see the nginx
+ * block of the same name for why they cannot. Cache-first is still right for
+ * them: they are photographs, they change roughly never, and they are the
+ * largest thing a repeat visitor would otherwise re-fetch. The cost is that a
+ * re-encode reaches an existing visitor only when VERSION above is bumped, so
+ * re-running scripts/build-media.py is a reason to bump it. */
 const isAsset = (url) =>
   url.pathname.startsWith('/assets/') ||
   url.pathname.startsWith('/fonts/') ||
-  /\.(?:woff2|png|webp|svg|jpg|jpeg|ico)$/.test(url.pathname)
+  url.pathname.startsWith('/media/') ||
+  /\.(?:woff2|png|webp|avif|svg|jpg|jpeg|ico)$/.test(url.pathname)
 
 const isPublicApi = (url) =>
   PUBLIC_API.some((p) => url.pathname === p || url.pathname.startsWith(`${p}/`))

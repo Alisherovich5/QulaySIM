@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { Globe2, Globe, LifeBuoy, LogOut, ShoppingBag, Smartphone, UserRound } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -17,17 +17,46 @@ export default function Navbar() {
   // directly under it, and a hardcoded offset is wrong the moment the promo
   // banner is dismissed or the viewport narrows. Measured rather than guessed,
   // and re-measured when it changes.
+  /* Has the page moved off the top?
+   *
+   * Through a sentinel and an IntersectionObserver, not a scroll listener. A
+   * scroll handler runs on the main thread for every frame of every flick —
+   * hundreds of calls to read `window.scrollY` on a page that only needs to
+   * know one boolean, on the phones this storefront is opened on. The observer
+   * fires twice in a session: once when the top of the page leaves, once when
+   * it comes back. It also cannot drift out of step with a page restored
+   * mid-scroll by the back button, which a listener seeded at 0 does. */
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const [detached, setDetached] = useState(false)
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => setDetached(!entry.isIntersecting))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   const headerRef = useRef<HTMLElement>(null)
   useEffect(() => {
     const el = headerRef.current
     if (!el) return
-    const publish = () =>
-      document.documentElement.style.setProperty('--header-h', `${Math.round(el.getBoundingClientRect().height)}px`)
+    // The gap the header floats on once it detaches counts as header height:
+    // anything that sticks under it is pushed down by it. Read from the
+    // computed style rather than duplicated here, so the number cannot drift
+    // away from the stylesheet that sets it.
+    const publish = () => {
+      const gap = Number.parseFloat(getComputedStyle(el).top) || 0
+      document.documentElement.style.setProperty(
+        '--header-h',
+        `${Math.round(el.getBoundingClientRect().height + gap)}px`,
+      )
+    }
     publish()
     const observer = new ResizeObserver(publish)
     observer.observe(el)
     return () => observer.disconnect()
-  }, [])
+  }, [detached])
+
 
   const { count } = useCart()
   const { customer, logout } = useAuth()
@@ -45,7 +74,14 @@ export default function Navbar() {
           browses. I had moved it out to reclaim ~40px per screen; that was the
           wrong call for a storefront whose main lever is the discount code —
           a promotion nobody can see while choosing a plan is not a promotion. */}
-      <header ref={headerRef} className="sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md">
+      {/* One pixel at the very top of the document, watched rather than
+          measured. It is what tells the header it is no longer at rest. */}
+      <div ref={sentinelRef} aria-hidden className="absolute left-0 top-0 h-px w-px" />
+      <header
+        ref={headerRef}
+        data-detached={detached ? 'true' : 'false'}
+        className="site-header sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md"
+      >
       <PromoStrip />
       <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
         <div className="shrink-0">
