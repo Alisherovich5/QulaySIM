@@ -105,23 +105,23 @@ export default function DestinationsExplorer() {
           colour inside the sentence instead of by a font size. The words stay
           in the translator's order; `aria-label` reads the untouched string. */}
       <Reveal>
-        <div className="lg:flex lg:items-end lg:justify-between lg:gap-16">
-          <h2
-            id={TITLE_ID}
-            aria-label={title}
-            className="max-w-2xl font-display text-[1.75rem] font-700 leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl"
-          >
-            {before && <span>{before} </span>}
-            {count && (
-              <span className="tabular-nums text-brand-600 dark:text-accent-400">{count}</span>
-            )}
-            {after && <span> {after}</span>}
-          </h2>
-
-          <p className="mt-4 max-w-xl text-[15px] leading-7 text-slate-soft lg:mt-0 lg:max-w-sm lg:shrink-0 lg:border-l lg:border-line lg:pl-10">
-            {t('home.exploreSubtitle')}
-          </p>
-        </div>
+        {/* The heading stands alone now, by the owner's instruction — the
+            supporting line beside it ("Hozirda o'zbekistonliklar uchun eng
+            ommabop davlatlar…") is gone. The two-column head went with it:
+            one column is a column, not a layout. `home.exploreSubtitle` is
+            left in all three locale files rather than deleted, so turning it
+            back on is one element and not a translation round. */}
+        <h2
+          id={TITLE_ID}
+          aria-label={title}
+          className="max-w-2xl font-display text-[1.75rem] font-700 leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl"
+        >
+          {before && <span>{before} </span>}
+          {count && (
+            <span className="tabular-nums text-brand-600 dark:text-accent-400">{count}</span>
+          )}
+          {after && <span> {after}</span>}
+        </h2>
       </Reveal>
 
       <div className="mt-8 sm:mt-10">
