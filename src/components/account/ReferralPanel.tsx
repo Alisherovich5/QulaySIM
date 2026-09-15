@@ -25,41 +25,58 @@ export default function ReferralPanel() {
   const { t } = useTranslation()
   const [data, setData] = useState<ReferralSummary | null>(null)
   const [copied, setCopied] = useState<'code' | 'link' | null>(null)
+  const [failed, setFailed] = useState(false)
+  const [copyFailed, setCopyFailed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
-    api.get<ReferralSummary>('/account/referrals').then((r) => setData(withRate(r.data)))
-  }, [])
+    setFailed(false)
+    api
+      .get<ReferralSummary>('/account/referrals')
+      .then((r) => setData(withRate(r.data)))
+      .catch(() => setFailed(true))
+  }, [attempt])
+
+  if (failed)
+    return (
+      <Card className="p-6">
+        <p role="alert">{t('account.errorSubtitle')}</p>
+        <Button variant="ghost" className="mt-4" onClick={() => setAttempt((value) => value + 1)}>
+          {t('account.retry')}
+        </Button>
+      </Card>
+    )
 
   if (!data) {
-    return <div className="h-64 animate-pulse rounded-2xl bg-line/50" />
+    return <div className="h-64 animate-pulse rounded-2xl bg-line/50" aria-busy="true" />
   }
 
   const link = `${window.location.origin}/register?ref=${data.code}`
-  const copy = (value: string, which: 'code' | 'link') => {
-    navigator.clipboard?.writeText(value)
-    setCopied(which)
-    setTimeout(() => setCopied(null), 1800)
+  const copy = async (value: string, which: 'code' | 'link') => {
+    setCopyFailed(false)
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(which)
+      setTimeout(() => setCopied(null), 1800)
+    } catch {
+      setCopyFailed(true)
+    }
   }
 
   const started = data.invited > 0
 
   return (
     <div className="space-y-5">
-      {started ? (
-        <EarningsCard data={data} />
-      ) : (
-        <StartCard rate={data.rate} />
+      {copyFailed && (
+        <p role="alert" className="text-status-bad-ink">
+          {t('account.errorSubtitle')}
+        </p>
       )}
+      {started ? <EarningsCard data={data} /> : <StartCard rate={data.rate} />}
 
       {(data.rate.percent !== null || data.rate.flat_uzs !== null) && <RateCard data={data} />}
 
-      <ShareCard
-        link={link}
-        code={data.code}
-        copied={copied}
-        onCopy={copy}
-        highlight={!started}
-      />
+      <ShareCard link={link} code={data.code} copied={copied} onCopy={copy} highlight={!started} />
 
       {started && <PeopleCard entries={data.entries} />}
 

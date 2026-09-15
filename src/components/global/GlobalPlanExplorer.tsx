@@ -5,6 +5,7 @@ import PlanCard from '../PlanCard'
 import Flag from '../Flag'
 import { Card } from '../ui'
 import type { Country, Plan } from '../../lib/types'
+import { useDialog } from '../../lib/useDialog'
 
 /**
  * The worldwide catalogue, filtered rather than pre-selected.
@@ -66,6 +67,7 @@ export default function GlobalPlanExplorer({ plans, onAdd, added, countries }: P
   const [sort, setSort] = useState<Sort>('price')
   const [openMenu, setOpenMenu] = useState<'size' | 'duration' | 'sort' | null>(null)
   const [coverageOf, setCoverageOf] = useState<Plan | null>(null)
+  const coverageRef = useDialog(() => setCoverageOf(null), coverageOf !== null)
 
   const lang = i18n.language.split('-')[0] || 'uz'
   const barRef = useRef<HTMLDivElement>(null)
@@ -361,7 +363,12 @@ export default function GlobalPlanExplorer({ plans, onAdd, added, countries }: P
             {[...sizes]
               .sort((a, b) => a - b)
               .map((mb) => (
-                <button key={mb} type="button" onClick={() => setSizes(toggle(sizes, mb))} className={removable}>
+                <button
+                  key={mb}
+                  type="button"
+                  onClick={() => setSizes(toggle(sizes, mb))}
+                  className={removable}
+                >
                   {Math.round(mb / 1024)} GB
                   <X size={12} aria-hidden />
                 </button>
@@ -423,6 +430,8 @@ export default function GlobalPlanExplorer({ plans, onAdd, added, countries }: P
           and it is what stops a refund request in a foreign airport. */}
       {coverageOf && (
         <div
+          ref={coverageRef}
+          tabIndex={-1}
           className="fixed inset-0 z-[80] grid place-items-center bg-ink/45 p-4 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
@@ -443,8 +452,8 @@ export default function GlobalPlanExplorer({ plans, onAdd, added, countries }: P
               <button
                 type="button"
                 onClick={() => setCoverageOf(null)}
-                aria-label={t('global.filterClear')}
-                className="focus-ring grid h-9 w-9 shrink-0 place-items-center rounded-lg text-slate-soft hover:bg-mist hover:text-ink"
+                aria-label={t('common.close')}
+                className="focus-ring grid h-11 w-11 shrink-0 place-items-center rounded-lg text-slate-soft hover:bg-mist hover:text-ink"
               >
                 <X size={16} />
               </button>

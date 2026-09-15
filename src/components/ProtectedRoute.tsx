@@ -14,7 +14,13 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     )
   }
   if (!customer) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />
+    return (
+      <Navigate
+        to="/login"
+        state={{ from: location.pathname + location.search + location.hash }}
+        replace
+      />
+    )
   }
   return <>{children}</>
 }

@@ -100,7 +100,7 @@ export default function DeviceCheck() {
   }, [])
 
   return (
-    <div className="container-page pb-6 pt-2 sm:py-10">
+    <div className="qs-page qs-device container-page">
       <Seo title={t('seo.deviceTitle')} description={t('seo.deviceDescription')} />
 
       <Link
@@ -136,7 +136,11 @@ export default function DeviceCheck() {
       <ManualCheck ref={manualRef} open={manual} onToggle={() => setManual((was) => !was)} />
 
       <p className="mt-4 flex items-start gap-2 text-[11px] leading-[1.55] text-slate-soft sm:mt-6 sm:text-[12.5px]">
-        <ShieldCheck size={14} aria-hidden className="mt-px shrink-0 text-brand-500 dark:text-brand-300" />
+        <ShieldCheck
+          size={14}
+          aria-hidden
+          className="mt-px shrink-0 text-brand-500 dark:text-brand-300"
+        />
         {t('device.privacyNote')}
       </p>
     </div>

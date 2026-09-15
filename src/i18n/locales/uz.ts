@@ -2,6 +2,7 @@ import type { Translation } from './en'
 
 const uz: Translation = {
   nav: {
+    homeLink: 'QulaySIM — bosh sahifa',
     destinations: 'Yo‘nalishlar',
     global: 'Butun dunyo',
     support: 'Yordam',
@@ -25,10 +26,14 @@ const uz: Translation = {
     device: 'Qurilma',
   },
   common: {
+    switchToLight: 'Kunduzgi rejimga o‘tish',
+    switchToDark: 'Tungi rejimga o‘tish',
+    language: 'Til',
     staleData: 'Internet uzildi — oxirgi saqlangan ma’lumot ko‘rsatilyapti.',
     retry: 'Qayta yuklash',
     som: 'so‘m',
-    rateUnavailable: 'Taxminiy kurs bo‘yicha hisoblandi — Markaziy bank kursi vaqtincha mavjud emas.',
+    rateUnavailable:
+      'Taxminiy kurs bo‘yicha hisoblandi — Markaziy bank kursi vaqtincha mavjud emas.',
     from: 'dan',
     viewAll: 'Barchasi',
     browseDestinations: 'Yo‘nalishlarni ko‘rish',
@@ -92,7 +97,8 @@ const uz: Translation = {
     heroCoverageTitle: 'Sizga faqat manzil kerak',
     heroCoverageText: 'Boradigan joyingizni qidiring va unga mos internet tarifini tanlang.',
     exploreTitle: '200 dan ortiq mamlakatlar',
-    exploreSubtitle: 'Hozirda o‘zbekistonliklar uchun eng ommabop davlatlar eSIM’lari bilan tanishing va boradigan davlatingiz uchun xarid qiling.',
+    exploreSubtitle:
+      'Hozirda o‘zbekistonliklar uchun eng ommabop davlatlar eSIM’lari bilan tanishing va boradigan davlatingiz uchun xarid qiling.',
     exploreAll: 'Hammasi',
     exploreEmpty: 'Bu mintaqada hozircha yo‘nalish yo‘q.',
     exploreMore: 'Barcha yo‘nalishlar',
@@ -160,7 +166,7 @@ const uz: Translation = {
   global: {
     statCountries: 'Davlat',
     statPlans: 'Tarif',
-    coverageStripTitle: "Qamrab olingan davlatlar",
+    coverageStripTitle: 'Qamrab olingan davlatlar',
     coverageMore: 'va yana {{count}} ta davlat',
     howItWorks: 'Qanday ishlaydi?',
     filterTitle: 'Tanlash',
@@ -202,7 +208,8 @@ const uz: Translation = {
     reasonThreeTitle: 'Raqamingiz o‘zingizda',
     reasonThreeText: 'Asosiy SIM qo‘ng‘iroqlar uchun qoladi, internet eSIM’dan ketadi.',
     plansTitle: 'Global tariflar',
-    plansSubtitle: 'Har bir tarifning qamrovi boshqacha — kartada nechta davlat ekani yozilgan. Muddat faollashtirilgan kundan boshlanadi.',
+    plansSubtitle:
+      'Har bir tarifning qamrovi boshqacha — kartada nechta davlat ekani yozilgan. Muddat faollashtirilgan kundan boshlanadi.',
     plansEmpty: 'Global tariflar hozircha mavjud emas. Mintaqaviy variantlarni ko‘rib chiqing.',
     regionsTitle: 'Yoki bitta mintaqa — arzonroq',
     regionsSubtitle: 'Faqat bir mintaqa bo‘ylab sayohat qilsangiz, global tarifdan ko‘ra tejamli.',
@@ -213,11 +220,14 @@ const uz: Translation = {
     howLink: 'To‘liq o‘rnatish qo‘llanmasi',
     cartLabel: 'Butun dunyo',
     seoTitle: 'Global eSIM — 200+ davlat uchun bitta internet tarifi',
-    seoDescription: 'Bir marta sotib oling va butun dunyoda ishlatavering. QulaySIM global eSIM tariflari: 1 GB dan 50 GB gacha, o‘zbek tilida qo‘llab-quvvatlash.',
+    seoDescription:
+      'Bir marta sotib oling va butun dunyoda ishlatavering. QulaySIM global eSIM tariflari: 1 GB dan 50 GB gacha, o‘zbek tilida qo‘llab-quvvatlash.',
   },
   destinations: {
+    alphabet: 'Alifbo bo‘yicha o‘tish',
     worldwide: 'Butun dunyo tariflari',
-    worldwideNotAList: '«Butun dunyo» — bu davlatlar ro‘yxati emas, balki bir nechta davlatni qamrab oladigan tariflar.',
+    worldwideNotAList:
+      '«Butun dunyo» — bu davlatlar ro‘yxati emas, balki bir nechta davlatni qamrab oladigan tariflar.',
     title: 'Yo‘nalishlar',
     subtitle: 'Qayerga sayohat qilayotganingizni tanlang va mos tarifni oling.',
     searchPlaceholder: 'Davlatni qidiring…',
@@ -251,6 +261,7 @@ const uz: Translation = {
     added: 'Qo‘shildi',
   },
   checkout: {
+    remove: 'Savatdan olib tashlash',
     title: 'Rasmiylashtirish',
     emptyTitle: 'Savatingiz bo‘sh',
     emptySubtitle: 'Boshlash uchun yo‘nalish tanlab, tarif qo‘shing.',
@@ -270,8 +281,9 @@ const uz: Translation = {
     payOpening: 'To‘lov oynasi tayyorlanmoqda…',
     payFrameTitle: 'Xavfsiz to‘lov',
     payMethodCard: 'Karta',
-    payMethodsHint: "Click/Payme — «Boshqa usuli»da",
-    payFrameNote: 'Karta ma’lumotlari to‘g‘ridan-to‘g‘ri to‘lov tizimiga yuboriladi — bizning serverimizga tegmaydi.',
+    payMethodsHint: 'Click/Payme — «Boshqa usuli»da',
+    payFrameNote:
+      'Karta ma’lumotlari to‘g‘ridan-to‘g‘ri to‘lov tizimiga yuboriladi — bizning serverimizga tegmaydi.',
     payCancel: 'Bekor qilish',
     payFallback: 'Oyna ochilmadimi? Yangi sahifada ochish',
     promoInvalid: 'Promo-kod topilmadi',
@@ -284,7 +296,8 @@ const uz: Translation = {
     payFailed: 'To‘lov amalga oshmadi. Qaytadan urinib ko‘ring.',
     successTitle: 'To‘lov muvaffaqiyatli',
     successSubtitle: 'Buyurtma #{{id}} · {{count}} ta eSIM tayyor. O‘rnatish uchun skanerlang.',
-    installHint: 'Sozlamalar → Uyali aloqa → eSIM qo‘shish bo‘limini oching va ushbu kodni skanerlang.',
+    installHint:
+      'Sozlamalar → Uyali aloqa → eSIM qo‘shish bo‘limini oching va ushbu kodni skanerlang.',
     goToMyEsims: 'Mening eSIM‘larimga',
     keepShopping: 'Xaridni davom ettirish',
   },
@@ -303,6 +316,7 @@ const uz: Translation = {
     note: 'To‘lovdan keyin GB bir necha soniyada shu eSIM‘ga qo‘shiladi.',
   },
   account: {
+    qrAlt: 'eSIM QR-kodi',
     title: 'Mening eSIM‘larim',
     subtitle: 'tariflaringizni boshqaring va faollashtiring.',
     buyAnother: 'Yana eSIM olish',
@@ -339,11 +353,13 @@ const uz: Translation = {
     logoutConfirm: 'Ha, chiqish',
     tabReview: 'Fikr bildirish',
     reviewTitle: 'QulaySIM haqida fikringiz',
-    reviewSubtitle: 'Tajribangizni boshqa sayohatchilar bilan ulashing. Fikr admin tasdiqlagandan keyin saytda chiqadi.',
+    reviewSubtitle:
+      'Tajribangizni boshqa sayohatchilar bilan ulashing. Fikr admin tasdiqlagandan keyin saytda chiqadi.',
     reviewLockedTitle: 'Fikr qoldirish hali ochilmagan',
     reviewLockedText: 'Fikr yozish uchun avval kamida bitta eSIM xarid qilishingiz kerak.',
     reviewPendingTitle: 'Fikringiz tekshirilmoqda',
-    reviewPendingText: 'Admin tasdiqlagandan keyin fikringiz bosh sahifada chiqadi. Hozircha uni tahrirlashingiz mumkin.',
+    reviewPendingText:
+      'Admin tasdiqlagandan keyin fikringiz bosh sahifada chiqadi. Hozircha uni tahrirlashingiz mumkin.',
     reviewApprovedTitle: 'Fikringiz saytda e’lon qilindi',
     reviewApprovedText: 'Tajribangizni ulashganingiz uchun rahmat!',
     reviewRating: 'Baholash',
@@ -435,9 +451,11 @@ const uz: Translation = {
     yesText: 'Telefoningiz tayyor. Boradigan davlatni tanlab, QR-kodni oling va ulaning.',
     yesCta: 'Yo‘nalishlarni ko‘rish',
     noTitle: 'EID yo‘q',
-    noText: 'Bu qurilmada eSIM moduli yo‘q — jismoniy SIM kerak bo‘ladi. Ishonchingiz komil bo‘lmasa, modelni bizga yozing, tekshirib beramiz.',
+    noText:
+      'Bu qurilmada eSIM moduli yo‘q — jismoniy SIM kerak bo‘ladi. Ishonchingiz komil bo‘lmasa, modelni bizga yozing, tekshirib beramiz.',
     noCta: 'Yordamga yozish',
-    privacyNote: 'EID va IMEI — qurilmangizning identifikatorlari. Ularni faqat o‘zingiz ko‘rasiz, bizga yuborish shart emas. Yuqoridagi raqamlar namuna uchun o‘ylab topilgan.',
+    privacyNote:
+      'EID va IMEI — qurilmangizning identifikatorlari. Ularni faqat o‘zingiz ko‘rasiz, bizga yuborish shart emas. Yuqoridagi raqamlar namuna uchun o‘ylab topilgan.',
     copyCode: 'Kodni nusxalash',
     copied: 'Nusxalandi',
     mockDialLabel: 'Nima teriladi',
@@ -448,23 +466,31 @@ const uz: Translation = {
     lead: 'Modelni yozing — javob shu zahoti chiqadi. Ro‘yxatda {{count}} ta model bor.',
     searchLabel: 'Modelni qidirish',
     searchPlaceholder: 'Masalan: iPhone 13, Galaxy A55, Redmi Note 13',
-    searchHint: '{{total}} modeldan {{supported}} tasida eSIM bor. Sozlamalardagi model raqamini ham yozsangiz bo‘ladi.',
+    searchHint:
+      '{{total}} modeldan {{supported}} tasida eSIM bor. Sozlamalardagi model raqamini ham yozsangiz bo‘ladi.',
     noResults: 'Bu model ro‘yxatda yo‘q',
-    noResultsHint: 'Yozilishini boshqacha urinib ko‘ring yoki telefonning o‘zidan tekshiring — bu usul har qanday qurilmada aniq javob beradi.',
+    noResultsHint:
+      'Yozilishini boshqacha urinib ko‘ring yoki telefonning o‘zidan tekshiring — bu usul har qanday qurilmada aniq javob beradi.',
     checkExactly: 'Telefonda aniq tekshirish',
     brandStat: '{{brand}} — {{total}} modeldan {{supported}} tasida eSIM bor.',
     detectedLabel: 'Qurilmangiz aniqlandi',
     answerLabel: 'Javob',
     iosYesTitle: 'iPhone’ingizda eSIM bor',
-    iosYesText: 'Brauzer iOS {{version}} deb ko‘rsatyapti. iOS 17 va undan yuqorisi faqat iPhone XR va undan keyingi modellarda ishlaydi — ularning hammasida eSIM bor.',
-    detectedUnknown: 'Bu model raqami ro‘yxatimizda yo‘q. Eng ishonchli yo‘l — telefonning o‘zidan tekshirish.',
+    iosYesText:
+      'Brauzer iOS {{version}} deb ko‘rsatyapti. iOS 17 va undan yuqorisi faqat iPhone XR va undan keyingi modellarda ishlaydi — ularning hammasida eSIM bor.',
+    detectedUnknown:
+      'Bu model raqami ro‘yxatimizda yo‘q. Eng ishonchli yo‘l — telefonning o‘zidan tekshirish.',
     verdictYes: 'eSIM ishlaydi',
-    verdictYesText: 'Bu modelda eSIM moduli bor. Boradigan davlatni tanlab, QR-kodni darhol olasiz.',
+    verdictYesText:
+      'Bu modelda eSIM moduli bor. Boradigan davlatni tanlab, QR-kodni darhol olasiz.',
     verdictNo: 'eSIM moduli yo‘q',
-    verdictNoText: 'Bu modelda eSIM apparati yo‘q — jismoniy SIM kerak bo‘ladi. Ro‘yxatimiz xato bo‘lishi ham mumkin, shuning uchun telefonning o‘zidan tekshirib ko‘rishni tavsiya qilamiz.',
-    regionalNote: 'Bu model ba’zi bozorlar uchun eSIM’siz ham chiqarilgan (masalan, Xitoy bozori nusxalari). Sotib olishdan oldin *#06# bilan 15 soniyada tasdiqlab qo‘ying.',
+    verdictNoText:
+      'Bu modelda eSIM apparati yo‘q — jismoniy SIM kerak bo‘ladi. Ro‘yxatimiz xato bo‘lishi ham mumkin, shuning uchun telefonning o‘zidan tekshirib ko‘rishni tavsiya qilamiz.',
+    regionalNote:
+      'Bu model ba’zi bozorlar uchun eSIM’siz ham chiqarilgan (masalan, Xitoy bozori nusxalari). Sotib olishdan oldin *#06# bilan 15 soniyada tasdiqlab qo‘ying.',
     manualTitle: 'Telefonning o‘zidan tekshirish',
-    manualLead: 'Bitta kod — *#06#. Har qanday qurilmada aniq javob beradi, ro‘yxatga bog‘liq emas.',
+    manualLead:
+      'Bitta kod — *#06#. Har qanday qurilmada aniq javob beradi, ro‘yxatga bog‘liq emas.',
     badge: {
       yes: 'Bor',
       regional: 'Bozorga qarab',
@@ -552,22 +578,23 @@ const uz: Translation = {
     ],
   },
   region: {
-    'europe': 'Yevropa',
-    'asia': 'Osiyo',
+    europe: 'Yevropa',
+    asia: 'Osiyo',
     'middle-east': 'Yaqin Sharq',
     'north-america': 'Shimoliy Amerika',
-    'africa': 'Afrika',
-    'oceania': 'Okeaniya',
+    africa: 'Afrika',
+    oceania: 'Okeaniya',
     'latin-america': 'Lotin Amerikasi',
-      'global': 'Butun dunyo',
-      oneEsimTitle: '{{region}} uchun bitta eSIM',
-      oneEsimNote:
-        'Bir necha davlatga borsangiz — bitta eSIM yetadi. Bu tariflar {{count}} ta yo‘nalishda ishlaydi.',
-      oneCountryTitle: 'Yoki bitta davlat uchun',
+    global: 'Butun dunyo',
+    oneEsimTitle: '{{region}} uchun bitta eSIM',
+    oneEsimNote:
+      'Bir necha davlatga borsangiz — bitta eSIM yetadi. Bu tariflar {{count}} ta yo‘nalishda ishlaydi.',
+    oneCountryTitle: 'Yoki bitta davlat uchun',
   },
 
   footer: {
-    tagline: 'Sayohat uchun qulay eSIM internet tariflari. Tarifni tanlang, QR-kodni oling va ulaning.',
+    tagline:
+      'Sayohat uchun qulay eSIM internet tariflari. Tarifni tanlang, QR-kodni oling va ulaning.',
     pages: 'Sahifalar',
     contacts: 'Kontaktlar',
     product: 'Mahsulot',
@@ -620,7 +647,8 @@ const uz: Translation = {
     statusJoined: 'ro‘yxatdan o‘tdi',
     statusBought: 'sotib oldi',
     startTitle: 'Havolangizni ulashing va pul ishlang',
-    startSubtitle: 'Havolangiz orqali kirgan odam eSIM sotib olsa, sizga haq tegadi. Cheklov yo‘q — nechta odam olib kelsangiz, shuncha.',
+    startSubtitle:
+      'Havolangiz orqali kirgan odam eSIM sotib olsa, sizga haq tegadi. Cheklov yo‘q — nechta odam olib kelsangiz, shuncha.',
     step1: 'Havolangizni do‘stlaringizga yoki mijozlaringizga yuboring.',
     step2: 'Ular o‘sha havola orqali kirib, eSIM sotib olishadi.',
     step3: 'Har bir sotib olgan odam uchun {{rate}} yig‘iladi.',
@@ -642,7 +670,8 @@ const uz: Translation = {
   },
   seo: {
     globalPageTitle: 'Global eSIM — bir tarif, ko‘p davlat',
-    globalPageDescription: 'Bir marta sotib oling va yo‘lingizdagi hamma davlatda ishlatavering. Qamrov ro‘yxati va narxlar sahifada.',
+    globalPageDescription:
+      'Bir marta sotib oling va yo‘lingizdagi hamma davlatda ishlatavering. Qamrov ro‘yxati va narxlar sahifada.',
     homeTitle: 'Sayohat uchun eSIM — 200+ davlatda internet',
     homeDescription:
       'Sayohat uchun eSIM’ni bir necha daqiqada oling. Manzilingizga tarif tanlang, QR-kodni skanerlang va yetib borganingizda darhol ulaning — roaming hisobisiz, SIM almashtirmasdan.',
@@ -666,6 +695,9 @@ const uz: Translation = {
     relatedTitle: 'Yaqin yo‘nalishlar',
     countryDescription:
       '{{country}} uchun sayohat eSIM tariflari. Onlayn xarid qiling, uchishdan oldin QR-kod orqali o‘rnating va qo‘nganingizdayoq internetga ulaning.',
+    dataCalculatorTitle: 'Menga yetadimi? Internet hajmini hisoblash',
+    dataCalculatorDescription:
+      'Safar muddati va kunlik odatlaringizga qarab taxminiy internet hajmini hisoblang va eSIM tariflarini tanlang.',
     deviceTitle: 'Telefoningiz eSIM’ni qo‘llab-quvvatlaydimi?',
     deviceDescription:
       'Telefoningiz eSIM’ni qo‘llab-quvvatlashini bir necha soniyada tekshiring — *#06# raqamini tering yoki modelingizni ro‘yxatdan toping. iPhone, Samsung, Google Pixel, Xiaomi va boshqalar.',
@@ -692,13 +724,14 @@ const uz: Translation = {
     ofertaTitle: 'Ommaviy oferta',
     refundTitle: 'Qaytarish siyosati',
     privacyTitle: 'Maxfiylik siyosati',
-    legalDescription: 'QulaySIM xizmatidan foydalanish shartlari, to‘lov, yetkazib berish va qaytarish tartibi.',
+    legalDescription:
+      'QulaySIM xizmatidan foydalanish shartlari, to‘lov, yetkazib berish va qaytarish tartibi.',
     guideInstallTitle: 'eSIM qanday o‘rnatiladi? Qadam-baqadam yo‘riqnoma',
     guideInstallDescription:
       'eSIM’ni QR-kod orqali o‘rnatish 5 daqiqa oladi. iPhone va Android uchun qadam-baqadam yo‘riqnoma, uchishdan oldingi tekshiruv va ulanmaganda nima qilish.',
   },
   legal: {
-    updated: "Oxirgi yangilanish: 2026-yil 4-avgust",
+    updated: 'Oxirgi yangilanish: 2026-yil 4-avgust',
     fillNote: "«[ ]» ichidagi ma'lumotlar rasmiy rekvizitlar bilan to'ldiriladi.",
     oferta: {
       title: 'Ommaviy oferta',
@@ -747,7 +780,7 @@ const uz: Translation = {
         {
           h: '7. Qaytarish',
           ps: [
-            "Pulni qaytarish shartlari alohida «Qaytarish siyosati» hujjatida belgilangan va ushbu ofertaning ajralmas qismi hisoblanadi.",
+            'Pulni qaytarish shartlari alohida «Qaytarish siyosati» hujjatida belgilangan va ushbu ofertaning ajralmas qismi hisoblanadi.',
           ],
         },
         {
@@ -759,7 +792,7 @@ const uz: Translation = {
         {
           h: '9. Rekvizitlar',
           ps: [
-            "[Yuridik nom / YaTT F.I.Sh.] · STIR: [_________] · Manzil: [_________] · E-mail: [_________] · Tel: [_________]",
+            '[Yuridik nom / YaTT F.I.Sh.] · STIR: [_________] · Manzil: [_________] · E-mail: [_________] · Tel: [_________]',
           ],
         },
       ],
@@ -823,7 +856,7 @@ const uz: Translation = {
         {
           h: '4. Cookie va saqlash',
           ps: [
-            "Sayt til va mavzu tanlovini brauzeringizda saqlaydi; seans xavfsizligi uchun texnik cookie ishlatiladi. Reklama kuzatuvi ishlatilmaydi.",
+            'Sayt til va mavzu tanlovini brauzeringizda saqlaydi; seans xavfsizligi uchun texnik cookie ishlatiladi. Reklama kuzatuvi ishlatilmaydi.',
           ],
         },
         {
@@ -835,9 +868,7 @@ const uz: Translation = {
         },
         {
           h: '6. Mas’ul shaxs',
-          ps: [
-            "[Yuridik nom / YaTT F.I.Sh.] · E-mail: [_________]",
-          ],
+          ps: ['[Yuridik nom / YaTT F.I.Sh.] · E-mail: [_________]'],
         },
       ],
     },

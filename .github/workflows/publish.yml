@@ -49,7 +49,24 @@ jobs:
       - name: Size budget
         run: npx size-limit
       - name: Install browser
-        run: npx playwright install chromium --with-deps
+        # `--with-deps` fetches apt packages from Google's own mirror, which
+        # answered "Hash Sum mismatch" three runs in a row and skipped the
+        # image build for a storefront that was fine. The browser itself comes
+        # from Playwright's CDN, so it is tried first and on its own; the apt
+        # step only runs if that is not enough, and each attempt gets a second
+        # try. The smoke flows below still gate the build -- this makes the
+        # download flaky-tolerant, it does not remove a check.
+        run: |
+          for attempt in 1 2 3; do
+            if npx playwright install chromium; then
+              exit 0
+            fi
+            echo "attempt $attempt failed; retrying with system deps"
+            npx playwright install chromium --with-deps && exit 0
+            sleep $((attempt * 15))
+          done
+          echo "::error::could not install the browser after three attempts"
+          exit 1
       - name: Smoke flows
         # Three flows on a phone and a desktop, with the API mocked at the
         # network boundary: a failure here means the storefront broke, not that

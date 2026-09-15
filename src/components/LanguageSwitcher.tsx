@@ -1,88 +1,130 @@
-import { useEffect, useRef, useState } from 'react'
-import { Check, ChevronDown } from 'lucide-react'
+import { useEffect, useId, useRef, useState } from 'react'
+import { Check, ChevronDown, Globe2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { LANGUAGES } from '../i18n'
 import { flagUrl, flagSrcSet } from '../lib/format'
 import { pathForLang, type SeoLang } from '../lib/seo'
+import CurrencySwitcher from './CurrencySwitcher'
 
-export default function LanguageSwitcher({ embedded = false, compact = false }: { embedded?: boolean; compact?: boolean }) {
-  const { i18n } = useTranslation()
+export default function LanguageSwitcher({
+  embedded = false,
+  compact = false,
+  appearance = 'default',
+}: {
+  embedded?: boolean
+  compact?: boolean
+  appearance?: 'default' | 'navigation'
+}) {
+  const { i18n, t } = useTranslation()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const trigger = useRef<HTMLButtonElement>(null)
+  const id = useId()
+  const navigation = appearance === 'navigation'
 
-  /**
-   * Switching language changes the URL, not just the strings.
-   *
-   * Each language is its own address now, so staying put would leave a Russian
-   * page sitting at an Uzbek URL — the one thing the whole prefix scheme exists
-   * to prevent. It is a real navigation rather than a router push because the
-   * basename is fixed when the app boots; the router cannot be re-based in
-   * place, and half-changing it would leave every link on the page pointing at
-   * the previous language.
-   *
-   * The current path is carried across, so someone reading about Turkey in
-   * Uzbek lands on the same page in Russian rather than back at the home page.
-   */
   const switchTo = (code: string) => {
     setOpen(false)
     const target = pathForLang(window.location.pathname, code as SeoLang)
-    if (target === window.location.pathname) return
-    // Written before navigating so the destination — which may be an unprefixed
-    // Uzbek URL with no language of its own in the address — starts up in the
-    // language that was actually chosen.
     i18n.changeLanguage(code)
+    if (target === window.location.pathname) {
+      trigger.current?.focus()
+      return
+    }
     window.location.assign(`${target}${window.location.search}${window.location.hash}`)
   }
-
   const current =
-    LANGUAGES.find((l) => l.code === i18n.resolvedLanguage) || LANGUAGES[0]
+    LANGUAGES.find((lang) => lang.code === i18n.resolvedLanguage?.split('-')[0]) || LANGUAGES[0]
 
   useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    if (!open) return
+    const outside = (event: MouseEvent) => {
+      if (!ref.current?.contains(event.target as Node)) setOpen(false)
     }
-    document.addEventListener('mousedown', onClick)
-    return () => document.removeEventListener('mousedown', onClick)
-  }, [])
+    document.addEventListener('mousedown', outside)
+    return () => document.removeEventListener('mousedown', outside)
+  }, [open])
 
   return (
-    <div ref={ref} className="relative">
+    <div
+      ref={ref}
+      className={navigation ? 'navigation-language' : 'relative'}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false)
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && open) {
+          event.preventDefault()
+          event.stopPropagation()
+          setOpen(false)
+          trigger.current?.focus()
+        }
+      }}
+    >
       <button
-        onClick={() => setOpen((o) => !o)}
-        className={`tap-44 inline-flex items-center gap-1.5 rounded-xl px-2.5 text-sm font-600 text-slate-soft transition hover:bg-surface hover:text-brand-600 ${
-          compact ? 'h-10 w-10 justify-center p-0 ring-1 ring-line hover:ring-brand-300' : embedded ? 'h-9' : 'h-10 ring-1 ring-line hover:ring-brand-300'
-        }`}
-        aria-label="Language"
+        ref={trigger}
+        type="button"
+        aria-label={t('common.language')}
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((value) => !value)}
+        className={
+          navigation
+            ? 'navigation-language__trigger'
+            : `tap-44 inline-flex items-center gap-1.5 rounded-xl px-2.5 text-sm font-600 text-slate-soft transition hover:bg-surface hover:text-brand-600 ${compact ? 'h-10 w-10 justify-center p-0 ring-1 ring-line hover:ring-brand-300' : embedded ? 'h-9' : 'h-10 ring-1 ring-line hover:ring-brand-300'}`
+        }
       >
-        <img
-          src={flagUrl(current.flag)}
-          srcSet={flagSrcSet(current.flag)}
-          alt=""
-          className="h-4 w-6 rounded-[3px] object-cover ring-1 ring-line"
-        />
-        {!compact && current.short}
-        {!compact && <ChevronDown size={14} className={`transition ${open ? 'rotate-180' : ''}`} />}
+        {navigation ? (
+          <Globe2 size={20} aria-hidden />
+        ) : (
+          <img
+            src={flagUrl(current.flag)}
+            srcSet={flagSrcSet(current.flag)}
+            alt=""
+            className="h-4 w-6 rounded-[3px] object-cover ring-1 ring-line"
+          />
+        )}
+        {!compact && <span>{current.short}</span>}
+        {!compact && <ChevronDown size={14} aria-hidden className={open ? 'rotate-180' : ''} />}
       </button>
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl bg-surface p-1 shadow-xl shadow-brand-900/10 ring-1 ring-line">
-          {LANGUAGES.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => switchTo(lang.code)}
-              className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition hover:bg-mist ${
-                lang.code === current.code ? 'font-700 text-brand-600' : 'text-ink'
-              }`}
-            >
-              <img
-                src={flagUrl(lang.flag)}
-                srcSet={flagSrcSet(lang.flag)}
-                alt=""
-                className="h-4 w-6 rounded-[3px] object-cover ring-1 ring-line"
-              />
-              <span className="flex-1 text-left">{lang.label}</span>
-              {lang.code === current.code && <Check size={15} />}
-            </button>
-          ))}
+        <div
+          id={id}
+          className={
+            navigation
+              ? 'navigation-language__popover'
+              : 'absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl bg-surface p-1 shadow-xl shadow-brand-900/10 ring-1 ring-line'
+          }
+        >
+          <div className={navigation ? 'navigation-language__choices' : ''}>
+            {LANGUAGES.map((lang) => (
+              <button
+                type="button"
+                key={lang.code}
+                onClick={() => switchTo(lang.code)}
+                aria-pressed={lang.code === current.code}
+                className={
+                  navigation
+                    ? 'navigation-language__option'
+                    : `flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition hover:bg-mist ${lang.code === current.code ? 'font-600 text-brand-600' : 'text-ink'}`
+                }
+              >
+                <img
+                  src={flagUrl(lang.flag)}
+                  srcSet={flagSrcSet(lang.flag)}
+                  alt=""
+                  className="h-4 w-6 rounded-[3px] object-cover ring-1 ring-line"
+                />
+                <span className="flex-1 text-left">{lang.label}</span>
+                {lang.code === current.code && <Check size={16} aria-hidden />}
+              </button>
+            ))}
+          </div>
+          {navigation && (
+            <div className="navigation-language__currency">
+              <span>{t('common.currency')}</span>
+              <CurrencySwitcher embedded />
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -22,7 +22,6 @@ import { useCurrency } from '../context/CurrencyContext'
 const NO_REGIONS: Region[] = []
 const NO_COUNTRIES: Country[] = []
 
-
 /**
  * The page for the product a traveller with several stops actually wants.
  *
@@ -117,7 +116,7 @@ export default function Global() {
   const lang = (i18n.language.split('-')[0] || 'uz') as SeoLang
 
   return (
-    <div className="container-page py-8 sm:py-12">
+    <div className="qs-page qs-global container-page">
       {/* `Seo` reads the path from the router itself, so it is not passed. */}
       <Seo
         title={t('global.seoTitle')}
@@ -136,7 +135,7 @@ export default function Global() {
           API, and the count beside them is that list's real length. If a
           supplier drops thirty countries tomorrow, this strip shrinks —
           which is exactly the property a prop does not have. */}
-      <section className="grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-12">
+      <section className="global-hero grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-12">
         <div>
           {widest.length > 0 && (
             <p className="text-xs font-700 uppercase tracking-[0.16em] text-brand-600 dark:text-accent-400">
@@ -155,7 +154,9 @@ export default function Global() {
           <dl className="mt-7 flex flex-wrap items-end gap-x-8 gap-y-4 border-t border-line pt-5">
             <div>
               <dt className="text-xs text-slate-soft">{t('global.statCountries')}</dt>
-              <dd className="font-display text-2xl font-700 tabular-nums text-ink">{widest.length || '—'}</dd>
+              <dd className="font-display text-2xl font-700 tabular-nums text-ink">
+                {widest.length || '—'}
+              </dd>
             </div>
             <div>
               <dt className="text-xs text-slate-soft">{t('global.statPlans')}</dt>
@@ -179,7 +180,7 @@ export default function Global() {
               <ArrowRight size={17} aria-hidden />
             </a>
             <Link
-              to="/guide/install-esim"
+              to="/esim-ornatish"
               className="focus-ring rounded-lg px-3 py-2 text-sm font-600 text-slate-soft hover:text-ink"
             >
               {t('global.howItWorks')}
@@ -224,7 +225,12 @@ export default function Global() {
       <p className="mt-1.5 text-sm text-slate-soft">{t('global.plansSubtitle')}</p>
 
       {detail && detail.plans.length > 0 ? (
-        <GlobalPlanExplorer plans={detail.plans} onAdd={handleAdd} added={added} countries={countries} />
+        <GlobalPlanExplorer
+          plans={detail.plans}
+          onAdd={handleAdd}
+          added={added}
+          countries={countries}
+        />
       ) : (
         <Card className="mt-6 p-6 text-sm text-slate-soft">{t('global.plansEmpty')}</Card>
       )}

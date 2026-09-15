@@ -20,15 +20,20 @@ export default function ReviewPanel() {
   const [comment, setComment] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(false)
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
-    api.get<ReviewStatus>('/account/testimonial').then(({ data }) => {
-      setState(data)
-      if (data.rating) setRating(data.rating)
-      if (data.location) setLocation(data.location)
-      if (data.text) setComment(data.text)
-    }).catch(() => setError(true))
-  }, [])
+    setError(false)
+    api
+      .get<ReviewStatus>('/account/testimonial')
+      .then(({ data }) => {
+        setState(data)
+        if (data.rating) setRating(data.rating)
+        if (data.location) setLocation(data.location)
+        if (data.text) setComment(data.text)
+      })
+      .catch(() => setError(true))
+  }, [attempt])
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -48,14 +53,30 @@ export default function ReviewPanel() {
     }
   }
 
-  if (!state) return <Card className="h-48 animate-pulse bg-line/30"><span /></Card>
+  if (!state && error)
+    return (
+      <Card className="p-6">
+        <p role="alert">{t('account.errorSubtitle')}</p>
+        <Button variant="ghost" className="mt-4" onClick={() => setAttempt((value) => value + 1)}>
+          {t('account.retry')}
+        </Button>
+      </Card>
+    )
+  if (!state)
+    return (
+      <Card className="h-48 animate-pulse bg-line/30" aria-busy="true">
+        <span />
+      </Card>
+    )
 
   if (!state.eligible) {
     return (
       <Card className="p-8 text-center">
         <MessageSquareText className="mx-auto text-slate-soft" size={32} />
         <h2 className="mt-3 text-lg font-700">{t('account.reviewLockedTitle')}</h2>
-        <p className="mx-auto mt-2 max-w-md text-sm text-slate-soft">{t('account.reviewLockedText')}</p>
+        <p className="mx-auto mt-2 max-w-md text-sm text-slate-soft">
+          {t('account.reviewLockedText')}
+        </p>
       </Card>
     )
   }
@@ -77,8 +98,16 @@ export default function ReviewPanel() {
           {state.status === 'pending' ? <Clock3 size={21} /> : <MessageSquareText size={21} />}
         </span>
         <div>
-          <h2 className="text-xl font-700">{state.status === 'pending' ? t('account.reviewPendingTitle') : t('account.reviewTitle')}</h2>
-          <p className="mt-1 text-sm text-slate-soft">{state.status === 'pending' ? t('account.reviewPendingText') : t('account.reviewSubtitle')}</p>
+          <h2 className="text-xl font-700">
+            {state.status === 'pending'
+              ? t('account.reviewPendingTitle')
+              : t('account.reviewTitle')}
+          </h2>
+          <p className="mt-1 text-sm text-slate-soft">
+            {state.status === 'pending'
+              ? t('account.reviewPendingText')
+              : t('account.reviewSubtitle')}
+          </p>
         </div>
       </div>
 
@@ -87,22 +116,61 @@ export default function ReviewPanel() {
           <label className="text-sm font-600 text-ink">{t('account.reviewRating')}</label>
           <div className="mt-2 flex gap-1" role="radiogroup" aria-label={t('account.reviewRating')}>
             {[1, 2, 3, 4, 5].map((value) => (
-              <button key={value} type="button" role="radio" aria-checked={rating === value} onClick={() => setRating(value)} className="rounded-lg p-1 focus:outline-none focus:ring-2 focus:ring-brand-500">
-                <Star size={26} className={value <= rating ? 'fill-gold-500 text-gold-500' : 'text-line'} />
-              </button>
+              <label key={value} className="review-star">
+                <input
+                  type="radio"
+                  name="review-rating"
+                  value={value}
+                  checked={rating === value}
+                  onChange={() => setRating(value)}
+                  aria-label={`${value} / 5`}
+                  className="sr-only"
+                />
+                <Star
+                  size={26}
+                  aria-hidden
+                  className={value <= rating ? 'fill-gold-500 text-gold-500' : 'text-line'}
+                />
+              </label>
             ))}
           </div>
         </div>
         <div>
-          <label htmlFor="review-location" className="text-sm font-600 text-ink">{t('account.reviewJourney')}</label>
-          <input id="review-location" className="input mt-2" value={location} onChange={(e) => setLocation(e.target.value)} minLength={2} maxLength={120} required placeholder={t('account.reviewJourneyPlaceholder')} />
+          <label htmlFor="review-location" className="text-sm font-600 text-ink">
+            {t('account.reviewJourney')}
+          </label>
+          <input
+            id="review-location"
+            className="input mt-2"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            minLength={2}
+            maxLength={120}
+            required
+            placeholder={t('account.reviewJourneyPlaceholder')}
+          />
         </div>
         <div>
-          <label htmlFor="review-text" className="text-sm font-600 text-ink">{t('account.reviewComment')}</label>
-          <textarea id="review-text" className="input mt-2 min-h-32 resize-y" value={comment} onChange={(e) => setComment(e.target.value)} minLength={10} maxLength={1000} required placeholder={t('account.reviewCommentPlaceholder')} />
+          <label htmlFor="review-text" className="text-sm font-600 text-ink">
+            {t('account.reviewComment')}
+          </label>
+          <textarea
+            id="review-text"
+            className="input mt-2 min-h-32 resize-y"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            minLength={10}
+            maxLength={1000}
+            required
+            placeholder={t('account.reviewCommentPlaceholder')}
+          />
           <p className="mt-1 text-right text-xs text-slate-soft">{comment.length}/1000</p>
         </div>
-        {error && <p className="text-sm text-red-500">{t('account.reviewError')}</p>}
+        {error && (
+          <p role="alert" className="text-sm text-red-500">
+            {t('account.reviewError')}
+          </p>
+        )}
         <Button type="submit" disabled={saving} className="w-full sm:w-auto">
           {saving ? t('account.reviewSending') : t('account.reviewSubmit')}
         </Button>

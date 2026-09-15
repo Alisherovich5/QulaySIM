@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Cpu, Globe2, PlaneTakeoff, Smartphone, Wallet, Zap } from 'lucide-react'
+import { ArrowRight, Globe2, PlaneTakeoff, Smartphone, Wallet, Zap } from 'lucide-react'
 
 import Seo from '../components/Seo'
 import { Button, Card, FaqItem, IconBadge } from '../components/ui'
@@ -33,7 +33,7 @@ export default function GuideWhatIsEsim() {
   const whyIcons = [Wallet, Zap, PlaneTakeoff]
 
   return (
-    <div className="container-page py-8 sm:py-12">
+    <div className="qs-page qs-guide container-page">
       <Seo
         title={t('seo.guideWhatTitle')}
         description={t('seo.guideWhatDescription')}
@@ -44,11 +44,15 @@ export default function GuideWhatIsEsim() {
       />
 
       <div className="mx-auto max-w-3xl">
-        <IconBadge icon={Cpu} tone="brand" size="xl" />
-        <h1 className="mt-5 text-3xl font-700 sm:text-4xl">{t('guides.what.title')}</h1>
-        <p className="mt-4 text-base leading-7 text-slate-soft sm:text-lg">
-          {t('guides.what.lead')}
-        </p>
+        <div className="guide-top">
+          <div>
+            <h1 className="mt-5 text-3xl font-700 sm:text-4xl">{t('guides.what.title')}</h1>
+            <p className="mt-4 text-base leading-7 text-slate-soft sm:text-lg">
+              {t('guides.what.lead')}
+            </p>
+          </div>
+          <img src="/hero-globe@2x.webp" alt="" />
+        </div>
 
         {/* Difference ---------------------------------------------------- */}
         <h2 className="mt-12 text-xl font-700 sm:text-2xl">{t('guides.what.diffTitle')}</h2>

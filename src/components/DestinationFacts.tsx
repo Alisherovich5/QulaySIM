@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { useCurrency } from '../context/CurrencyContext'
 import { Infinity as InfinityIcon, Layers, Share2, Signal, Tag, Timer } from 'lucide-react'
 
 import type { DestinationFacts as Facts } from '../lib/destination-facts'
@@ -15,26 +16,18 @@ import type { DestinationFacts as Facts } from '../lib/destination-facts'
  * Every value is computed from the plans rendered below it, so it cannot drift
  * out of date and cannot promise something the catalogue does not sell.
  */
-export default function DestinationFacts({
-  facts,
-  country,
-}: {
-  facts: Facts
-  country: string
-}) {
+export default function DestinationFacts({ facts, country }: { facts: Facts; country: string }) {
   const { t } = useTranslation()
+  const { formatPrice } = useCurrency()
 
   const rows: { icon: typeof Layers; label: string; value: string }[] = [
     { icon: Layers, label: t('seo.factsPlans'), value: String(facts.planCount) },
-    { icon: Tag, label: t('seo.factsFrom'), value: `$${facts.minPrice.toFixed(2)}` },
+    { icon: Tag, label: t('seo.factsFrom'), value: formatPrice(facts.minPrice) },
     {
       icon: Timer,
       label: t('seo.factsValidity'),
       value: t('seo.factsValidityValue', {
-        days:
-          facts.minDays === facts.maxDays
-            ? facts.minDays
-            : `${facts.minDays}–${facts.maxDays}`,
+        days: facts.minDays === facts.maxDays ? facts.minDays : `${facts.minDays}–${facts.maxDays}`,
       }),
     },
   ]
@@ -50,7 +43,7 @@ export default function DestinationFacts({
   })
 
   return (
-    <section className="card mt-8 p-5 sm:p-6">
+    <section className="destination-facts mt-8">
       {/* h2, not h1: the country name above it is the page's heading, and two
           h1s make a search engine guess which one the page is about. */}
       <h2 className="text-base font-700 sm:text-lg">{t('seo.factsTitle', { country })}</h2>

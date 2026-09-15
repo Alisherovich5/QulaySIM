@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, CheckCircle2, LifeBuoy, PlaneLanding, QrCode } from 'lucide-react'
+import { ArrowRight, CheckCircle2, LifeBuoy, PlaneLanding } from 'lucide-react'
 
 import Seo from '../components/Seo'
 import IosWalkthrough from '../components/guide/IosWalkthrough'
-import { Button, Card, FaqItem, IconBadge } from '../components/ui'
+import { Button, Card, FaqItem } from '../components/ui'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd, faqLd } from '../lib/structured-data'
 
@@ -43,7 +43,7 @@ export default function GuideInstallEsim() {
   const faqs = t('guides.install.faqs', { returnObjects: true }) as { q: string; a: string }[]
 
   return (
-    <div className="container-page py-8 sm:py-12">
+    <div className="qs-page qs-guide container-page">
       <Seo
         title={t('seo.guideInstallTitle')}
         description={t('seo.guideInstallDescription')}
@@ -54,16 +54,24 @@ export default function GuideInstallEsim() {
       />
 
       <div className="mx-auto max-w-3xl">
-        <IconBadge icon={QrCode} tone="brand" size="xl" />
-        <h1 className="mt-5 text-3xl font-700 sm:text-4xl">{t('guides.install.title')}</h1>
-        <p className="mt-4 text-base leading-7 text-slate-soft sm:text-lg">
-          {t('guides.install.lead')}
-        </p>
+        <div className="guide-top">
+          <div>
+            <h1 className="mt-5 text-3xl font-700 sm:text-4xl">{t('guides.install.title')}</h1>
+            <p className="mt-4 text-base leading-7 text-slate-soft sm:text-lg">
+              {t('guides.install.lead')}
+            </p>
+          </div>
+          <img src="/hero-globe@2x.webp" alt="" />
+        </div>
 
         {/* Pre-flight ------------------------------------------------------ */}
         <Card className="mt-10 p-6">
           <h2 className="flex items-center gap-2.5 text-lg font-700">
-            <CheckCircle2 size={20} className="shrink-0 text-brand-500 dark:text-accent-400" aria-hidden />
+            <CheckCircle2
+              size={20}
+              className="shrink-0 text-brand-500 dark:text-accent-400"
+              aria-hidden
+            />
             {t('guides.install.beforeTitle')}
           </h2>
           <ul className="mt-4 space-y-3">
@@ -110,7 +118,11 @@ export default function GuideInstallEsim() {
         {/* On arrival ------------------------------------------------------- */}
         <Card className="mt-8 p-6">
           <h2 className="flex items-center gap-2.5 text-lg font-700">
-            <PlaneLanding size={20} className="shrink-0 text-brand-500 dark:text-accent-400" aria-hidden />
+            <PlaneLanding
+              size={20}
+              className="shrink-0 text-brand-500 dark:text-accent-400"
+              aria-hidden
+            />
             {t('guides.install.arriveTitle')}
           </h2>
           <ol className="mt-4 space-y-3.5">
@@ -125,7 +137,11 @@ export default function GuideInstallEsim() {
         {/* Troubleshooting --------------------------------------------------- */}
         <Card className="mt-8 p-6">
           <h2 className="flex items-center gap-2.5 text-lg font-700">
-            <LifeBuoy size={20} className="shrink-0 text-brand-500 dark:text-accent-400" aria-hidden />
+            <LifeBuoy
+              size={20}
+              className="shrink-0 text-brand-500 dark:text-accent-400"
+              aria-hidden
+            />
             {t('guides.install.troubleTitle')}
           </h2>
           <ul className="mt-4 space-y-3">

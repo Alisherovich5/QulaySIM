@@ -1,5 +1,6 @@
 const en = {
   nav: {
+    homeLink: 'QulaySIM — home',
     destinations: 'Destinations',
     global: 'Global',
     support: 'Support',
@@ -23,10 +24,14 @@ const en = {
     device: 'Device',
   },
   common: {
+    switchToLight: 'Switch to light mode',
+    switchToDark: 'Switch to dark mode',
+    language: 'Language',
     staleData: 'Connection lost — showing the last saved data.',
     retry: 'Reload',
     som: 'som',
-    rateUnavailable: 'Converted at an indicative rate — the central bank rate is temporarily unavailable.',
+    rateUnavailable:
+      'Converted at an indicative rate — the central bank rate is temporarily unavailable.',
     from: 'from',
     viewAll: 'View all',
     browseDestinations: 'Browse destinations',
@@ -90,7 +95,8 @@ const en = {
     heroCoverageTitle: 'One destination is all you need',
     heroCoverageText: 'Search where you are going, then pick the right data plan.',
     exploreTitle: '200+ countries',
-    exploreSubtitle: 'Explore eSIMs for the destinations most popular with travellers from Uzbekistan, then buy for where you are going.',
+    exploreSubtitle:
+      'Explore eSIMs for the destinations most popular with travellers from Uzbekistan, then buy for where you are going.',
     exploreAll: 'All',
     exploreEmpty: 'No destinations in this region yet.',
     exploreMore: 'View all destinations',
@@ -158,7 +164,7 @@ const en = {
   global: {
     statCountries: 'Countries',
     statPlans: 'Plans',
-    coverageStripTitle: "Countries covered",
+    coverageStripTitle: 'Countries covered',
     coverageMore: 'and {{count}} more countries',
     howItWorks: 'How it works',
     filterTitle: 'Filter',
@@ -200,10 +206,12 @@ const en = {
     reasonThreeTitle: 'Keep your number',
     reasonThreeText: 'Your main SIM stays on for calls; data comes from the eSIM.',
     plansTitle: 'Worldwide plans',
-    plansSubtitle: 'Coverage differs by plan — each card says how many countries. The window starts the day you activate.',
+    plansSubtitle:
+      'Coverage differs by plan — each card says how many countries. The window starts the day you activate.',
     plansEmpty: 'No worldwide plans are available right now. Have a look at the regional ones.',
     regionsTitle: 'Or one region — cheaper',
-    regionsSubtitle: 'If your trip stays inside a single region, the regional plan costs less than the worldwide one.',
+    regionsSubtitle:
+      'If your trip stays inside a single region, the regional plan costs less than the worldwide one.',
     howTitle: 'How it works',
     howOne: 'Pick a plan and pay by card — the QR code appears in your account straight away.',
     howTwo: 'Scan it in your phone’s settings. At home, over Wi-Fi.',
@@ -211,11 +219,14 @@ const en = {
     howLink: 'Full installation guide',
     cartLabel: 'Worldwide',
     seoTitle: 'Global eSIM — one data plan for 200+ countries',
-    seoDescription: 'Buy once and use it worldwide. QulaySIM global eSIM plans from 1 GB to 50 GB, with support in Uzbek.',
+    seoDescription:
+      'Buy once and use it worldwide. QulaySIM global eSIM plans from 1 GB to 50 GB, with support in Uzbek.',
   },
   destinations: {
+    alphabet: 'Jump by letter',
     worldwide: 'Worldwide plans',
-    worldwideNotAList: '“Worldwide” is not a list of countries — it is the plans that cover many of them at once.',
+    worldwideNotAList:
+      '“Worldwide” is not a list of countries — it is the plans that cover many of them at once.',
     title: 'Destinations',
     subtitle: 'Choose where you are travelling and pick a data plan that fits your trip.',
     searchPlaceholder: 'Search a country…',
@@ -249,11 +260,13 @@ const en = {
     added: 'Added',
   },
   checkout: {
+    remove: 'Remove from cart',
     title: 'Checkout',
     emptyTitle: 'Your cart is empty',
     emptySubtitle: 'Browse destinations and add a data plan to get started.',
     summary: 'Order summary',
-    priceUpdated: 'Some prices have been updated since you added these items. The totals below are current.',
+    priceUpdated:
+      'Some prices have been updated since you added these items. The totals below are current.',
     promoCode: 'Promo code',
     apply: 'Apply',
     subtotal: 'Subtotal',
@@ -268,7 +281,7 @@ const en = {
     payOpening: 'Preparing the payment form…',
     payFrameTitle: 'Secure payment',
     payMethodCard: 'Card',
-    payMethodsHint: "Click/Payme under “Other method”",
+    payMethodsHint: 'Click/Payme under “Other method”',
     payFrameNote: 'Card details go straight to the payment provider — they never touch our server.',
     payCancel: 'Cancel',
     payFallback: 'Form did not open? Open on a new page',
@@ -301,6 +314,7 @@ const en = {
     note: 'After payment the data is added to this eSIM within seconds.',
   },
   account: {
+    qrAlt: 'eSIM QR code',
     title: 'My eSIMs',
     subtitle: 'manage and activate your data plans.',
     buyAnother: 'Buy another eSIM',
@@ -337,11 +351,13 @@ const en = {
     logoutConfirm: 'Yes, log out',
     tabReview: 'Leave a review',
     reviewTitle: 'Share your QulaySIM experience',
-    reviewSubtitle: 'Help other travellers by sharing your experience. Your review appears after admin approval.',
+    reviewSubtitle:
+      'Help other travellers by sharing your experience. Your review appears after admin approval.',
     reviewLockedTitle: 'Reviews are not available yet',
     reviewLockedText: 'You need to purchase at least one eSIM before you can leave a review.',
     reviewPendingTitle: 'Your review is being checked',
-    reviewPendingText: 'It will appear on the homepage after admin approval. You can edit it while it is pending.',
+    reviewPendingText:
+      'It will appear on the homepage after admin approval. You can edit it while it is pending.',
     reviewApprovedTitle: 'Your review is published',
     reviewApprovedText: 'Thank you for sharing your experience!',
     reviewRating: 'Rating',
@@ -408,7 +424,8 @@ const en = {
     avatarRemoving: 'Removing photo…',
     avatarUploading: 'Uploading photo…',
     esimsSubtitle: 'Activate, top up and scan your QR codes.',
-    globeAria: 'Travel globe showing the countries you have connected to and where plans are available',
+    globeAria:
+      'Travel globe showing the countries you have connected to and where plans are available',
     globeUnavailable: 'The globe cannot be shown on this device',
     ordersSubtitle: 'Every purchase, newest first.',
     overview: 'Overview',
@@ -436,9 +453,11 @@ const en = {
     yesText: 'Your phone is ready. Pick your destination, get the QR code and connect.',
     yesCta: 'Browse destinations',
     noTitle: 'No EID',
-    noText: 'This device has no eSIM — you will need a physical SIM. If you are unsure, send us the model and we will check it for you.',
+    noText:
+      'This device has no eSIM — you will need a physical SIM. If you are unsure, send us the model and we will check it for you.',
     noCta: 'Contact support',
-    privacyNote: 'Your EID and IMEI identify your device. Only you see them; you do not need to send them to us. The numbers shown above are invented examples.',
+    privacyNote:
+      'Your EID and IMEI identify your device. Only you see them; you do not need to send them to us. The numbers shown above are invented examples.',
     copyCode: 'Copy code',
     copied: 'Copied',
     mockDialLabel: 'What you type',
@@ -449,21 +468,28 @@ const en = {
     lead: 'Type your model — the answer appears as you type. {{count}} models on the list.',
     searchLabel: 'Search your model',
     searchPlaceholder: 'For example: iPhone 13, Galaxy A55, Redmi Note 13',
-    searchHint: '{{supported}} of {{total}} models have an eSIM. The model number from your settings works too.',
+    searchHint:
+      '{{supported}} of {{total}} models have an eSIM. The model number from your settings works too.',
     noResults: 'That model is not on the list',
-    noResultsHint: 'Try a different spelling, or check on the phone itself — that method answers for any device.',
+    noResultsHint:
+      'Try a different spelling, or check on the phone itself — that method answers for any device.',
     checkExactly: 'Check on the phone',
     brandStat: '{{brand}} — {{supported}} of {{total}} models have an eSIM.',
     detectedLabel: 'Detected on this device',
     answerLabel: 'Answer',
     iosYesTitle: 'Your iPhone has an eSIM',
-    iosYesText: 'The browser reports iOS {{version}}. iOS 17 and later only run on iPhone XR and newer — and every one of those has an eSIM.',
-    detectedUnknown: 'That model number is not on our list. The surest route is to check on the phone itself.',
+    iosYesText:
+      'The browser reports iOS {{version}}. iOS 17 and later only run on iPhone XR and newer — and every one of those has an eSIM.',
+    detectedUnknown:
+      'That model number is not on our list. The surest route is to check on the phone itself.',
     verdictYes: 'eSIM supported',
-    verdictYesText: 'This model has eSIM hardware. Pick your destination and the QR code is yours straight away.',
+    verdictYesText:
+      'This model has eSIM hardware. Pick your destination and the QR code is yours straight away.',
     verdictNo: 'No eSIM hardware',
-    verdictNoText: 'This model has no eSIM — it needs a physical SIM. Our list can be wrong, so it is worth confirming on the phone itself.',
-    regionalNote: 'This model also shipped without an eSIM in some markets (mainland-China units, for example). Confirm with *#06# in fifteen seconds before you buy.',
+    verdictNoText:
+      'This model has no eSIM — it needs a physical SIM. Our list can be wrong, so it is worth confirming on the phone itself.',
+    regionalNote:
+      'This model also shipped without an eSIM in some markets (mainland-China units, for example). Confirm with *#06# in fifteen seconds before you buy.',
     manualTitle: 'Check on the phone itself',
     manualLead: 'One code — *#06#. It answers for any device, whether or not it is on our list.',
     badge: {
@@ -512,8 +538,7 @@ const en = {
     title: 'How can we help?',
     subtitle: 'Answers to common questions about setup, devices and billing.',
     checkCompat: 'Check compatibility',
-    checkCompatText:
-      'Most phones since 2018 support eSIM. Your device must be carrier-unlocked.',
+    checkCompatText: 'Most phones since 2018 support eSIM. Your device must be carrier-unlocked.',
     liveChat: '24/7 live chat',
     liveChatText: 'Our support team is available any time, in multiple languages.',
     contactAdmin: 'Contact an admin',
@@ -553,22 +578,23 @@ const en = {
     ],
   },
   region: {
-    'europe': 'Europe',
-    'asia': 'Asia',
+    europe: 'Europe',
+    asia: 'Asia',
     'middle-east': 'Middle East',
     'north-america': 'North America',
-    'africa': 'Africa',
-    'oceania': 'Oceania',
+    africa: 'Africa',
+    oceania: 'Oceania',
     'latin-america': 'Latin America',
-      'global': 'Worldwide',
-      oneEsimTitle: 'One eSIM for {{region}}',
-      oneEsimNote:
-        'Travelling through several countries? One eSIM covers them. These plans work across {{count}} destinations.',
-      oneCountryTitle: 'Or for a single country',
+    global: 'Worldwide',
+    oneEsimTitle: 'One eSIM for {{region}}',
+    oneEsimNote:
+      'Travelling through several countries? One eSIM covers them. These plans work across {{count}} destinations.',
+    oneCountryTitle: 'Or for a single country',
   },
 
   footer: {
-    tagline: 'Convenient eSIM data plans for travel. Choose a plan, receive your QR code, and connect.',
+    tagline:
+      'Convenient eSIM data plans for travel. Choose a plan, receive your QR code, and connect.',
     pages: 'Pages',
     contacts: 'Contacts',
     product: 'Product',
@@ -621,7 +647,8 @@ const en = {
     statusJoined: 'signed up',
     statusBought: 'bought',
     startTitle: 'Share your link and earn',
-    startSubtitle: 'When someone joins through your link and buys an eSIM, you get paid. No cap — the more people you bring, the more you earn.',
+    startSubtitle:
+      'When someone joins through your link and buys an eSIM, you get paid. No cap — the more people you bring, the more you earn.',
     step1: 'Send your link to friends or clients.',
     step2: 'They join through it and buy an eSIM.',
     step3: 'You earn {{rate}} for every person who buys.',
@@ -632,8 +659,10 @@ const en = {
     nextRate: '{{needed}} more customers and your rate rises to {{rate}}.',
     topRate: 'This is the top rate.',
     withdrawTitle: 'Withdrawing your money',
-    withdrawReady: '{{amount}} so‘m is ready to withdraw. Message us on Telegram and we will transfer it to your card.',
-    withdrawLater: 'Once the money adds up, message us on Telegram and we will transfer it to your card.',
+    withdrawReady:
+      '{{amount}} so‘m is ready to withdraw. Message us on Telegram and we will transfer it to your card.',
+    withdrawLater:
+      'Once the money adds up, message us on Telegram and we will transfer it to your card.',
     withdrawButton: 'Message on Telegram',
   },
   notFound: {
@@ -650,7 +679,8 @@ const en = {
   // Google truncates the pair at roughly 60.
   seo: {
     globalPageTitle: 'Global eSIM — one plan, many countries',
-    globalPageDescription: 'Buy once and use it in every country on your route. Coverage list and prices on the page.',
+    globalPageDescription:
+      'Buy once and use it in every country on your route. Coverage list and prices on the page.',
     homeTitle: 'eSIM for travel — data in 200+ countries',
     homeDescription:
       'Buy a travel eSIM in minutes. Pick a plan for your destination, scan the QR code and land connected — no roaming bills, no SIM swap, no queue at the airport.',
@@ -680,6 +710,9 @@ const en = {
     relatedTitle: 'Nearby destinations',
     countryDescription:
       'Travel eSIM plans for {{country}}. Buy online, install by QR code before you fly and connect the moment you land.',
+    dataCalculatorTitle: 'How much data? Travel data calculator',
+    dataCalculatorDescription:
+      'Estimate your travel data allowance from your trip length and daily habits, then explore eSIM plans.',
     deviceTitle: 'Does your phone support eSIM?',
     deviceDescription:
       'Check eSIM support on your phone in a few seconds — dial *#06# or find your model in the list. Covers iPhone, Samsung, Google Pixel, Xiaomi and more.',
@@ -849,9 +882,7 @@ const en = {
         },
         {
           h: '6. Controller',
-          ps: [
-            '[Legal name / sole proprietor] · E-mail: [_________]',
-          ],
+          ps: ['[Legal name / sole proprietor] · E-mail: [_________]'],
         },
       ],
     },

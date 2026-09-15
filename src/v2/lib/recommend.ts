@@ -10,6 +10,8 @@
  * so'raymiz, qolganini o'zimiz aytamiz.
  */
 import type { Plan } from '../../lib/types'
+import { HOURLY_MB, MB_PER_DAY } from '../../lib/data-estimate'
+export { HOURLY_MB, MB_PER_DAY } from '../../lib/data-estimate'
 
 /**
  * Kuniga o'rtacha sarf, MB.
@@ -19,16 +21,8 @@ import type { Plan } from '../../lib/types'
  * kam chiqib qolgan tarif mijozni chet elda internetsiz qoldiradi, ortiqcha
  * chiqib qolgani esa bir-ikki dollar. Ikkovining bahosi teng emas.
  */
-export const MB_PER_DAY = 400
 
 /** Bir soatlik sarf, MB. Ekranda "yetadimi?" ni odam tilida aytish uchun. */
-export const HOURLY_MB = {
-  map: 6,
-  chat: 3,
-  social: 110,
-  video: 350,
-  call: 200,
-} as const
 
 export interface Choice {
   /** Tavsiya etilgan tarif. */
@@ -44,9 +38,7 @@ export interface Choice {
 
 /** Tariflarni bir xil o'lchovga keltirib tartiblash: avval hajm, keyin narx. */
 function order(plans: Plan[]): Plan[] {
-  return [...plans].sort(
-    (a, b) => effectiveMb(a) - effectiveMb(b) || a.price_usd - b.price_usd,
-  )
+  return [...plans].sort((a, b) => effectiveMb(a) - effectiveMb(b) || a.price_usd - b.price_usd)
 }
 
 /**

@@ -7,6 +7,7 @@ import GoogleSignIn from '../components/GoogleSignIn'
 import Seo from '../components/Seo'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
+import AuthScene from '../components/AuthScene'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import ThemeToggle from '../components/ThemeToggle'
 import { Button, Card } from '../components/ui'
@@ -19,8 +20,8 @@ export default function Login() {
   const from = (location.state as { from?: string })?.from || '/account'
 
   useEffect(() => {
-    if (customer) navigate('/account', { replace: true })
-  }, [customer, navigate])
+    if (customer) navigate(from, { replace: true })
+  }, [customer, from, navigate])
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -45,71 +46,83 @@ export default function Login() {
   }
 
   return (
-    <div className="container-page grid min-h-[70vh] place-items-center py-12">
+    <div className="auth-page">
       {/* noindex: a sign-in form is never the answer to a search, and letting
           it rank pulls clicks away from the page the searcher wanted. */}
       <Seo title={t('seo.signInTitle')} description={t('seo.homeDescription')} noindex />
-      <div className="w-full max-w-md">
-        <div className="flex items-center justify-between">
-          <Logo />
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <LanguageSwitcher />
+      <AuthScene />
+      <div className="auth-main">
+        <div className="auth-form-shell">
+          <div className="auth-top">
+            <Logo />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <LanguageSwitcher />
+            </div>
           </div>
+          <Card className="mt-6 p-8">
+            <h1 className="text-2xl font-700">{t('auth.loginTitle')}</h1>
+            <p className="mt-1.5 text-sm text-slate-soft">{t('auth.loginSubtitle')}</p>
+
+            <form onSubmit={submit} className="mt-6 space-y-4">
+              <div>
+                <label className="text-xs font-600 text-slate-soft" htmlFor="login-email">
+                  {t('auth.email')}
+                </label>
+                <input
+                  id="login-email"
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  className="input mt-1.5"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-xs font-600 text-slate-soft" htmlFor="login-password">
+                  {t('auth.password')}
+                </label>
+                <input
+                  id="login-password"
+                  name="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder={t('auth.passwordPlaceholder')}
+                  autoComplete="current-password"
+                  className="input mt-1.5"
+                  required
+                />
+              </div>
+              {error && (
+                <p role="alert" className="text-sm text-red-500">
+                  {error}
+                </p>
+              )}
+              <Button type="submit" loading={loading} fullWidth className="py-3">
+                {!loading && <LogIn size={18} />} {loading ? t('auth.signingIn') : t('auth.signIn')}
+              </Button>
+            </form>
+
+            <GoogleSignIn onSuccess={() => navigate(from, { replace: true })} onError={setError} />
+
+            <p className="mt-5 text-center text-sm text-slate-soft">
+              {t('auth.noAccount')}{' '}
+              <Link state={{ from }} to="/register" className="font-600 text-brand-600">
+                {t('auth.createAccount')}
+              </Link>
+            </p>
+          </Card>
+          <Link
+            to="/"
+            className="mt-5 flex items-center justify-center gap-1.5 text-sm font-600 text-slate-soft transition hover:text-brand-600"
+          >
+            <ArrowLeft size={15} /> {t('auth.backHome')}
+          </Link>
         </div>
-        <Card className="mt-6 p-8">
-          <h1 className="text-2xl font-700">{t('auth.loginTitle')}</h1>
-          <p className="mt-1.5 text-sm text-slate-soft">{t('auth.loginSubtitle')}</p>
-
-          <form onSubmit={submit} className="mt-6 space-y-4">
-            <div>
-              <label className="text-xs font-600 text-slate-soft">{t('auth.email')}</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t('auth.emailPlaceholder')}
-                autoComplete="email"
-                className="input mt-1.5"
-                required
-              />
-            </div>
-            <div>
-              <label className="text-xs font-600 text-slate-soft">{t('auth.password')}</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={t('auth.passwordPlaceholder')}
-                autoComplete="current-password"
-                className="input mt-1.5"
-                required
-              />
-            </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button type="submit" loading={loading} fullWidth className="py-3">
-              {!loading && <LogIn size={18} />} {loading ? t('auth.signingIn') : t('auth.signIn')}
-            </Button>
-          </form>
-
-          <GoogleSignIn
-            onSuccess={() => navigate(from, { replace: true })}
-            onError={setError}
-          />
-
-          <p className="mt-5 text-center text-sm text-slate-soft">
-            {t('auth.noAccount')}{' '}
-            <Link to="/register" className="font-600 text-brand-600">
-              {t('auth.createAccount')}
-            </Link>
-          </p>
-        </Card>
-        <Link
-          to="/"
-          className="mt-5 flex items-center justify-center gap-1.5 text-sm font-600 text-slate-soft transition hover:text-brand-600"
-        >
-          <ArrowLeft size={15} /> {t('auth.backHome')}
-        </Link>
       </div>
     </div>
   )

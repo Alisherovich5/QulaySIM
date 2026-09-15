@@ -7,6 +7,8 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import { useTranslation } from 'react-i18next'
+
 import { api } from '../lib/api'
 import { charmUzs } from '../lib/charm'
 
@@ -44,6 +46,7 @@ function initialCurrency(): Currency {
  * prices are displayed; checkout calculations remain based on the USD value.
  */
 export function CurrencyProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation()
   const [currency, setCurrency] = useState<Currency>(initialCurrency)
   const [usdToUzs, setUsdToUzs] = useState(FALLBACK_USD_TO_UZS)
   const [isRateFallback, setIsRateFallback] = useState(true)
@@ -77,11 +80,14 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   const formatUzs = useCallback(
     (usd: number | null | undefined) => {
       if (usd == null) return '—'
+      // The unit is translated: the Russian edition says "сум", not "so‘m".
+      // It used to be written into the template here, so every price on the
+      // ru and en sites carried an Uzbek word.
       return `${new Intl.NumberFormat('uz-UZ', {
         maximumFractionDigits: 0,
-      }).format(charmUzs(usd * usdToUzs))} so‘m`
+      }).format(charmUzs(usd * usdToUzs))} ${t('common.som')}`
     },
-    [usdToUzs],
+    [usdToUzs, t],
   )
 
   const formatPrice = useCallback(

@@ -119,6 +119,7 @@ const STATIC_ROUTES = [
   // whose request was lost on the way.
   '/global',
   '/device-check',
+  '/data-calculator',
   '/support',
   '/esim-nima',
   '/esim-ornatish',
@@ -235,10 +236,10 @@ function headFor({ title, description, path, lang, jsonLd, image }: PageMeta): s
  * titles come from the admin in one language anyway.
  */
 async function fetchGlobalPlans(apiBase: string): Promise<Record<string, unknown> | null> {
-  const snapshot = await readSnapshot<Record<string, unknown>>("global.json")
+  const snapshot = await readSnapshot<Record<string, unknown>>('global.json')
   if (snapshot) return snapshot
   const res = await fetch(`${apiBase}/regions/global`, {
-    headers: { Accept: "application/json" },
+    headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(20_000),
   })
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
@@ -279,7 +280,8 @@ interface Detail {
 
 async function fetchFacts(apiBase: string, slug: string): Promise<Detail | null> {
   const snapshot = await readSnapshot<{ plans?: Plan[] }>(`detail/${slug}.json`)
-  if (snapshot) return { facts: factsFor(snapshot.plans ?? []), body: snapshot as Record<string, unknown> }
+  if (snapshot)
+    return { facts: factsFor(snapshot.plans ?? []), body: snapshot as Record<string, unknown> }
   const res = await fetch(`${apiBase}/countries/${slug}`, {
     headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(20_000),
@@ -311,11 +313,23 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
   const base = { path: route, lang }
   switch (route) {
     case '/destinations':
-      return { ...base, title: s.destinationsTitle, description: s.destinationsDescription, jsonLd: [] }
+      return {
+        ...base,
+        title: s.destinationsTitle,
+        description: s.destinationsDescription,
+        jsonLd: [],
+      }
     case '/global':
       return { ...base, title: s.globalPageTitle, description: s.globalPageDescription, jsonLd: [] }
     case '/device-check':
       return { ...base, title: s.deviceTitle, description: s.deviceDescription, jsonLd: [] }
+    case '/data-calculator':
+      return {
+        ...base,
+        title: s.dataCalculatorTitle,
+        description: s.dataCalculatorDescription,
+        jsonLd: [],
+      }
     case '/support':
       return { ...base, title: s.supportTitle, description: s.supportDescription, jsonLd: [] }
     // The guides bake their FAQ schema from the same locale arrays the pages
@@ -440,9 +454,8 @@ function metaForCountry(
         description,
         path,
         lang,
-        [
-        { name: country.name, price: country.starting_price ?? 0, currency: 'USD' },
-      ]),
+        [{ name: country.name, price: country.starting_price ?? 0, currency: 'USD' }],
+      ),
       breadcrumbLd(
         [
           { name: STRINGS[lang].nav.destinations, path: '/destinations' },
@@ -499,7 +512,7 @@ export function prerender(): Plugin {
       } catch (error) {
         this.warn(
           `worldwide plans unavailable from ${apiBase}: ${(error as Error).message}. ` +
-            "The home and worldwide pages will fetch them at runtime.",
+            'The home and worldwide pages will fetch them at runtime.',
         )
       }
 
@@ -538,7 +551,8 @@ export function prerender(): Plugin {
           const meta = metaForStaticRoute(route, lang)
           // The destinations index is the one static page whose content is the
           // catalogue, so it is the one that gains from carrying it.
-          if (route === '/destinations' && catalogue.length) meta.boot = { countries: catalogue }
+          if ((route === '/destinations' || route === '/data-calculator') && catalogue.length)
+            meta.boot = { countries: catalogue }
           // The home page shows destination cards and the worldwide strip; the
           // worldwide page is nothing but those plans. Both went blank when a
           // request was lost, which is the failure this whole mechanism exists
@@ -591,7 +605,7 @@ export function prerender(): Plugin {
       const countries = pages.length - STATIC_ROUTES.length * SEO_LANGS.length
       this.info(
         `prerendered ${pages.length} pages — ` +
-          `${STATIC_ROUTES.length} static and ${countries / SEO_LANGS.length | 0} destinations ` +
+          `${STATIC_ROUTES.length} static and ${(countries / SEO_LANGS.length) | 0} destinations ` +
           `across ${SEO_LANGS.length} languages`,
       )
     },

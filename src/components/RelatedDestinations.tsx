@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useCurrency } from '../context/CurrencyContext'
 
 import { api } from '../lib/api'
 import Flag from './Flag'
@@ -29,6 +30,7 @@ export default function RelatedDestinations({
   currentSlug: string
 }) {
   const { t, i18n } = useTranslation()
+  const { formatPrice } = useCurrency()
   const [siblings, setSiblings] = useState<Country[]>([])
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function RelatedDestinations({
   if (siblings.length === 0) return null
 
   return (
-    <section className="mt-12">
+    <section className="related-destinations mt-12">
       <h2 className="text-base font-700 sm:text-lg">{t('seo.relatedTitle')}</h2>
       <div className="mt-4 flex flex-wrap gap-2.5">
         {siblings.map((c) => (
@@ -64,7 +66,7 @@ export default function RelatedDestinations({
             <span>{c.name}</span>
             {c.starting_price != null && (
               <span className="text-xs font-600 text-slate-soft">
-                {t('common.from')} ${c.starting_price.toFixed(2)}
+                {t('common.from')} {formatPrice(c.starting_price)}
               </span>
             )}
           </Link>

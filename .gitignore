@@ -30,3 +30,7 @@ test-results/
 playwright-report/
 dist/stats.html
 .lighthouseci/
+
+# Local browser review artifacts (kept on disk for the design gallery)
+.playwright-cli/
+output/playwright/

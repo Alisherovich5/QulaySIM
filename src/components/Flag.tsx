@@ -33,7 +33,11 @@ export default function Flag({ iso2, w = 80, className = '', alt }: Props) {
       loading="lazy"
       src={flagUrl(iso2, w)}
       srcSet={flagSrcSet(iso2, w)}
-      alt={alt ?? `${iso2} flag`}
+      // Decorative by default. Every flag in this app sits beside the country
+      // name, so a reader that announced the image too would say the country
+      // twice — and the old fallback said it in English ("TR flag") on all
+      // three editions. A call site that needs a name still passes one.
+      alt={alt ?? ''}
       width={w}
       decoding="async"
       onError={() => setFailed(true)}

@@ -1,15 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, type MouseEvent } from 'react'
 import PriceTag from '../components/PriceTag'
-import {
-  CreditCard,
-  Lock,
-  LogIn,
-  Minus,
-  Plus,
-  ShoppingBag,
-  Tag,
-  Trash2,
-} from 'lucide-react'
+import { useDesignCopy } from '../lib/design-copy'
+import { CreditCard, Lock, LogIn, Minus, Plus, ShoppingBag, Tag, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import Seo from '../components/Seo'
@@ -23,10 +15,12 @@ import { Button, Card } from '../components/ui'
 import type { Quote } from '../lib/types'
 
 export default function Checkout() {
+  const c = useDesignCopy()
   const { items, setQuantity, remove, subtotal } = useCart()
   const { customer } = useAuth()
   const { t } = useTranslation()
   const [payUrl, setPayUrl] = useState<string | null>(null)
+  const payTrigger = useRef<HTMLButtonElement>(null)
   const [payState, setPayState] = useState<'idle' | 'starting' | 'error' | 'unavailable'>('idle')
 
   /**
@@ -37,7 +31,8 @@ export default function Checkout() {
    * back belongs to whichever provider is configured. A 503 means no provider
    * is live yet, which is a different message from a failure.
    */
-  const startPayment = async () => {
+  const startPayment = async (event: MouseEvent<HTMLButtonElement>) => {
+    payTrigger.current = event.currentTarget
     setPayState('starting')
     try {
       const { data } = await api.post<{ payment_url: string }>('/checkout', {
@@ -109,7 +104,7 @@ export default function Checkout() {
   // Empty cart
   if (items.length === 0) {
     return (
-      <div className="container-page py-20">
+      <div className="qs-page qs-checkout checkout-empty container-page">
         <div className="mx-auto max-w-md text-center">
           <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-brand-50 text-brand-500">
             <ShoppingBag size={30} />
@@ -125,9 +120,13 @@ export default function Checkout() {
   }
 
   return (
-    <div className="container-page py-8 sm:py-12">
+    <div className="qs-page qs-checkout container-page">
       <Seo title={t('seo.checkoutTitle')} description={t('seo.homeDescription')} noindex />
-      <h1 className="text-2xl font-700 sm:text-3xl">{t('checkout.title')}</h1>
+      <div className="page-intro">
+        <p className="eyebrow">{c.checkoutLabel}</p>
+        <h1>{t('checkout.title')}</h1>
+        <p>{c.checkoutNote}</p>
+      </div>
       {priceChanged && (
         <p className="mt-3 rounded-xl bg-gold-500/10 px-4 py-3 text-sm text-gold-700 ring-1 ring-gold-500/20 dark:text-gold-300">
           {t('checkout.priceUpdated')}
@@ -137,7 +136,10 @@ export default function Checkout() {
         {/* Items */}
         <div className="space-y-4">
           {items.map((item) => (
-            <div key={item.plan.id} className="card grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-4 sm:flex sm:gap-4">
+            <div
+              key={item.plan.id}
+              className="card grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-4 sm:flex sm:gap-4"
+            >
               <Flag
                 iso2={item.iso2}
                 alt={item.countryName}
@@ -146,24 +148,28 @@ export default function Checkout() {
               <div className="min-w-0">
                 <p className="truncate font-600">{item.plan.title}</p>
                 <p className="text-sm text-slate-soft">
-                  {item.countryName} · {item.plan.network_type} · {item.plan.validity_days} days
+                  {item.countryName} · {item.plan.network_type} · {item.plan.validity_days} {c.days}
                 </p>
               </div>
               <div className="col-span-3 flex items-center justify-between gap-3 border-t border-line pt-3 sm:ml-auto sm:border-0 sm:pt-0">
                 <div className="flex items-center gap-1 rounded-lg ring-1 ring-line">
-                <button
-                  onClick={() => setQuantity(item.plan.id, item.quantity - 1)}
-                  className="grid h-8 w-8 place-items-center text-slate-soft hover:text-brand-600"
-                >
-                  <Minus size={14} />
-                </button>
-                <span className="w-6 text-center text-sm font-600">{item.quantity}</span>
-                <button
-                  onClick={() => setQuantity(item.plan.id, item.quantity + 1)}
-                  className="grid h-8 w-8 place-items-center text-slate-soft hover:text-brand-600"
-                >
-                  <Plus size={14} />
-                </button>
+                  <button
+                    type="button"
+                    aria-label={c.data + ' −1'}
+                    onClick={() => setQuantity(item.plan.id, item.quantity - 1)}
+                    className="grid h-8 w-8 place-items-center text-slate-soft hover:text-brand-600"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span className="w-6 text-center text-sm font-600">{item.quantity}</span>
+                  <button
+                    type="button"
+                    aria-label={c.data + ' +1'}
+                    onClick={() => setQuantity(item.plan.id, item.quantity + 1)}
+                    className="grid h-8 w-8 place-items-center text-slate-soft hover:text-brand-600"
+                  >
+                    <Plus size={14} />
+                  </button>
                 </div>
                 <PriceTag
                   usd={serverLineTotal(item.plan.id) ?? item.plan.price_usd * item.quantity}
@@ -174,7 +180,7 @@ export default function Checkout() {
               <button
                 onClick={() => remove(item.plan.id)}
                 className="col-start-3 row-start-1 grid h-8 w-8 place-items-center text-slate-soft hover:text-red-500 sm:order-last"
-                aria-label="Remove"
+                aria-label={t('checkout.remove')}
               >
                 <Trash2 size={16} />
               </button>
@@ -188,11 +194,15 @@ export default function Checkout() {
             <h2 className="font-700">{t('checkout.summary')}</h2>
 
             <div className="mt-4">
-              <label className="text-xs font-600 text-slate-soft">{t('checkout.promoCode')}</label>
+              <label className="text-xs font-600 text-slate-soft" htmlFor="checkout-promo">
+                {t('checkout.promoCode')}
+              </label>
               <div className="mt-1.5 flex gap-2">
                 <div className="flex flex-1 items-center gap-2 rounded-xl px-3 ring-1 ring-line">
                   <Tag size={15} className="text-slate-soft" />
                   <input
+                    id="checkout-promo"
+                    name="promo"
                     value={promo}
                     onChange={(e) => setPromo(e.target.value.toUpperCase())}
                     placeholder="WELCOME10"
@@ -277,7 +287,13 @@ export default function Checkout() {
         </div>
       </div>
 
-      {payUrl && <PaymentFrame url={payUrl} onClose={() => setPayUrl(null)} />}
+      {payUrl && (
+        <PaymentFrame
+          url={payUrl}
+          onClose={() => setPayUrl(null)}
+          returnFocus={payTrigger.current}
+        />
+      )}
     </div>
   )
 }

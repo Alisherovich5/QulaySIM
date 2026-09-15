@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import type { Country, Plan, Region, RegionDetail as RegionDetailData } from '../lib/types'
 import CountryCard from '../components/CountryCard'
-import PlanCard from '../components/PlanCard'
+import PlanPicker from '../components/PlanPicker'
 import Reveal from '../components/Reveal'
 import Seo from '../components/Seo'
 import { Button } from '../components/ui'
@@ -109,7 +109,7 @@ export default function RegionDetail() {
   }
 
   return (
-    <div className="container-page py-8 sm:py-12">
+    <div className="qs-page qs-region container-page">
       <Seo
         title={t('seo.regionTitle', { region: regionName })}
         description={description}
@@ -153,20 +153,12 @@ export default function RegionDetail() {
           <p className="mt-1.5 text-sm leading-6 text-slate-soft">
             {t('region.oneEsimNote', { count: detail?.country_count ?? countries.length })}
           </p>
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {regionalPlans.map((plan, i) => (
-              <Reveal key={plan.id} delay={i * 60}>
-                <PlanCard plan={plan} onAdd={handleAdd} added={added === plan.id} />
-              </Reveal>
-            ))}
-          </div>
+          <PlanPicker key={slug} plans={regionalPlans} onAdd={handleAdd} added={added} />
         </section>
       )}
 
       {regionalPlans.length > 0 && countries.length > 0 && (
-        <h2 className="mt-12 text-lg font-700 sm:text-xl">
-          {t('region.oneCountryTitle')}
-        </h2>
+        <h2 className="mt-12 text-lg font-700 sm:text-xl">{t('region.oneCountryTitle')}</h2>
       )}
 
       {countries.length === 0 ? (

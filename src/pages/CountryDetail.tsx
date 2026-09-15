@@ -2,18 +2,17 @@ import { useState } from 'react'
 import { bootIf } from '../lib/boot'
 import { useCatalogue } from '../lib/useCatalogue'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ShoppingBag } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import type { CountryDetail as CountryDetailType, Plan } from '../lib/types'
-import PlanCard from '../components/PlanCard'
-import GlobalTeaser from '../components/GlobalTeaser'
+import PlanPicker from '../components/PlanPicker'
+import { useDesignCopy } from '../lib/design-copy'
+import { destinationMedia } from '../lib/destination-media'
 import Flag from '../components/Flag'
-import Reveal from '../components/Reveal'
 import Seo from '../components/Seo'
 import DestinationFacts from '../components/DestinationFacts'
 import RelatedDestinations from '../components/RelatedDestinations'
-import { Button } from '../components/ui'
 import { useCart } from '../context/CartContext'
 import { SITE_URL, type SeoLang } from '../lib/seo'
 import { descriptionParams, factsFor } from '../lib/destination-facts'
@@ -21,6 +20,7 @@ import { breadcrumbLd, destinationLd } from '../lib/structured-data'
 
 export default function CountryDetail() {
   const { slug } = useParams()
+  const c = useDesignCopy()
   const [added, setAdded] = useState<number | null>(null)
   const { add } = useCart()
   const { t, i18n } = useTranslation()
@@ -107,7 +107,7 @@ export default function CountryDetail() {
   )
 
   return (
-    <div className="container-page py-8 sm:py-12">
+    <div className="qs-page qs-country container-page">
       <Seo
         title={t('seo.countryTitle', { country: country.name })}
         description={description}
@@ -140,54 +140,38 @@ export default function CountryDetail() {
         <ArrowLeft size={16} /> {t('country.backToAll')}
       </Link>
 
-      <div className="mt-6 flex items-center gap-3 sm:gap-5">
-        <Flag
-          iso2={country.iso2}
-          w={160}
-          alt={`${country.name} flag`}
-          className="h-14 w-20 rounded-lg object-cover ring-1 ring-line sm:h-16 sm:w-24"
-        />
+      <div className="destination-intro">
         <div>
-          <h1 className="text-2xl font-700 sm:text-3xl">{country.name}</h1>
-          <p className="mt-1 text-sm leading-5 text-slate-soft sm:text-base">
-            {country.region ? (
-              // A link, not a label: the region hub is this page's category
-              // tier, and every country page linking up to it is what makes
-              // the hub rank for "region + eSIM" queries.
-              <Link
-                to={`/destinations/region/${country.region.slug}`}
-                className="focus-ring rounded font-600 text-brand-600 hover:underline dark:text-accent-400"
-              >
+          <div className="destination-title">
+            <Flag iso2={country.iso2} alt="" />
+            <h1>{country.name}</h1>
+          </div>
+          <p>{c.countryNote}</p>
+          <div className="destination-meta">
+            {country.region && (
+              <Link to={'/destinations/region/' + country.region.slug}>
                 {t(`region.${country.region.slug}`, { defaultValue: country.region.name })}
               </Link>
-            ) : null}
-            {country.region ? ' · ' : ''}
-            {t('country.plansAvailable', { count: country.plans.length })}
-          </p>
+            )}
+            <span>{t('country.plansAvailable', { count: country.plans.length })}</span>
+          </div>
+        </div>
+        <div className={'destination-photo' + (destinationMedia[country.slug] ? '' : ' is-globe')}>
+          <img
+            src={destinationMedia[country.slug]?.src || '/hero-globe@2x.webp'}
+            alt={destinationMedia[country.slug]?.place || ''}
+          />
         </div>
       </div>
-
-      {facts && <DestinationFacts facts={facts} country={country.name} />}
-
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {country.plans.map((plan, i) => (
-          <Reveal key={plan.id} delay={i * 60}>
-            <PlanCard plan={plan} onAdd={handleAdd} added={added === plan.id} />
-          </Reveal>
-        ))}
-      </div>
-
-      {/* Worldwide, offered where the question actually comes up: someone
-          reading a country page with two more stops on the same trip. */}
-      <GlobalTeaser />
+      <h2>{c.planTitle}</h2>
+      <PlanPicker key={country.slug} plans={country.plans} onAdd={handleAdd} added={added} />
+      {facts && (
+        <div className="mt-10">
+          <DestinationFacts facts={facts} country={country.name} />
+        </div>
+      )}
 
       <RelatedDestinations regionSlug={country.region?.slug} currentSlug={country.slug} />
-
-      <div className="mt-10 flex justify-center">
-        <Button to="/checkout" variant="ghost" className="px-6 py-3">
-          <ShoppingBag size={18} /> {t('common.goToCart')}
-        </Button>
-      </div>
     </div>
   )
 }

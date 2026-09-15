@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QulaySIM — barcha sahifalar dizayni</title>
+    <style>
+      @font-face {
+        font-family: Manrope;
+        src: url('/fonts/manrope-semibold.ttf');
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          15px/1.6 system-ui,
+          sans-serif;
+        background: #eef3ed;
+        color: #183c34;
+      }
+      button,
+      a,
+      select {
+        font: inherit;
+      }
+      button,
+      select {
+        cursor: pointer;
+      }
+      a {
+        color: inherit;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #38a58b;
+        outline-offset: 4px;
+      }
+      header {
+        background: #153e35;
+        color: #eef5ed;
+        padding: 28px 36px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+      header h1 {
+        font-family: Manrope, system-ui;
+        font-size: 26px;
+        margin: 0;
+        letter-spacing: -0.04em;
+      }
+      header p {
+        margin: 5px 0 0;
+        color: #c2d4c8;
+        font-size: 14px;
+      }
+      header > a {
+        border: 1px solid #729585;
+        padding: 10px 18px;
+        border-radius: 10px;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .workspace {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        max-width: 1920px;
+        margin: auto;
+        min-height: calc(100vh - 118px);
+      }
+      aside {
+        padding: 26px 18px;
+        background: #fcfdfb;
+        border-right: 1px solid #dbe4dc;
+      }
+      aside > p {
+        font-size: 12px;
+        color: #6b7c6e;
+        margin: 0 12px 18px;
+      }
+      #pages {
+        display: grid;
+        gap: 4px;
+      }
+      #pages button {
+        text-align: left;
+        border: 0;
+        background: none;
+        color: #5e7067;
+        padding: 10px 12px;
+        min-height: 44px;
+        border-radius: 8px;
+        font-size: 14px;
+      }
+      #pages button[aria-pressed='true'] {
+        background: #e5f1e8;
+        color: #006b5a;
+        font-weight: 600;
+      }
+      #pages button:hover {
+        background: #edf4ed;
+      }
+      .small {
+        font-size: 12px;
+        color: #78897d;
+        padding: 22px 12px;
+      }
+      main {
+        min-width: 0;
+        padding: 28px 32px 50px;
+      }
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+      }
+      .toolbar h2 {
+        margin: 0;
+        font-family: Manrope;
+        font-size: 23px;
+        letter-spacing: -0.025em;
+      }
+      .toolbar p {
+        margin: 2px 0 0;
+        color: #6b7c6e;
+        font-size: 13px;
+      }
+      .switcher {
+        display: flex;
+        gap: 5px;
+        background: #dfe8df;
+        padding: 5px;
+        border-radius: 12px;
+      }
+      .switcher button {
+        border: 0;
+        background: none;
+        border-radius: 8px;
+        color: #5d7266;
+        min-height: 40px;
+        padding: 8px 16px;
+      }
+      .switcher button[aria-pressed='true'] {
+        background: #fff;
+        color: #153e35;
+        box-shadow: 0 1px 3px #143c3510;
+      }
+      .switcher button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .notice {
+        margin: 0 0 18px;
+        padding: 12px 16px;
+        background: #fff8e5;
+        border: 1px solid #eadfbd;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #756329;
+      }
+      .preview {
+        padding: 24px;
+        background: #e3ebe2;
+        border: 1px solid #d6e1d5;
+        border-radius: 18px;
+        min-height: 600px;
+      }
+      .preview > a {
+        display: block;
+        margin: auto;
+        width: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 45px #163c3410;
+      }
+      .preview img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .preview[data-mode='mobile'] > a {
+        max-width: 390px;
+      }
+      .links {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 18px;
+        font-size: 13px;
+      }
+      .links a {
+        color: #007365;
+        text-underline-offset: 4px;
+      }
+      .links span {
+        color: #718377;
+        margin-left: auto;
+      }
+      .mobile-select {
+        display: none;
+      }
+      footer {
+        font-size: 13px;
+        color: #718377;
+        margin-top: 30px;
+        max-width: 85ch;
+      }
+      footer a {
+        color: #007365;
+      }
+      #mock[hidden] {
+        display: none;
+      }
+      @media (max-width: 1023px) {
+        header {
+          padding: 22px 24px;
+        }
+        .workspace {
+          grid-template-columns: 220px minmax(0, 1fr);
+        }
+        main {
+          padding: 24px 20px;
+        }
+        .preview {
+          padding: 12px;
+        }
+        .switcher button {
+          padding-inline: 11px;
+        }
+        header h1 {
+          font-size: 23px;
+        }
+      }
+      @media (max-width: 767px) {
+        header {
+          align-items: flex-start;
+          padding: 22px 20px;
+        }
+        header h1 {
+          font-size: 20px;
+        }
+        header p {
+          font-size: 12px;
+        }
+        header > a {
+          padding: 8px 10px;
+          font-size: 12px;
+        }
+        .workspace {
+          display: block;
+        }
+        aside {
+          display: none;
+        }
+        main {
+          padding: 20px 14px;
+        }
+        .mobile-select {
+          display: block;
+          width: 100%;
+          padding: 13px 12px;
+          border: 1px solid #cedbcc;
+          border-radius: 10px;
+          background: #fcfdfb;
+          color: #183c34;
+          margin-bottom: 22px;
+          font-size: 16px;
+        }
+        .toolbar h2 {
+          font-size: 22px;
+        }
+        .toolbar {
+          gap: 15px;
+        }
+        .toolbar > div:first-child {
+          width: 100%;
+        }
+        .preview {
+          padding: 7px;
+          border-radius: 12px;
+          min-height: 300px;
+        }
+        .links {
+          gap: 15px;
+        }
+        .links span {
+          width: 100%;
+          margin: 0;
+        }
+        .switcher button {
+          min-height: 44px;
+        }
+        .preview[data-mode='mobile'] > a {
+          max-width: 390px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <h1>QulaySIM · Yangi dizayn</h1>
+        <p>To‘liq yangi kompozitsiya · Ixcham navbar · Desktop va mobil · 3D globus saqlangan</p>
+      </div>
+      <a href="/" target="_blank" rel="noopener">Saytni ochish ↗</a>
+    </header>
+    <div class="workspace">
+      <aside>
+        <p>SAHIFALAR VA HOLATLAR</p>
+        <nav id="pages" aria-label="Dizayn sahifalari"></nav>
+        <div class="small">
+          1440 px desktop<br />390 px mobil<br />UZ · RU · EN<br />Yorug‘ va qorong‘i rejim
+        </div>
+      </aside>
+      <main>
+        <select id="mobile-pages" class="mobile-select" aria-label="Sahifani tanlash"></select>
+        <div class="toolbar">
+          <div>
+            <h2 id="title">Bosh sahifa</h2>
+            <p id="route">/</p>
+          </div>
+          <div class="switcher" aria-label="Ekran o‘lchami">
+            <button id="desktop" type="button" aria-pressed="true">Desktop · 1440</button
+            ><button id="mobile" type="button" aria-pressed="false">Mobil · 390</button>
+          </div>
+        </div>
+        <p id="mock" class="notice" hidden>
+          Kabinet ma’lumotlari, QR-kod va to‘lov — faqat dizayn uchun namuna. Haqiqiy mijoz hisobi
+          yoki to‘lov ishlatilmagan.
+        </p>
+        <div class="preview" id="preview" data-mode="desktop">
+          <a
+            id="full-image"
+            href="playwright/home-desktop.png"
+            target="_blank"
+            rel="noopener"
+            aria-label="Rasmni to‘liq o‘lchamda ochish"
+            ><img
+              id="screen"
+              src="playwright/home-desktop.png"
+              alt="QulaySIM bosh sahifasining desktop dizayni"
+          /></a>
+        </div>
+        <div class="links">
+          <a id="download" href="playwright/home-desktop.png" download>PNG’ni yuklab olish ↓</a
+          ><a id="live" href="/" target="_blank" rel="noopener">Ishlaydigan sahifa ↗</a
+          ><span>Rasm ustiga bossangiz, to‘liq o‘lchamda ochiladi.</span>
+        </div>
+        <footer>
+          Bu galereya ishlaydigan React loyihasidan olingan ekran tasvirlari. Asosiy interfeys yangi
+          ranglar, Manrope + Inter tipografik tizimi, mahalliy media fayllari va moslashuvchan
+          sahifa tuzilmasiga ega.
+          <a href="../docs/design-journey.md">Dizayn va tekshiruv qaydlari</a>.
+        </footer>
+      </main>
+    </div>
+    <script>
+      const pages = [
+        ['Bosh sahifa', 'home', '/'],
+        ['Menga yetadimi?', 'calculator', '/data-calculator'],
+        ['Yo‘nalishlar', 'destinations', '/destinations'],
+        ['Davlat va tariflar', 'country', '/destinations/turkey'],
+        ['Hududiy tariflar', 'region', '/destinations/region/europe'],
+        ['Global tariflar', 'global', '/global'],
+        ['Qurilma tekshiruvi', 'device', '/device-check'],
+        ['Yordam markazi', 'support', '/support'],
+        ['Kirish', 'login', '/login'],
+        ['Ro‘yxatdan o‘tish', 'register', '/register'],
+        ['eSIM nima?', 'what-is-esim', '/esim-nima'],
+        ['O‘rnatish qo‘llanmasi', 'installation', '/esim-ornatish'],
+        ['Savat', 'checkout', '/checkout'],
+        ['Kabinet · Xarita', 'account-map', '/account?tab=map', true],
+        ['Kabinet · eSIM’lar', 'account-esims', '/account?tab=esims', true],
+        ['Kabinet · Buyurtmalar', 'account-orders', '/account?tab=orders', true],
+        ['Kabinet · Sozlamalar', 'account-settings', '/account?tab=settings', true],
+        ['Kabinet · Taklif', 'account-referral', '/account?tab=referral', true],
+        ['Kabinet · Fikr bildirish', 'account-review', '/account?tab=review', true],
+        ['To‘lov oynasi', 'payment', '/checkout', true],
+        ['Ommaviy oferta', 'offer', '/oferta'],
+        ['Maxfiylik siyosati', 'privacy', '/maxfiylik'],
+        ['Qaytarish siyosati', 'refund', '/qaytarish'],
+        ['404 · Sahifa topilmadi', '404', '/missing-page'],
+        ['Kabinet · Bo‘sh holat', 'account-empty', '/account?tab=esims', true, 'mobile'],
+        ['Qorong‘i · Bosh sahifa', 'home-dark', '/', false, 'desktop'],
+        ['Qorong‘i · Tariflar', 'country-dark', '/destinations/turkey', false, 'mobile'],
+        ['Русский · Главная', 'ru-language', '/ru/', false, 'single'],
+        ['English · Home', 'en-language', '/en/', false, 'single'],
+        ['Русский · Направления', 'ru-destinationslanguage', '/ru/destinations', false, 'single'],
+        ['English · Destinations', 'en-destinationslanguage', '/en/destinations', false, 'single'],
+        ['Menyu · Mobil', 'menu', '/', false, 'mobile'],
+        ['Qidiruv · Bo‘sh holat', 'search-empty', '/destinations?search=zzzz', false, 'mobile'],
+        ['Qamrov oynasi', 'coverage', '/global', false, 'mobile'],
+        ['Internet qo‘shish oynasi', 'topup', '/account?tab=esims', true, 'mobile'],
+        ['Chiqishni tasdiqlash', 'logout', '/account', true, 'mobile'],
+      ]
+      let active = 0,
+        mode = innerWidth < 768 ? 'mobile' : 'desktop'
+      const $ = (id) => document.getElementById(id)
+      pages.forEach((entry, index) => {
+        const button = document.createElement('button')
+        button.type = 'button'
+        button.textContent = entry[0]
+        button.addEventListener('click', () => choose(index))
+        $('pages').append(button)
+        const option = document.createElement('option')
+        option.value = index
+        option.textContent = entry[0]
+        $('mobile-pages').append(option)
+      })
+      function choose(index) {
+        active = index
+        const only = pages[active][4]
+        if (only) mode = only === 'single' ? 'mobile' : only
+        render()
+      }
+      function render() {
+        const [title, file, route, mock, only] = pages[active]
+        $('title').textContent = title
+        $('route').textContent = route
+        $('mock').hidden = !mock
+        $('mobile-pages').value = active
+        const src = 'playwright/' + file + (only === 'single' ? '' : '-' + mode) + '.png'
+        $('screen').src = src
+        $('screen').alt = title + ' — ' + mode
+        $('full-image').href = src
+        $('download').href = src
+        $('live').href = route
+        $('preview').dataset.mode = mode
+        ;['desktop', 'mobile'].forEach((view) => {
+          $(view).setAttribute('aria-pressed', mode === view)
+          $(view).disabled = !!only && (only === 'single' ? 'mobile' : only) !== view
+        })
+        Array.from($('pages').children).forEach((button, index) =>
+          button.setAttribute('aria-pressed', index === active),
+        )
+      }
+      $('desktop').onclick = () => {
+        mode = 'desktop'
+        render()
+      }
+      $('mobile').onclick = () => {
+        mode = 'mobile'
+        render()
+      }
+      $('mobile-pages').onchange = (event) => choose(Number(event.target.value))
+      render()
+    </script>
+  </body>
+</html>

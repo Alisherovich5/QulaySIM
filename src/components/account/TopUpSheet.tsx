@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Plus, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { api } from '../../lib/api'
+import { useDialog } from '../../lib/useDialog'
 import { Button } from '../ui'
 
 /**
@@ -42,6 +44,7 @@ export default function TopUpSheet({ esimId, esimStatus, onClose, onPay }: Props
   const [failed, setFailed] = useState(false)
   const [buying, setBuying] = useState<string | null>(null)
   const [error, setError] = useState('')
+  const dialogRef = useDialog(onClose)
 
   useEffect(() => {
     let alive = true
@@ -67,7 +70,8 @@ export default function TopUpSheet({ esimId, esimStatus, onClose, onPay }: Props
       .catch((err: unknown) => {
         // The most likely refusal is a package the wholesaler has withdrawn
         // since the list was drawn, which is worth saying rather than hiding.
-        const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+        const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data
+          ?.detail
         setError(detail || t('topup.failed'))
         setBuying(null)
       })
@@ -78,7 +82,9 @@ export default function TopUpSheet({ esimId, esimStatus, onClose, onPay }: Props
 
   return (
     <div
-      className="fixed inset-0 z-[80] grid place-items-end bg-ink/45 backdrop-blur-sm sm:place-items-center sm:p-4"
+      ref={dialogRef}
+      tabIndex={-1}
+      className="topup-dialog fixed inset-0 z-[120] grid place-items-end bg-ink/45 backdrop-blur-sm sm:place-items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-label={t('topup.title')}
@@ -108,7 +114,9 @@ export default function TopUpSheet({ esimId, esimStatus, onClose, onPay }: Props
             <p className="px-2 py-6 text-center text-sm text-slate-soft">{t('topup.loading')}</p>
           )}
           {failed && (
-            <p className="px-2 py-6 text-center text-sm text-slate-soft">{t('topup.unavailable')}</p>
+            <p className="px-2 py-6 text-center text-sm text-slate-soft">
+              {t('topup.unavailable')}
+            </p>
           )}
           {options?.length === 0 && (
             /* Two different facts, and telling them apart matters. The
@@ -122,9 +130,12 @@ export default function TopUpSheet({ esimId, esimStatus, onClose, onPay }: Props
                 {esimStatus === 'expired' ? t('topup.expired') : t('topup.none')}
               </p>
               {esimStatus === 'expired' && (
-                <a href="/destinations" className="focus-ring mt-3 inline-block text-sm font-600 text-brand-600 hover:underline dark:text-accent-400">
+                <Link
+                  to="/destinations"
+                  className="focus-ring mt-3 inline-block text-sm font-600 text-brand-600 hover:underline dark:text-accent-400"
+                >
                   {t('topup.buyNew')}
-                </a>
+                </Link>
               )}
             </div>
           )}
@@ -146,10 +157,13 @@ export default function TopUpSheet({ esimId, esimStatus, onClose, onPay }: Props
                   </span>
                   <span className="ml-auto text-right">
                     <span className="block font-700 tabular-nums text-ink">
-                      {som(option.price_uzs)} <span className="text-xs font-600">{t('common.som')}</span>
+                      {som(option.price_uzs)}{' '}
+                      <span className="text-xs font-600">{t('common.som')}</span>
                     </span>
                     {buying === option.package_code && (
-                      <span className="block text-[11px] text-slate-soft">{t('topup.opening')}</span>
+                      <span className="block text-[11px] text-slate-soft">
+                        {t('topup.opening')}
+                      </span>
                     )}
                   </span>
                 </button>
@@ -157,7 +171,11 @@ export default function TopUpSheet({ esimId, esimStatus, onClose, onPay }: Props
             ))}
           </ul>
 
-          {error && <p className="mt-3 px-2 text-sm text-status-bad-ink">{error}</p>}
+          {error && (
+            <p role="alert" className="mt-3 px-2 text-sm text-status-bad-ink">
+              {error}
+            </p>
+          )}
         </div>
 
         <p className="border-t border-line px-5 py-3 text-[11px] leading-4 text-slate-soft">

@@ -24,6 +24,7 @@ const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const Support = lazy(() => import('./pages/Support'))
 const DeviceCheck = lazy(() => import('./pages/DeviceCheck'))
+const DataCalculator = lazy(() => import('./pages/DataCalculator'))
 const GuideWhatIsEsim = lazy(() => import('./pages/GuideWhatIsEsim'))
 const GuideInstallEsim = lazy(() => import('./pages/GuideInstallEsim'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
@@ -96,6 +97,7 @@ export default function App() {
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/support" element={<Support />} />
                   <Route path="/device-check" element={<DeviceCheck />} />
+                  <Route path="/data-calculator" element={<DataCalculator />} />
                   {/* Uzbek slugs on purpose: the pages exist to catch Uzbek
                       searches, and the URL is part of what matches a query. The
                       ru/en editions live under their language prefix with the
@@ -113,10 +115,10 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route path="*" element={<NotFound />} />
                 </Route>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </CartProvider>

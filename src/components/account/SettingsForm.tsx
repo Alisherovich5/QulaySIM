@@ -41,8 +41,7 @@ export default function SettingsForm({ initialName, onSaved, onLogout }: Props) 
       setNewPassword('')
       setTimeout(() => setOk(false), 2500)
     } catch (err: unknown) {
-      const detail =
-        (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
       setError(detail || t('account.saveFailed'))
     } finally {
       setSaving(false)
@@ -58,8 +57,13 @@ export default function SettingsForm({ initialName, onSaved, onLogout }: Props) 
         </div>
 
         <div>
-          <label className="text-xs font-600 text-slate-soft">{t('auth.fullName')}</label>
+          <label htmlFor="profile-name" className="text-sm font-600 text-slate-soft">
+            {t('auth.fullName')}
+          </label>
           <input
+            id="profile-name"
+            name="name"
+            autoComplete="name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             className="input mt-1.5"
@@ -72,7 +76,12 @@ export default function SettingsForm({ initialName, onSaved, onLogout }: Props) 
             <span className="text-sm font-600 text-ink">{t('account.changePassword')}</span>
           </div>
           <div className="space-y-3">
+            <label htmlFor="current-password" className="block text-sm text-slate-soft">
+              {t('account.currentPassword')}
+            </label>
             <input
+              id="current-password"
+              name="current-password"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
@@ -80,7 +89,12 @@ export default function SettingsForm({ initialName, onSaved, onLogout }: Props) 
               className="input"
               autoComplete="current-password"
             />
+            <label htmlFor="new-password" className="block text-sm text-slate-soft">
+              {t('account.newPassword')}
+            </label>
             <input
+              id="new-password"
+              name="new-password"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
@@ -91,7 +105,11 @@ export default function SettingsForm({ initialName, onSaved, onLogout }: Props) 
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && (
+          <p role="alert" className="text-sm text-red-500">
+            {error}
+          </p>
+        )}
         <Button type="submit" loading={saving} sheen fullWidth className="py-3">
           {ok ? <Check size={18} /> : null}
           {saving ? t('account.saving') : ok ? t('account.saved') : t('account.saveChanges')}

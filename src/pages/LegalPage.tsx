@@ -24,9 +24,9 @@ export default function LegalPage({ doc }: { doc: 'oferta' | 'refund' | 'privacy
   const seoKey = { oferta: 'ofertaTitle', refund: 'refundTitle', privacy: 'privacyTitle' }[doc]
 
   return (
-    <div className="container-page py-8 sm:py-12">
+    <div className="qs-page qs-legal container-page">
       <Seo title={t(`seo.${seoKey}`)} description={t('seo.legalDescription')} />
-      <article className="mx-auto max-w-3xl">
+      <article className="legal-document">
         <h1 className="text-2xl font-700 sm:text-3xl">{t(`legal.${doc}.title`)}</h1>
         <p className="mt-2 text-sm text-slate-soft">{t('legal.updated')}</p>
 

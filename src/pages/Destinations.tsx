@@ -1,345 +1,348 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { ArrowRight, Search, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+
+import { useCurrency } from '../context/CurrencyContext'
+import { useDesignCopy } from '../lib/design-copy'
+import Seo from '../components/Seo'
+import Flag from '../components/Flag'
+import { api } from '../lib/api'
 import { boot } from '../lib/boot'
 import { useCatalogue } from '../lib/useCatalogue'
-import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowUpRight, Check, ChevronDown, Search, X } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { useCurrency } from '../context/CurrencyContext'
-import Seo from '../components/Seo'
-import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd, destinationListLd } from '../lib/structured-data'
-import { api } from '../lib/api'
+import type { SeoLang } from '../lib/seo'
 import type { Country, Region } from '../lib/types'
-import CountryCard from '../components/CountryCard'
-import Reveal from '../components/Reveal'
-import { Card } from '../components/ui'
-/* A stable identity for "nothing yet".
- *
- * `?? []` builds a new array on every render, which quietly defeats every
- * useMemo downstream — the filters and sorts below re-run on each keystroke
- * elsewhere in the page. One frozen constant costs nothing and keeps them memoised. */
-const NO_COUNTRIES: Country[] = []
-const NO_REGIONS: Region[] = []
 
+/**
+ * The destination catalogue, as a directory rather than a gallery.
+ *
+ * 207 countries is a reference list, and the two people who open it want
+ * opposite things. Most already know where they are going and need to find one
+ * name in seconds; the rest are deciding and want the popular routes, a
+ * regional bundle, or the global plan. The page answers them in that order:
+ * search first, then what people actually buy, then the alphabet.
+ *
+ * The previous version put a decorative photograph where the search should be,
+ * hid the region choice inside a <select> in a sidebar, and rendered every
+ * country as an identical 108px card — so finding Qatar meant reading past two
+ * hundred boxes that differed only in a grey price, after pressing "show all".
+ */
+
+/** Warm the country page on hover: the visitor almost always clicks through. */
+const warmed = new Set<string>()
+function prefetch(slug: string) {
+  if (warmed.has(slug)) return
+  warmed.add(slug)
+  void api.get('/countries/' + slug).catch(() => warmed.delete(slug))
+}
+
+function fold(value: string) {
+  return value.toLocaleLowerCase()
+}
 
 export default function Destinations() {
   const [params, setParams] = useSearchParams()
-  const [regionOpen, setRegionOpen] = useState(false)
-  const barRef = useRef<HTMLDivElement>(null)
-
-  // A click anywhere else closes the region menu — otherwise it stays open over
-  // the grid while the visitor scrolls, which reads as a stuck page.
-  useEffect(() => {
-    if (!regionOpen) return
-    const close = (event: MouseEvent) => {
-      if (!barRef.current?.contains(event.target as Node)) setRegionOpen(false)
-    }
-    document.addEventListener('mousedown', close)
-    return () => document.removeEventListener('mousedown', close)
-  }, [regionOpen])
-
-  const chipClass =
-    'focus-ring inline-flex items-center gap-1.5 rounded-full bg-mist px-2.5 py-1 text-xs font-600 text-ink ring-1 ring-line hover:ring-brand-300'
+  const c = useDesignCopy()
   const { t, i18n } = useTranslation()
+  const { formatPrice } = useCurrency()
+  const regionsRef = useRef<HTMLElement>(null)
+
   const search = params.get('search') || ''
   const region = params.get('region') || ''
+  const lang = (i18n.resolvedLanguage ?? 'uz') as SeoLang
 
-  // The build knows this list, so the first render shows it; the request below
-  // replaces it, because the live catalogue is larger than the build's snapshot.
-  // Both fetches previously had no `.catch` at all — a dropped request became an
-  // unhandled rejection that our own error reporter then posted. useCatalogue
-  // owns the whole rule; see lib/catalogue.ts.
-  const { data: fetchedCountries, loading } = useCatalogue<Country[]>({
+  const { data, loading } = useCatalogue<Country[]>({
     seed: () => boot<Country[]>('countries'),
-    load: () =>
-      api
-        .get<Country[]>('/countries', {
-          params: { search: search || undefined, region: region || undefined },
-        })
-        .then((r) => r.data),
-    deps: [search, region, i18n.language],
+    load: () => api.get<Country[]>('/countries').then((r) => r.data),
+    deps: [i18n.language],
   })
-  const countries = fetchedCountries ?? NO_COUNTRIES
-
-  const { data: fetchedRegions } = useCatalogue<Region[]>({
+  const { data: regions } = useCatalogue<Region[]>({
     seed: () => null,
     load: () => api.get<Region[]>('/regions').then((r) => r.data),
     deps: [i18n.language],
   })
-  const regions = fetchedRegions ?? NO_REGIONS
 
-  const updateParam = (key: string, value: string) => {
+  const all = useMemo(() => data ?? [], [data])
+  const filtering = Boolean(search || region)
+
+  const countries = useMemo(() => {
+    const q = fold(search)
+    return all.filter(
+      (country) =>
+        (!region || country.region?.slug === region) &&
+        (!q || fold(country.name).includes(q) || fold(country.slug).includes(q) || fold(country.iso2) === q),
+    )
+  }, [all, region, search])
+
+  /* Grouped by first letter. A directory of this length is unusable as one
+     run of two hundred lines: the letter is what people navigate by. */
+  const groups = useMemo(() => {
+    const map = new Map<string, Country[]>()
+    for (const country of [...countries].sort((a, b) => a.name.localeCompare(b.name, lang))) {
+      const letter = country.name.charAt(0).toLocaleUpperCase(lang)
+      const bucket = map.get(letter)
+      if (bucket) bucket.push(country)
+      else map.set(letter, [country])
+    }
+    return [...map.entries()]
+  }, [countries, lang])
+
+  /* Letters earn their space at two hundred names and cost it at twelve:
+     filtering to the Middle East produced eight headings for eight rows.
+     Below the threshold the list is simply alphabetical. */
+  const grouped = countries.length > 40
+
+  const popular = useMemo(() => all.filter((country) => country.is_popular).slice(0, 9), [all])
+  const sellableRegions = useMemo(
+    () => (regions ?? []).filter((item) => item.slug !== 'global' && item.country_count > 0),
+    [regions],
+  )
+
+  const update = (key: string, value: string) => {
     const next = new URLSearchParams(params)
     if (value) next.set(key, value)
     else next.delete(key)
     setParams(next, { replace: true })
   }
 
-  const { formatPrice } = useCurrency()
+  /* `?scope=regions` used to switch a tab that no longer exists. The regional
+     plans are a section on this page now, so the old link still lands on them
+     instead of on nothing. */
+  useEffect(() => {
+    if (params.get('scope') !== 'regions') return
+    regionsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [params])
 
-  // Only regions that actually sell a multi-country plan. A card without a
-  // price would promise a product we do not have.
-  //
-  // The count is deliberately not part of the test. Countries are mapped to
-  // Europe, Asia and so on, so the worldwide region legitimately has none — and
-  // requiring one hid the global plan, which is the product the whole section
-  // exists to sell.
-  const regionCards = useMemo(
-    () => regions.filter((r) => r.starting_price != null),
-    [regions],
-  )
-
-  const heading = useMemo(() => {
-    if (search) return t('destinations.resultsFor', { query: search })
-    if (region) return regions.find((r) => r.slug === region)?.name || t('destinations.title')
-    return t('destinations.allDestinations')
-  }, [search, region, regions, t])
-
-  const seoLang = (i18n.resolvedLanguage ?? 'uz') as SeoLang
-  const listLd = destinationListLd(countries, seoLang)
+  const list = destinationListLd(countries, lang)
 
   return (
-    <div className="container-page py-8 sm:py-12">
+    <div className="qs-page dst container-page">
       <Seo
         title={t('seo.destinationsTitle')}
         description={t('seo.destinationsDescription')}
         jsonLd={[
-          // Built from what the page is actually showing, so a filtered view
-          // never advertises destinations it is not listing.
-          ...(listLd ? [listLd] : []),
-          breadcrumbLd([{ name: t('nav.destinations'), path: '/destinations' }], seoLang),
+          ...(list ? [list] : []),
+          breadcrumbLd([{ name: t('nav.destinations'), path: '/destinations' }], lang),
         ]}
       />
-      <h1 className="text-2xl font-700 sm:text-3xl">{t('destinations.title')}</h1>
-      <p className="mt-2 leading-6 text-slate-soft">{t('destinations.subtitle')}</p>
 
-      {/* One bar, and it follows the page down.
-          Before: a full-width search box, then a second row of region pills
-          under a "Mintaqa" label — two blocks and four lines of chrome above a
-          grid the visitor came to read, and both scrolled away the moment they
-          started reading. Now the search and the region live on one line, the
-          regions open on demand instead of sitting there permanently, and the
-          bar stays reachable at the top of the screen. The header publishes its
-          own height, so the offset survives the promo banner being dismissed. */}
-      <div
-        ref={barRef}
-        className="sticky top-[var(--header-h,104px)] z-40 -mx-4 mt-6 border-y border-line bg-canvas/95 px-4 py-3 backdrop-blur-md sm:mx-0 sm:rounded-xl sm:border sm:px-4"
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative min-w-[220px] flex-1">
-            <Search size={16} aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-soft" />
-            <input
-              value={search}
-              onChange={(e) => updateParam('search', e.target.value)}
-              placeholder={t('destinations.searchPlaceholder')}
-              aria-label={t('destinations.searchPlaceholder')}
-              className="focus-ring w-full rounded-lg bg-mist py-2 pl-9 pr-9 text-sm text-ink ring-1 ring-line placeholder:text-slate-soft [&::-webkit-search-cancel-button]:hidden"
-            />
-            {search && (
-              <button
-                type="button"
-                onClick={() => updateParam('search', '')}
-                aria-label={t('destinations.all')}
-                className="focus-ring absolute right-1.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-md text-slate-soft hover:bg-surface hover:text-ink"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
+      {/* 1 — the question, and the one control that answers it */}
+      <header className="dst-head">
+        <p className="eyebrow">{t('nav.destinations')}</p>
+        <h1>{c.catalogueTitle}</h1>
+        <p className="dst-lead">{c.catalogueNote}</p>
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setRegionOpen((open) => !open)}
-              aria-expanded={regionOpen}
-              className={`focus-ring inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-600 ring-1 transition ${
-                region
-                  ? 'bg-brand-600 text-white ring-brand-600'
-                  : regionOpen
-                    ? 'bg-mist text-ink ring-line'
-                    : 'bg-surface text-slate-soft ring-line hover:text-ink'
-              }`}
-            >
-              {region ? regions.find((r) => r.slug === region)?.name : t('destinations.region')}
-              <ChevronDown size={14} aria-hidden />
+        <div className="dst-search">
+          <Search size={20} aria-hidden />
+          <input
+            type="search"
+            name="country"
+            aria-label={c.searchHint}
+            placeholder={c.searchHint}
+            value={search}
+            autoComplete="off"
+            onChange={(event) => update('search', event.target.value)}
+          />
+          {search ? (
+            <button type="button" aria-label={c.clear} onClick={() => update('search', '')}>
+              <X size={18} aria-hidden />
             </button>
-            {regionOpen && (
-              <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-56 rounded-xl bg-surface p-1.5 shadow-xl ring-1 ring-line">
-                <button
-                  type="button"
-                  onClick={() => {
-                    updateParam('region', '')
-                    setRegionOpen(false)
-                  }}
-                  className={`focus-ring flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition ${
-                    !region ? 'bg-brand-50 font-600 text-brand-700 dark:bg-brand-800/40 dark:text-accent-400' : 'text-ink hover:bg-mist'
-                  }`}
-                >
-                  {t('destinations.all')}
-                  {!region && <Check size={14} aria-hidden />}
-                </button>
-                {/* Only regions that can actually filter something. The
-                    worldwide region holds no countries — it exists for the
-                    multi-country plans — so picking it emptied the page
-                    completely, which is what "the countries disappeared" turns
-                    out to mean. It is offered below as what it really is: a
-                    different page. */}
-                {regions
-                  .filter((r) => r.country_count > 0)
-                  .map((r) => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => {
-                      updateParam('region', r.slug)
-                      setRegionOpen(false)
-                    }}
-                    className={`focus-ring flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition ${
-                      region === r.slug
-                        ? 'bg-brand-50 font-600 text-brand-700 dark:bg-brand-800/40 dark:text-accent-400'
-                        : 'text-ink hover:bg-mist'
-                    }`}
-                  >
-                    <span className="truncate">{r.name}</span>
-                    {/* The number of destinations behind the label: the answer
-                        before the click rather than after it. */}
-                    {r.country_count > 0 && (
-                      <span className="shrink-0 text-xs tabular-nums text-slate-soft">{r.country_count}</span>
-                    )}
-                    {region === r.slug && <Check size={14} aria-hidden />}
-                  </button>
-                  ))}
+          ) : null}
+        </div>
+
+        <p className="dst-count" role="status">
+          {search ? `${t('destinations.resultsFor', { query: search })} · ` : ''}
+          {t('destinations.regionCountries', { count: countries.length })}
+        </p>
+      </header>
+
+      {/* 2 — what people actually travel to, before the alphabet */}
+      {!filtering && popular.length ? (
+        <section className="dst-block">
+          <div className="dst-block__head">
+            <h2>{t('home.popularTitle')}</h2>
+            <p>{t('home.popularSubtitle')}</p>
+          </div>
+          <ul className="dst-popular">
+            {popular.map((country) => (
+              <li key={country.id}>
                 <Link
-                  to="/global"
-                  onClick={() => setRegionOpen(false)}
-                  className="focus-ring mt-1 flex w-full items-center justify-between gap-3 rounded-lg border-t border-line px-3 py-2 text-sm font-600 text-brand-600 hover:bg-mist dark:text-accent-400"
+                  to={'/destinations/' + country.slug}
+                  onMouseEnter={() => prefetch(country.slug)}
+                  onFocus={() => prefetch(country.slug)}
                 >
-                  {t('destinations.worldwide')}
-                  <ArrowUpRight size={14} aria-hidden />
+                  <Flag iso2={country.iso2} w={160} />
+                  <span className="dst-popular__name">{country.name}</span>
+                  <span className="dst-popular__price">
+                    <span>{t('common.from')}</span> {formatPrice(country.starting_price)}
+                  </span>
                 </Link>
-              </div>
-            )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {/* 3 — a regional eSIM is a product, not a filter, so it gets its own block */}
+      {!filtering && sellableRegions.length ? (
+        <section className="dst-block" id="mintaqalar" ref={regionsRef}>
+          <div className="dst-block__head">
+            <h2>{t('destinations.regionsTitle')}</h2>
+            <p>{t('destinations.regionsSubtitle')}</p>
+          </div>
+          <ul className="dst-regions">
+            {sellableRegions.map((item) => (
+              <li key={item.id}>
+                <Link to={'/destinations/region/' + item.slug}>
+                  {/* The count is repeated as an attribute so the tablet layout
+                      can show it under the name without duplicating it for a
+                      screen reader — the visible column is hidden there. */}
+                  <span
+                    className="dst-regions__name"
+                    data-count={t('destinations.regionCountries', { count: item.country_count })}
+                  >
+                    {item.name}
+                  </span>
+                  <span className="dst-regions__count">
+                    {t('destinations.regionCountries', { count: item.country_count })}
+                  </span>
+                  <span className="dst-regions__price">
+                    {item.starting_price != null ? (
+                      <>
+                        <span>{t('common.from')}</span> {formatPrice(item.starting_price)}
+                      </>
+                    ) : null}
+                  </span>
+                  <ArrowRight size={17} aria-hidden />
+                </Link>
+              </li>
+            ))}
+            {/* The worldwide plan is not a region, and its sentence does not
+                fit the three-column rhythm — it gets its own row shape. */}
+            <li className="dst-regions__global">
+              <Link to="/global">
+                <span>
+                  <span className="dst-regions__name">{t('destinations.worldwide')}</span>
+                  <span className="dst-regions__note">{t('destinations.worldwideNotAList')}</span>
+                </span>
+                <ArrowRight size={17} aria-hidden />
+              </Link>
+            </li>
+          </ul>
+        </section>
+      ) : null}
+
+      {/* 4 — the directory itself */}
+      <section className="dst-block dst-index">
+        {/* "All destinations" over two search results is a lie; the count
+            line under the search box already names what is on screen. */}
+        {!filtering ? (
+          <div className="dst-block__head">
+            <h2>{t('destinations.allDestinations')}</h2>
+          </div>
+        ) : null}
+
+        {/* The region names appear twice on this page — as a filter here and
+            as a purchasable regional eSIM above. One visible word says which
+            is which; without it the repetition is the confusion the old
+            sidebar had, only spread further apart. */}
+        <div className="dst-filter">
+          <span className="dst-filter__label" id="dst-region-label">
+            {t('destinations.region')}
+          </span>
+          <div className="dst-chips" role="group" aria-labelledby="dst-region-label">
+          <button type="button" aria-pressed={!region} onClick={() => update('region', '')}>
+            {t('destinations.all')}
+          </button>
+          {(regions ?? [])
+            .filter((item) => item.slug !== 'global')
+            .map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                aria-pressed={region === item.slug}
+                onClick={() => update('region', region === item.slug ? '' : item.slug)}
+              >
+                {item.name}
+              </button>
+            ))}
           </div>
         </div>
 
-        {(search || region) && (
-          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-            {search && (
-              <button type="button" onClick={() => updateParam('search', '')} className={chipClass}>
-                “{search}”
-                <X size={12} aria-hidden />
-              </button>
-            )}
-            {region && (
-              <button type="button" onClick={() => updateParam('region', '')} className={chipClass}>
-                {regions.find((r) => r.slug === region)?.name}
-                <X size={12} aria-hidden />
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                updateParam('search', '')
-                updateParam('region', '')
-              }}
-              className="focus-ring rounded-lg px-2 py-1 text-xs font-600 text-brand-600 hover:underline dark:text-accent-400"
-            >
-              {t('global.filterReset')}
-            </button>
-          </div>
-        )}
-      </div>
+        {grouped ? (
+          <nav className="dst-alpha" aria-label={t('destinations.alphabet')}>
+            {groups.map(([letter]) => (
+              <a key={letter} href={`#harf-${letter}`}>
+                {letter}
+              </a>
+            ))}
+          </nav>
+        ) : null}
 
-      {loading ? (
-        <p className="mt-12 text-slate-soft">{t('destinations.loading')}</p>
-      ) : (
-        <>
-          <h2 className="mt-10 text-lg font-700">{heading}</h2>
-          {countries.length === 0 ? (
-            <Card className="mt-5 p-10 text-center text-slate-soft">
-              {/* A region with no destinations is not "no match" — it is the
-                  worldwide region, which holds plans rather than countries.
-                  Reachable by a shared or bookmarked link even now that the
-                  filter no longer offers it, and a bare "nothing found" would
-                  read as a broken catalogue. */}
-              {regions.some((r) => r.slug === region && r.country_count === 0) ? (
-                <>
-                  <p>{t('destinations.worldwideNotAList')}</p>
-                  <Link
-                    to="/global"
-                    className="focus-ring mt-3 inline-block font-600 text-brand-600 hover:underline dark:text-accent-400"
-                  >
-                    {t('destinations.worldwide')}
-                  </Link>
-                </>
-              ) : (
-                t('destinations.noMatch')
-              )}
-            </Card>
-          ) : (
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {countries.map((c, i) => (
-                <Reveal key={c.id} delay={i * 40}>
-                  <CountryCard country={c} />
-                </Reveal>
-              ))}
-            </div>
-          )}
+        {loading && !all.length ? (
+          <ul className="dst-rows" aria-busy="true">
+            {Array.from({ length: 9 }, (_, i) => (
+              <li key={i} className="dst-row dst-row--ghost" />
+            ))}
+          </ul>
+        ) : null}
 
-          {/* One eSIM for a whole trip, presented as a product rather than as a
-              list of links. These were text chips under an SEO heading at the
-              bottom of the page, so the regional plans — which already exist,
-              are priced, and cover up to 55 countries each — were invisible: a
-              customer going to three countries bought three separate eSIMs
-              because nothing told them they did not have to.
-
-              Still real addresses, unlike the filter chips higher up: a chip
-              rewrites this page's query string, which neither a crawler nor a
-              shared link can hold onto.
-
-              Only regions that actually sell a multi-country plan appear. One
-              without a price would be a card promising something we cannot
-              deliver, which is worse than a shorter list. */}
-          {regionCards.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-base font-700 sm:text-lg">{t('destinations.regionsTitle')}</h2>
-              <p className="mt-1 text-sm text-slate-soft">{t('destinations.regionsSubtitle')}</p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {regionCards.map((r) => (
-                  <Link
-                    key={r.slug}
-                    to={`/destinations/region/${r.slug}`}
-                    className="focus-ring lift group flex items-center justify-between gap-3 rounded-2xl bg-surface p-4 ring-1 ring-line transition hover:ring-brand-300"
-                  >
-                    <span className="min-w-0">
-                      <span className="block truncate font-700 text-ink group-hover:text-brand-600">
-                        {t(`region.${r.slug}`, { defaultValue: r.name })}
-                      </span>
-                      <span className="mt-0.5 block text-xs text-slate-soft">
-                        {/* No count for the worldwide plan: its coverage comes
-                            from the wholesaler, not from our region mapping, and
-                            inventing "200+ countries" would be a number nobody
-                            has checked. */}
-                        {r.country_count > 0
-                          ? t('destinations.regionCountries', { count: r.country_count })
-                          : t('destinations.regionWorldwide')}
-                      </span>
-                    </span>
-                    <span className="shrink-0 text-right">
-                      <span className="block text-[11px] text-slate-soft">
-                        {t('destinations.priceFrom')}
-                      </span>
-                      <span className="block font-700 text-brand-600 dark:text-accent-400">
-                        {formatPrice(r.starting_price)}
-                      </span>
-                    </span>
-                  </Link>
+        {grouped ? (
+          groups.map(([letter, items]) => (
+            <div className="dst-letter" id={`harf-${letter}`} key={letter}>
+              <h3>{letter}</h3>
+              <ul className="dst-rows">
+                {items.map((country) => (
+                  <CountryRow key={country.id} country={country} price={formatPrice(country.starting_price)} />
                 ))}
-              </div>
-            </section>
-          )}
-        </>
-      )}
+              </ul>
+            </div>
+          ))
+        ) : (
+          <ul className="dst-rows">
+            {groups.flatMap(([, items]) => items).map((country) => (
+              <CountryRow key={country.id} country={country} price={formatPrice(country.starting_price)} />
+            ))}
+          </ul>
+        )}
+
+        {!loading && !countries.length ? (
+          <div className="empty-destinations">
+            <h2>{c.empty}</h2>
+            <p className="mt-3 text-slate-soft">{t('destinations.noMatch')}</p>
+            <div className="dst-empty__actions">
+              <button type="button" className="text-link" onClick={() => setParams({})}>
+                {c.clear}
+                <ArrowRight size={18} aria-hidden />
+              </button>
+              {/* A country we do not sell on its own is often inside the global
+                  plan, so the dead end offers the way that still works. */}
+              <Link className="text-link" to="/global">
+                {t('destinations.worldwide')}
+                <ArrowRight size={18} aria-hidden />
+              </Link>
+            </div>
+          </div>
+        ) : null}
+      </section>
     </div>
+  )
+}
+
+function CountryRow({ country, price }: { country: Country; price: string }) {
+  return (
+    <li>
+      <Link
+        className="dst-row"
+        to={'/destinations/' + country.slug}
+        onMouseEnter={() => prefetch(country.slug)}
+        onFocus={() => prefetch(country.slug)}
+      >
+        <Flag iso2={country.iso2} w={80} />
+        <span className="dst-row__name">{country.name}</span>
+        <span className="dst-row__price">{price}</span>
+      </Link>
+    </li>
   )
 }

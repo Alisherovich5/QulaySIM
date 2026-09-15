@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ExternalLink, Lock, X } from 'lucide-react'
-
+import { useDialog } from '../lib/useDialog'
 
 /**
  * The payment form, on our page rather than on the provider's.
@@ -22,26 +22,24 @@ import { ExternalLink, Lock, X } from 'lucide-react'
  * corporate proxy, a provider that starts sending X-Frame-Options — the
  * customer still has a working link instead of a blank rectangle.
  */
-export default function PaymentFrame({ url, onClose }: { url: string; onClose: () => void }) {
+export default function PaymentFrame({
+  url,
+  onClose,
+  returnFocus,
+}: {
+  url: string
+  onClose: () => void
+  returnFocus?: HTMLElement | null
+}) {
   const { t } = useTranslation()
   const [loaded, setLoaded] = useState(false)
-
-  // Escape closes it, and the page behind must not scroll while a payment is
-  // open — a half-scrolled checkout under a payment form reads as two pages.
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose()
-    const previous = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', onKey)
-    return () => {
-      document.body.style.overflow = previous
-      window.removeEventListener('keydown', onKey)
-    }
-  }, [onClose])
+  const dialogRef = useDialog(onClose, true, returnFocus)
 
   return (
     <div
-      className="fixed inset-0 z-[100] grid place-items-center bg-brand-950/70 backdrop-blur-sm sm:p-6"
+      ref={dialogRef}
+      tabIndex={-1}
+      className="payment-dialog fixed inset-0 z-[100] grid place-items-center bg-brand-950/70 backdrop-blur-sm sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-label={t('checkout.payFrameTitle')}
@@ -92,9 +90,15 @@ export default function PaymentFrame({ url, onClose }: { url: string; onClose: (
           <span className="rounded-md bg-brand-600 px-1.5 py-0.5 text-[10px] font-700 uppercase tracking-wide text-white">
             {t('checkout.payMethodCard')}
           </span>
-          <span className="rounded-md bg-[#0F86D8] px-1.5 py-0.5 text-[10px] font-700 text-white">Click</span>
-          <span className="rounded-md bg-[#00C4B4] px-1.5 py-0.5 text-[10px] font-700 text-white">Payme</span>
-          <span className="text-[11px] leading-4 text-slate-soft">{t('checkout.payMethodsHint')}</span>
+          <span className="rounded-md bg-[#0F86D8] px-1.5 py-0.5 text-[10px] font-700 text-white">
+            Click
+          </span>
+          <span className="rounded-md bg-[#00C4B4] px-1.5 py-0.5 text-[10px] font-700 text-white">
+            Payme
+          </span>
+          <span className="text-[11px] leading-4 text-slate-soft">
+            {t('checkout.payMethodsHint')}
+          </span>
         </div>
 
         {/* `flex-1` with a full-height iframe rather than a fixed height, so the

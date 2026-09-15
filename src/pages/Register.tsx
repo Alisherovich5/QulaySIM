@@ -8,6 +8,7 @@ import GoogleSignIn from '../components/GoogleSignIn'
 import Seo from '../components/Seo'
 import { useAuth } from '../context/AuthContext'
 import Logo from '../components/Logo'
+import AuthScene from '../components/AuthScene'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import ThemeToggle from '../components/ThemeToggle'
 import { Button, Card } from '../components/ui'
@@ -84,87 +85,104 @@ export default function Register() {
   }
 
   return (
-    <div className="container-page grid min-h-[70vh] place-items-center py-12">
+    <div className="auth-page">
       <Seo title={t('seo.registerTitle')} description={t('seo.homeDescription')} noindex />
-      <div className="w-full max-w-md">
-        <div className="flex items-center justify-between">
-          <Logo />
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <LanguageSwitcher />
+      <AuthScene />
+      <div className="auth-main">
+        <div className="auth-form-shell">
+          <div className="auth-top">
+            <Logo />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <LanguageSwitcher />
+            </div>
           </div>
-        </div>
-        <Card className="mt-6 p-8">
-          <h1 className="text-2xl font-700">{t('auth.registerTitle')}</h1>
-          <p className="mt-1.5 text-sm text-slate-soft">{t('auth.registerSubtitle')}</p>
-          {referralCode && (
-            <p className="mt-3 rounded-lg bg-accent-500/10 px-3 py-2 text-center text-xs font-600 text-accent-600">
-              {t('referral.referredBy', { code: referralCode })}
-            </p>
-          )}
+          <Card className="mt-6 p-8">
+            <h1 className="text-2xl font-700">{t('auth.registerTitle')}</h1>
+            <p className="mt-1.5 text-sm text-slate-soft">{t('auth.registerSubtitle')}</p>
+            {referralCode && (
+              <p className="mt-3 rounded-lg bg-accent-500/10 px-3 py-2 text-center text-xs font-600 text-accent-600">
+                {t('referral.referredBy', { code: referralCode })}
+              </p>
+            )}
 
-          <form onSubmit={submit} className="mt-6 space-y-4">
-            <div>
-              <label className="text-xs font-600 text-slate-soft">{t('auth.fullName')}</label>
-              <input
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                autoComplete="name"
-                className="input mt-1.5"
-                placeholder={t('auth.fullNamePlaceholder')}
-              />
-            </div>
-            <div>
-              <label className="text-xs font-600 text-slate-soft">{t('auth.email')}</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t('auth.emailPlaceholder')}
-                autoComplete="email"
-                className="input mt-1.5"
-                required
-              />
-            </div>
-            <div>
-              <label className="text-xs font-600 text-slate-soft">{t('auth.password')}</label>
-              {/* autoComplete is "new-password", not "current-password": it tells a
+            <form onSubmit={submit} className="mt-6 space-y-4">
+              <div>
+                <label className="text-xs font-600 text-slate-soft" htmlFor="register-name">
+                  {t('auth.fullName')}
+                </label>
+                <input
+                  id="register-name"
+                  name="full_name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  autoComplete="name"
+                  className="input mt-1.5"
+                  placeholder={t('auth.fullNamePlaceholder')}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-600 text-slate-soft" htmlFor="register-email">
+                  {t('auth.email')}
+                </label>
+                <input
+                  id="register-email"
+                  name="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                  className="input mt-1.5"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-xs font-600 text-slate-soft" htmlFor="register-password">
+                  {t('auth.password')}
+                </label>
+                {/* autoComplete is "new-password", not "current-password": it tells a
                   password manager to offer a generated one rather than autofilling
                   the password the customer already uses somewhere else. */}
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
-                className="input mt-1.5"
-                placeholder={t('auth.passwordPlaceholder')}
-                required
-              />
-            </div>
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button type="submit" loading={loading} fullWidth className="py-3">
-              {!loading && <UserPlus size={18} />} {loading ? t('auth.creating') : t('auth.create')}
-            </Button>
-          </form>
+                <input
+                  id="register-password"
+                  name="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
+                  className="input mt-1.5"
+                  placeholder={t('auth.passwordPlaceholder')}
+                  required
+                />
+              </div>
+              {error && (
+                <p role="alert" className="text-sm text-red-500">
+                  {error}
+                </p>
+              )}
+              <Button type="submit" loading={loading} fullWidth className="py-3">
+                {!loading && <UserPlus size={18} />}{' '}
+                {loading ? t('auth.creating') : t('auth.create')}
+              </Button>
+            </form>
 
-          <GoogleSignIn
-            onSuccess={() => navigate(from, { replace: true })}
-            onError={setError}
-          />
+            <GoogleSignIn onSuccess={() => navigate(from, { replace: true })} onError={setError} />
 
-          <p className="mt-5 text-center text-sm text-slate-soft">
-            {t('auth.haveAccount')}{' '}
-            <Link to="/login" className="font-600 text-brand-600">
-              {t('auth.signIn')}
-            </Link>
-          </p>
-        </Card>
-        <Link
-          to="/"
-          className="mt-5 flex items-center justify-center gap-1.5 text-sm font-600 text-slate-soft transition hover:text-brand-600"
-        >
-          <ArrowLeft size={15} /> {t('auth.backHome')}
-        </Link>
+            <p className="mt-5 text-center text-sm text-slate-soft">
+              {t('auth.haveAccount')}{' '}
+              <Link state={{ from }} to="/login" className="font-600 text-brand-600">
+                {t('auth.signIn')}
+              </Link>
+            </p>
+          </Card>
+          <Link
+            to="/"
+            className="mt-5 flex items-center justify-center gap-1.5 text-sm font-600 text-slate-soft transition hover:text-brand-600"
+          >
+            <ArrowLeft size={15} /> {t('auth.backHome')}
+          </Link>
+        </div>
       </div>
     </div>
   )

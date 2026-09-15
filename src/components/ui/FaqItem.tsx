@@ -1,45 +1,24 @@
-import { ChevronDown } from 'lucide-react'
-import Card from './Card'
-
+import { useId } from 'react'
+import { Plus, Minus } from 'lucide-react'
 interface FaqItemProps {
   question: string
   answer: string
   isOpen: boolean
   onToggle: () => void
 }
-
-/** A single expandable FAQ row with a smooth height/opacity transition. */
 export default function FaqItem({ question, answer, isOpen, onToggle }: FaqItemProps) {
+  const id = useId()
   return (
-    <Card
-      className={`overflow-hidden transition-shadow duration-300 ${
-        isOpen ? 'shadow-lg shadow-brand-500/5 ring-brand-200' : ''
-      }`}
-    >
-      <button
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        className="flex w-full items-center justify-between gap-4 p-5 text-left transition-colors hover:text-brand-600"
-      >
-        <span className="font-600 text-ink">{question}</span>
-        <ChevronDown
-          size={18}
-          className={`shrink-0 text-slate-soft transition-transform duration-300 ${
-            isOpen ? 'rotate-180 text-brand-500' : ''
-          }`}
-        />
-      </button>
-      <div
-        className={`grid transition-all duration-300 ease-out ${
-          isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-        }`}
-      >
-        <div className="overflow-hidden">
-          <p className="border-t border-line px-5 pb-5 pt-4 text-sm leading-relaxed text-slate-soft">
-            {answer}
-          </p>
-        </div>
+    <div className="faq-item" data-open={isOpen}>
+      <h3>
+        <button type="button" onClick={onToggle} aria-expanded={isOpen} aria-controls={id}>
+          <span>{question}</span>
+          {isOpen ? <Minus size={20} /> : <Plus size={20} />}
+        </button>
+      </h3>
+      <div id={id} hidden={!isOpen}>
+        <p>{answer}</p>
       </div>
-    </Card>
+    </div>
   )
 }

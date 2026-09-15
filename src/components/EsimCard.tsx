@@ -59,7 +59,7 @@ export default function EsimCard({ esim, onActivate, activating, onTopUp }: Prop
             image where the code should be. */}
         <div className="grid h-[136px] w-[136px] shrink-0 place-items-center rounded-xl bg-white p-3 ring-1 ring-line">
           {esim.qr_image ? (
-            <img src={esim.qr_image} alt="eSIM QR code" className="h-28 w-28" />
+            <img src={esim.qr_image} alt={t('account.qrAlt')} className="h-28 w-28" />
           ) : (
             <div className="flex flex-col items-center gap-2 px-1 text-center">
               <CircleDot size={22} className="animate-pulse text-slate-400" aria-hidden />

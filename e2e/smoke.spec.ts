@@ -8,13 +8,57 @@ import { expect, test, type Page } from '@playwright/test'
  */
 
 const COUNTRIES = [
-  { id: 1, name: 'Turkiya', slug: 'turkey', iso2: 'TR', starting_price: 1.5, is_popular: true, region: { id: 1, name: 'Yevropa', slug: 'europe' } },
-  { id: 2, name: 'Gruziya', slug: 'georgia', iso2: 'GE', starting_price: 2, is_popular: true, region: { id: 1, name: 'Yevropa', slug: 'europe' } },
+  {
+    id: 1,
+    name: 'Turkiya',
+    slug: 'turkey',
+    iso2: 'TR',
+    starting_price: 1.5,
+    is_popular: true,
+    region: { id: 1, name: 'Yevropa', slug: 'europe' },
+  },
+  {
+    id: 2,
+    name: 'Gruziya',
+    slug: 'georgia',
+    iso2: 'GE',
+    starting_price: 2,
+    is_popular: true,
+    region: { id: 1, name: 'Yevropa', slug: 'europe' },
+  },
 ]
 
 const PLANS = [
-  { id: 10, scope: 'local', title: 'Turkey 3 GB · 7 days', data_amount_mb: 3072, is_unlimited: false, data_label: '3 GB', validity_days: 7, price_usd: 4.5, price_note: '', network_type: '5G', supports_hotspot: true, is_popular: true, coverage: [] },
-  { id: 11, scope: 'local', title: 'Turkey 10 GB · 30 days', data_amount_mb: 10240, is_unlimited: false, data_label: '10 GB', validity_days: 30, price_usd: 9.5, price_note: '', network_type: '5G', supports_hotspot: true, is_popular: false, coverage: [] },
+  {
+    id: 10,
+    scope: 'local',
+    title: 'Turkey 3 GB · 7 days',
+    data_amount_mb: 3072,
+    is_unlimited: false,
+    data_label: '3 GB',
+    validity_days: 7,
+    price_usd: 4.5,
+    price_note: '',
+    network_type: '5G',
+    supports_hotspot: true,
+    is_popular: true,
+    coverage: [],
+  },
+  {
+    id: 11,
+    scope: 'local',
+    title: 'Turkey 10 GB · 30 days',
+    data_amount_mb: 10240,
+    is_unlimited: false,
+    data_label: '10 GB',
+    validity_days: 30,
+    price_usd: 9.5,
+    price_note: '',
+    network_type: '5G',
+    supports_hotspot: true,
+    is_popular: false,
+    coverage: [],
+  },
 ]
 
 /** Every endpoint the storefront can ask for, answered from memory. */
@@ -30,16 +74,40 @@ async function mockApi(page: Page): Promise<void> {
       const country = COUNTRIES.find((c) => c.slug === slug)
       return country ? json({ ...country, plans: PLANS }) : route.fulfill({ status: 404, json: {} })
     }
-    if (path === '/regions') return json([{ id: 1, name: 'Yevropa', slug: 'europe', country_count: 55, starting_price: 1.5 }])
-    if (path.startsWith('/regions/')) return json({ id: 1, name: 'Global', slug: 'global', country_count: 0, starting_price: 10.5, plans: [] })
+    if (path === '/regions')
+      return json([
+        { id: 1, name: 'Yevropa', slug: 'europe', country_count: 55, starting_price: 1.5 },
+      ])
+    if (path.startsWith('/regions/'))
+      return json({
+        id: 1,
+        name: 'Global',
+        slug: 'global',
+        country_count: 0,
+        starting_price: 10.5,
+        plans: [],
+      })
     if (path === '/currency') return json({ usd_to_uzs: 12500, source: 'cbu' })
     if (path === '/auth/me') return route.fulfill({ status: 401, json: {} })
     if (path === '/auth/providers') return json({ password: true, google: false })
     if (path === '/checkout/quote') {
       return json({
-        subtotal: 4.5, discount: 0, total: 4.5, promo_applied: false, promo_message: null,
-        promo_reason: null, promo_min_order_usd: null,
-        lines: [{ plan_id: 10, title: 'Turkey 3 GB · 7 days', unit_price: 4.5, quantity: 1, line_total: 4.5 }],
+        subtotal: 4.5,
+        discount: 0,
+        total: 4.5,
+        promo_applied: false,
+        promo_message: null,
+        promo_reason: null,
+        promo_min_order_usd: null,
+        lines: [
+          {
+            plan_id: 10,
+            title: 'Turkey 3 GB · 7 days',
+            unit_price: 4.5,
+            quantity: 1,
+            line_total: 4.5,
+          },
+        ],
       })
     }
     if (path === '/rum') return route.fulfill({ status: 204, body: '' })
@@ -62,7 +130,10 @@ test('a customer can go from a destination to the cart', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Turkiya')
   await expect(page.getByText('3 GB').first()).toBeVisible()
 
-  await page.getByRole('button', { name: /savatga|qo‘shish|qo'shish/i }).first().click()
+  await page
+    .getByRole('button', { name: /Tarifni tanlash/i })
+    .first()
+    .click()
 
   // The cart survives the navigation, which is the part that breaks when
   // storage keys or contexts are refactored.
@@ -78,7 +149,7 @@ test('the language prefix decides the edition, whatever is stored', async ({ pag
   await page.goto('/ru/destinations')
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
-  await expect(page.getByRole('heading', { level: 1 })).toContainText(/Направлени|Страны/i)
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(/Куда отправимся дальше/i)
 })
 
 test('the worldwide filter narrows by country', async ({ page }) => {
@@ -86,10 +157,26 @@ test('the worldwide filter narrows by country', async ({ page }) => {
   await page.route('**/api/regions/global*', (route) =>
     route.fulfill({
       json: {
-        id: 8, name: 'Global', slug: 'global', country_count: 0, starting_price: 10.5,
+        id: 8,
+        name: 'Global',
+        slug: 'global',
+        country_count: 0,
+        starting_price: 10.5,
         plans: [
-          { ...PLANS[0], id: 20, scope: 'global', title: 'Global 3 GB · 30 days', coverage: ['TR', 'GE'] },
-          { ...PLANS[1], id: 21, scope: 'global', title: 'Global 10 GB · 30 days', coverage: ['GE'] },
+          {
+            ...PLANS[0],
+            id: 20,
+            scope: 'global',
+            title: 'Global 3 GB · 30 days',
+            coverage: ['TR', 'GE'],
+          },
+          {
+            ...PLANS[1],
+            id: 21,
+            scope: 'global',
+            title: 'Global 10 GB · 30 days',
+            coverage: ['GE'],
+          },
         ],
       },
     }),
@@ -98,7 +185,10 @@ test('the worldwide filter narrows by country', async ({ page }) => {
 
   await expect(page.getByText(/2 tarifdan 2 tasi/)).toBeVisible()
   await page.getByPlaceholder(/qaysi davlatga/i).fill('Turkiya')
-  await page.getByRole('button', { name: /Turkiya/ }).first().click()
+  await page
+    .getByRole('button', { name: /Turkiya/ })
+    .first()
+    .click()
 
   // One plan covers Turkey, the other does not — and the one that does not is
   // removed rather than quietly ranked lower.
@@ -118,13 +208,11 @@ test('the region filter never offers a region that empties the page', async ({ p
     }),
   )
   await page.goto('/destinations')
-  await page.getByRole('button', { name: /Mintaqa/i }).click()
-
-  const menu = page.locator('div.absolute')
-  await expect(menu.getByRole('button', { name: 'Yevropa' })).toBeVisible()
-  await expect(menu.getByRole('button', { name: 'Butun dunyo' })).toHaveCount(0)
+  const menu = page.getByRole('combobox', { name: /Mintaqa/i })
+  await expect(menu.locator('option', { hasText: 'Yevropa' })).toHaveCount(1)
+  await expect(menu.locator('option', { hasText: 'Butun dunyo' })).toHaveCount(0)
   // Offered instead as a link to the page that actually sells those plans.
-  await expect(menu.getByRole('link')).toHaveAttribute('href', '/global')
+  await expect(page.locator('.catalogue-tabs a')).toHaveAttribute('href', '/global')
 })
 
 test('the device check answers by typing, and refuses to overstate', async ({ page }) => {
@@ -154,7 +242,9 @@ test('the device check answers by typing, and refuses to overstate', async ({ pa
   await expect(page.getByLabel(/\*#06#/).first()).toBeVisible()
 })
 
-test('a dropped catalogue request never empties a page that was baked with one', async ({ page }) => {
+test('a dropped catalogue request never empties a page that was baked with one', async ({
+  page,
+}) => {
   // Twice reported as "the countries disappeared", and this is the mechanism:
   // the home page carries its catalogue in the HTML, then replaced it with the
   // empty state as soon as one request was lost. On a link measured at 40%
@@ -186,4 +276,100 @@ test('the globe keeps its countries when the catalogue request is lost', async (
   const quick = page.getByLabel('Tez yo‘nalishlar').locator('a[href^="/destinations/"]')
   await expect(quick.first()).toBeVisible()
   expect(await quick.count()).toBeGreaterThan(0)
+})
+
+test('the floating navigation keeps its controls and eSIM destination', async ({ page }) => {
+  await page.goto('/destinations')
+  const header = page.locator('.floating-nav')
+  const language = header.getByRole('button', { name: 'Language', exact: true })
+  const menu = header.locator('.floating-nav__toggle')
+
+  await language.click()
+  await header.getByRole('button', { name: 'USD', exact: true }).click()
+  await expect(header.getByRole('button', { name: 'USD', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await page.keyboard.press('Escape')
+  await expect(language).toBeFocused()
+  await expect(language).toHaveAttribute('aria-expanded', 'false')
+
+  if (await menu.isVisible()) await menu.click()
+  await header.getByRole('button', { name: 'Switch to dark mode' }).click()
+  await expect(page.locator('html')).toHaveClass(/dark/)
+  await header.getByRole('button', { name: 'Switch to light mode' }).click()
+  await expect(page.locator('html')).not.toHaveClass(/dark/)
+
+  if (await menu.isVisible()) {
+    await language.click()
+    await page.keyboard.press('Escape')
+    await expect(menu).toHaveAttribute('aria-expanded', 'true')
+    await page.keyboard.press('Escape')
+    await expect(menu).toHaveAttribute('aria-expanded', 'false')
+    await expect(menu).toBeFocused()
+    await menu.click()
+  }
+
+  await header
+    .getByRole('link', { name: 'Mening eSIM’im', exact: true })
+    .filter({ visible: true })
+    .click()
+  await expect(page).toHaveURL(/\/login$/)
+  expect(await page.evaluate(() => history.state.usr.from)).toBe('/account?tab=esims')
+})
+
+test('the floating navigation changes language without losing the page', async ({ page }) => {
+  await page.goto('/destinations/turkey')
+  await page.locator('.floating-nav').getByRole('button', { name: 'Language' }).click()
+  await page
+    .locator('.navigation-language__popover')
+    .getByRole('button', { name: 'Русский' })
+    .click()
+  await expect(page).toHaveURL(/\/ru\/destinations\/turkey$/)
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
+  // The API fixture deliberately keeps its Uzbek country name; page copy is translated locally.
+  await expect(page.getByRole('button', { name: 'Выбрать тариф', exact: true })).toBeVisible()
+})
+
+test('the navigation fits a phone and tablet with a filled cart', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 })
+  await page.goto('/destinations/turkey')
+  await page
+    .getByRole('button', { name: /Tarifni tanlash/i })
+    .first()
+    .click()
+  await expect(page.locator('.floating-nav__cart')).toBeVisible()
+  for (const width of [320, 360, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 844 })
+    await expect(page.locator('.floating-nav__theme > button')).toHaveCount(width >= 768 ? 1 : 0)
+    await expect
+      .poll(() =>
+        page.locator('.floating-nav__bar').evaluate((bar) => {
+          const brand = bar.querySelector('.floating-nav__brand')!.getBoundingClientRect()
+          const controls = bar.querySelector('.floating-nav__controls')!.getBoundingClientRect()
+          return bar.scrollWidth <= bar.clientWidth && brand.right <= controls.left
+        }),
+      )
+      .toBe(true)
+    await page.locator('.navigation-language__trigger').click()
+    const bounds = await page.locator('.navigation-language__popover').boundingBox()
+    expect(bounds!.x).toBeGreaterThanOrEqual(0)
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width)
+    await page.keyboard.press('Escape')
+  }
+})
+
+test('Uzbek can be selected on an unprefixed page with another stored language', async ({
+  page,
+}) => {
+  await page.addInitScript(() => localStorage.setItem('fastsim_lang', 'en'))
+  await page.goto('/destinations/turkey')
+  await expect(page.getByRole('button', { name: 'Choose plan', exact: true })).toBeVisible()
+  await page.locator('.navigation-language__trigger').click()
+  await page
+    .locator('.navigation-language__popover')
+    .getByRole('button', { name: "O'zbekcha" })
+    .click()
+  await expect(page).toHaveURL(/\/destinations\/turkey$/)
+  await expect(page.getByRole('button', { name: 'Tarifni tanlash', exact: true })).toBeVisible()
 })
