@@ -2,36 +2,43 @@
    The interactive globe is the signature; the remaining surfaces serve the task. */
 :root {
   --font-display: 'Manrope', ui-sans-serif, system-ui, sans-serif;
-  --color-canvas: #f8faf7;
+  --color-canvas: #f8fafa;
   --color-surface: #ffffff;
-  --color-surface-2: #eef2ec;
-  --color-mist: #eef2ec;
-  --color-ink: #21362c;
-  --color-slate-soft: #66746b;
-  --color-line: #dce4dc;
-  --color-brand-600: #287c66;
-  --color-brand-700: #1e604f;
-  --departure: #101713;
-  --cabin: #18211c;
-  --signal: #4fa38e;
-  --paper: #f8faf7;
+  --color-surface-2: #eaf2f3;
+  --color-mist: #eaf2f3;
+  --color-ink: #153640;
+  --color-slate-soft: #5f7383;
+  --color-line: #d5e5e9;
+  --color-brand-600: #007365;
+  --color-brand-700: #005a4e;
+  --departure: #05181f;
+  --cabin: #09222b;
+  --signal: #24ae97;
+  --paper: #f8fafa;
   --radius-card: 24px;
   --fs-e1: none;
   --fs-e2: none;
 }
 .dark {
-  --color-canvas: #101713;
-  --color-surface: #18211c;
-  --color-surface-2: #222e26;
-  --color-mist: #222e26;
-  --color-ink: #edf2eb;
-  --color-slate-soft: #acb8ac;
-  --color-line: #34453a;
-  --color-brand-600: #78baa4;
-  --color-brand-700: #aad3bf;
+  --color-canvas: #05181f;
+  --color-surface: #09222b;
+  --color-surface-2: #102f3c;
+  --color-mist: #102f3c;
+  --color-ink: #e9f2f4;
+  --color-slate-soft: #a2b8c2;
+  --color-line: #254650;
+  --color-brand-600: #62cbb7;
+  --color-brand-700: #99dfd2;
 }
 body {
-  background: var(--departure);
+  /* The canvas, not the dark band.
+   *
+   * `--departure` painted the whole document near-black and the rounded <main>
+   * sat on top of it, so a strip of it showed above the header, below the
+   * footer and through the header's 90%-opaque backdrop — which is where the
+   * "grey" tint on the navigation came from. The approved design's body is the
+   * canvas. --departure stays for the footer, which is deliberately dark. */
+  background: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 16px;
@@ -61,13 +68,13 @@ textarea {
 button:focus-visible,
 a:focus-visible,
 summary:focus-visible {
-  outline: 3px solid #62b6a0;
+  outline: 3px solid #24ae97;
   outline-offset: 4px;
 }
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #3c947d;
+  outline: 2px solid #008e7c;
   outline-offset: -1px;
 }
 .container-page {
@@ -77,7 +84,11 @@ textarea:focus-visible {
   padding-inline: 48px;
 }
 .site-shell {
-  background: var(--departure);
+  /* Same reason as body above: the shell is what shows around the rounded
+     <main>, and painting it dark put a band of near-black at the top and
+     bottom of every page. The footer keeps --departure; it is meant to be
+     dark. */
+  background: var(--color-canvas);
 }
 .site-shell > main {
   background: var(--color-canvas);
@@ -171,12 +182,16 @@ h4 {
   background: var(--color-surface);
   box-shadow: none;
 }
+/* The primary button is the one colour on the page nobody should have to
+   look for, and it was `background-image: none` over a flat #287c66 — a
+   desaturated green that is in no palette this project has ever had. The
+   approved design draws it as a gradient between the two brand greens. */
 .site-shell .btn-primary,
 .auth-page .btn-primary {
   min-height: 52px;
   border-radius: 14px;
-  background: #287c66;
-  background-image: none;
+  background: #007365;
+  background-image: linear-gradient(105deg, #008e7c, #007365);
   color: #fff;
   box-shadow: none;
   font-size: 15px;
@@ -185,7 +200,8 @@ h4 {
 }
 .site-shell .btn-primary:hover,
 .auth-page .btn-primary:hover {
-  background: #1e604f;
+  background: #005a4e;
+  background-image: linear-gradient(105deg, #007365, #005a4e);
   transform: none;
 }
 .site-shell .btn-primary:before,
@@ -285,7 +301,7 @@ h4 {
   min-width: 0;
 }
 .hero-copy .eyebrow {
-  color: #93b7a6;
+  color: #62cbb7;
   margin-bottom: 24px;
 }
 .site-shell .hero-copy h1 {
@@ -293,7 +309,7 @@ h4 {
   line-height: 1;
   letter-spacing: -0.065em;
   max-width: 12ch;
-  color: #f1f4ee;
+  color: #eef4f5;
 }
 .hero-copy h1 > span {
   display: block;
@@ -301,7 +317,7 @@ h4 {
 }
 .hero-copy .hero-lead {
   max-width: 42ch;
-  color: #adb9ad;
+  color: #a3b9c3;
   font-size: 17px;
   line-height: 1.75;
   margin-top: 28px;
@@ -315,15 +331,15 @@ h4 {
 }
 .hero-search {
   position: relative;
-  background: #f6f8f3;
-  color: #233a2c;
+  background: #f4f8f9;
+  color: #183943;
   padding: 16px 12px 12px 20px;
   border-radius: 22px;
 }
 .hero-search > label {
   display: block;
   font-size: 12px;
-  color: #637465;
+  color: #5e7182;
   margin-bottom: 5px;
 }
 .hero-search-row {
@@ -334,7 +350,7 @@ h4 {
 }
 .hero-search-row > svg {
   flex-shrink: 0;
-  color: #6b8071;
+  color: #697d8c;
 }
 .hero-search-row input {
   min-width: 0;
@@ -344,7 +360,7 @@ h4 {
   outline: none;
   box-shadow: none;
   background: transparent;
-  color: #20372a;
+  color: #153640;
   font: inherit;
   font-size: 16px;
 }
@@ -352,10 +368,10 @@ h4 {
   display: none;
 }
 .hero-search-row input::placeholder {
-  color: #738175;
+  color: #6b808f;
 }
 .hero-search:focus-within {
-  outline: 2px solid #77b59e;
+  outline: 2px solid #24ae97;
   outline-offset: 3px;
 }
 .search-submit {
@@ -365,11 +381,11 @@ h4 {
   height: 54px;
   flex-shrink: 0;
   border-radius: 15px;
-  background: #377e69;
+  background: #008e7c;
   color: #fff;
 }
 .search-submit:hover {
-  background: #23614e;
+  background: #005a4e;
 }
 .search-clear {
   display: grid;
@@ -377,7 +393,7 @@ h4 {
   min-width: 44px;
   min-height: 48px;
   border-radius: 12px;
-  color: #59715e;
+  color: #596c7d;
 }
 .hero-search-results {
   position: absolute;
@@ -385,9 +401,9 @@ h4 {
   right: 0;
   top: calc(100% + 10px);
   z-index: 30;
-  background: #f8faf7;
-  border: 1px solid #bccdbd;
-  color: #243b2a;
+  background: #f8fafa;
+  border: 1px solid #b8cbd3;
+  color: #193a44;
   border-radius: 20px;
   padding: 8px;
 }
@@ -400,7 +416,7 @@ h4 {
   border-radius: 12px;
 }
 .hero-search-results > a:hover {
-  background: #e7eee5;
+  background: #e1eef1;
 }
 .hero-search-results > a > span {
   flex: 1;
@@ -420,7 +436,7 @@ h4 {
   flex-wrap: wrap;
   gap: 8px 20px;
   margin-top: 16px;
-  color: #a1b2a3;
+  color: #9ab1bb;
 }
 .quick-destinations > span {
   font-size: 12px;
@@ -431,7 +447,7 @@ h4 {
   gap: 7px;
   min-height: 36px;
   font-size: 13px;
-  color: #dfe8dc;
+  color: #d9e8ec;
 }
 .quick-destinations > a:hover {
   text-decoration: underline;
@@ -459,7 +475,7 @@ h4 {
   justify-content: space-between;
   gap: 20px;
   width: 80%;
-  color: #a9b9a8;
+  color: #a1b8c2;
   font-size: 12px;
   z-index: 1;
 }
@@ -482,7 +498,7 @@ h4 {
   max-width: 100%;
 }
 .world-caption {
-  color: #849a88;
+  color: #8197a4;
   font-size: 12px !important;
   text-align: center;
   position: relative;
@@ -495,7 +511,7 @@ h4 {
   justify-content: space-between;
   gap: 24px;
   min-height: 84px;
-  border-top: 1px solid #29382d;
+  border-top: 1px solid #183943;
 }
 .hero-features > span,
 .hero-features > a {
@@ -503,14 +519,14 @@ h4 {
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  color: #bcccbc;
+  color: #b7cbd2;
 }
 .hero-features svg {
   flex-shrink: 0;
-  color: #72b79d;
+  color: #62cbb7;
 }
 .hero-features > a {
-  color: #dce8d6;
+  color: #d7e7ea;
   font-weight: 600;
   min-height: 48px;
 }
@@ -557,7 +573,7 @@ h4 {
   border-radius: 24px;
   overflow: hidden;
   color: #fff;
-  background: #213c33;
+  background: #193b45;
   outline: 1px solid #00000008;
   outline-offset: -1px;
 }
@@ -629,11 +645,11 @@ h4 {
 }
 .photo-card-details > p {
   font-size: 14px !important;
-  color: #eef5ea;
+  color: #ebf5f6;
   margin-top: 10px;
 }
 .photo-card-details > p > span {
-  color: #d4e3cf;
+  color: #d1e1e5;
   font-size: 12px;
 }
 .photo-skeleton {
@@ -1275,7 +1291,7 @@ h4 {
   margin-top: 28px;
   margin-bottom: 48px;
   border-radius: 28px;
-  background: #182a20;
+  background: #0f273b;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -1285,7 +1301,7 @@ h4 {
   z-index: 2;
   padding: 40px;
   max-width: 57%;
-  color: #f0f5ed;
+  color: #ecf5f6;
 }
 .destination-title {
   display: flex;
@@ -1301,13 +1317,13 @@ h4 {
 }
 .destination-title h1 {
   font-size: 44px;
-  color: #f0f5ed;
+  color: #ecf5f6;
   overflow-wrap: anywhere;
 }
 .destination-intro p {
   max-width: 44ch;
   margin-top: 20px;
-  color: #c0d0bf;
+  color: #bbcfd5;
 }
 .destination-meta {
   display: flex;
@@ -1315,7 +1331,7 @@ h4 {
   gap: 12px 20px;
   margin-top: 24px;
   font-size: 13px;
-  color: #a8bfab;
+  color: #a6bcc5;
 }
 .destination-meta > a {
   text-decoration: underline;
@@ -1331,7 +1347,7 @@ h4 {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #182a20, transparent 70%);
+  background: linear-gradient(90deg, #0f273b, transparent 70%);
 }
 .destination-photo img {
   width: 100%;
@@ -1405,7 +1421,7 @@ h4 {
   padding: 21px;
 }
 .plan-option:focus-within {
-  outline: 3px solid #70ae98;
+  outline: 3px solid #24ae97;
   outline-offset: 3px;
 }
 .plan-option > input {
@@ -1414,7 +1430,7 @@ h4 {
   width: 20px;
   height: 20px;
   margin: 0;
-  accent-color: #287c66;
+  accent-color: #007365;
   cursor: pointer;
 }
 .plan-option-top {
@@ -1469,10 +1485,10 @@ h4 {
   position: sticky;
   top: calc(var(--header-h, 112px) + 20px);
   padding: 30px;
-  border: 1px solid #3a5140;
+  border: 1px solid #334f5b;
   border-radius: 24px;
-  background: #1b2b20;
-  color: #eaf0e5;
+  background: #10283e;
+  color: #e4f0f2;
 }
 .plan-summary:before {
   content: 'QulaySIM';
@@ -1482,17 +1498,17 @@ h4 {
   letter-spacing: -0.045em;
   padding-bottom: 26px;
   margin-bottom: 26px;
-  border-bottom: 1px solid #3a4d3d;
-  color: #accdb6;
+  border-bottom: 1px solid #2e4c58;
+  color: #99dfd2;
 }
 .site-shell .plan-summary h3 {
   font-family: var(--font-display);
   font-size: 38px;
   letter-spacing: -0.05em;
-  color: #eaf0e5;
+  color: #e4f0f2;
 }
 .plan-summary > p {
-  color: #a8bda8;
+  color: #a4bac4;
   margin-top: 10px;
   font-size: 13px;
   overflow-wrap: anywhere;
@@ -1509,20 +1525,20 @@ h4 {
   font-size: 13px;
 }
 .plan-summary dt {
-  color: #a6bba6;
+  color: #a2b9c2;
 }
 .plan-summary dd {
   text-align: right;
-  color: #ecf3e6;
+  color: #e8f3f4;
 }
 .plan-total {
   margin-top: 24px;
   padding-top: 22px;
-  border-top: 1px dashed #637662;
+  border-top: 1px dashed #5f7383;
 }
 .plan-total > span {
   display: block;
-  color: #b5c6b0;
+  color: #afc4cc;
   font-size: 12px;
 }
 .plan-total > strong {
@@ -1534,23 +1550,23 @@ h4 {
 }
 .plan-total > p {
   font-size: 12px !important;
-  color: #b5c6b0;
+  color: #afc4cc;
 }
 .plan-summary .btn-primary {
   display: flex;
   width: 100%;
   margin-top: 22px;
-  background: #98c3a7;
-  color: #18301e;
+  background: #62cbb7;
+  color: #102d3c;
 }
 .plan-summary .btn-primary:hover {
-  background: #b5d8bb;
+  background: #99dfd2;
 }
 .plan-summary > .text-link {
   justify-content: center;
   width: 100%;
   font-size: 12px;
-  color: #bbd0b8;
+  color: #b9cdd4;
   margin-top: 8px;
 }
 .destination-facts {
@@ -1861,7 +1877,7 @@ h4 {
   margin: 24px 24px 24px 0;
   border-radius: 32px;
   overflow: hidden;
-  background: #143725;
+  background: #004038;
   color: #fff;
 }
 .auth-scene > img {
@@ -1884,7 +1900,7 @@ h4 {
 }
 .auth-scene h2 {
   font-family: var(--font-display);
-  color: #f1f4ee;
+  color: #eef4f5;
   font-size: 35px;
   font-weight: 600;
   line-height: 1.3;
@@ -1897,7 +1913,7 @@ h4 {
 .auth-scene p {
   max-width: 38ch;
   margin-top: 20px;
-  color: #dee8d9;
+  color: #d8e8eb;
   font-size: 16px;
 }
 .auth-scene-caption {
@@ -1905,7 +1921,7 @@ h4 {
   padding-top: 20px;
   border-top: 1px solid #ffffff45;
   font-size: 12px;
-  color: #d9e7d6;
+  color: #d6e6e9;
 }
 .qs-device {
   max-width: 1184px;
@@ -2281,16 +2297,16 @@ h4 {
   background: currentColor;
 }
 .esim-status[data-status='active'] {
-  background: #e6f1e8;
-  color: #286038;
+  background: #e4f0f2;
+  color: #005a4e;
 }
 .dark .esim-status[data-status='active'] {
-  background: #233e2c;
-  color: #b0d8b5;
+  background: #004038;
+  color: #99dfd2;
 }
 .esim-status[data-status='pending'] {
-  color: #866123;
-  background: #f4eddd;
+  color: #007365;
+  background: #e4f0f2;
 }
 .esim-card-body {
   display: grid;
@@ -2408,10 +2424,10 @@ h4 {
   font-size: 24px;
 }
 .site-shell .logout-sheet .btn-primary {
-  background: #b44036;
+  background: #007365;
 }
 .site-shell .logout-sheet .btn-primary:hover {
-  background: #96362d;
+  background: #007365;
 }
 .topup-dialog h3 {
   font-family: var(--font-sans);
@@ -2510,7 +2526,7 @@ h4 {
 .usage-row input {
   grid-column: 1/-1;
   width: 100%;
-  accent-color: #287c66;
+  accent-color: #007365;
   min-height: 24px;
   cursor: pointer;
 }
@@ -2569,7 +2585,7 @@ h4 {
 /* Shared footer and thumb navigation. */
 .site-footer {
   background: var(--departure);
-  color: #d5e2d3;
+  color: #d1e1e5;
   padding: 64px 0 28px;
 }
 .footer-top {
@@ -2578,7 +2594,7 @@ h4 {
   justify-content: space-between;
   gap: 48px;
   padding-bottom: 44px;
-  border-bottom: 1px solid #2a3b2d;
+  border-bottom: 1px solid #1a3b45;
 }
 .footer-top > div > a svg {
   height: 28px;
@@ -2586,7 +2602,7 @@ h4 {
 }
 .footer-top p {
   font-size: 14px;
-  color: #9ab09c;
+  color: #97adb8;
   max-width: 44ch;
 }
 .footer-top .footer-thesis {
@@ -2594,7 +2610,7 @@ h4 {
   font-size: 30px;
   line-height: 1.4;
   letter-spacing: -0.05em;
-  color: #eff4e9;
+  color: #eaf4f5;
   max-width: 25ch;
   margin: 28px 0 16px;
 }
@@ -2604,9 +2620,9 @@ h4 {
   gap: 18px;
   min-height: 52px;
   padding: 12px 0;
-  border-bottom: 1px solid #6c866f;
+  border-bottom: 1px solid #008e7c;
   font-size: 16px;
-  color: #e1ecdb;
+  color: #dcebee;
 }
 .footer-columns {
   display: grid;
@@ -2618,7 +2634,7 @@ h4 {
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
-  color: #819884;
+  color: #7f94a2;
   margin-bottom: 18px;
   letter-spacing: 0;
 }
@@ -2628,7 +2644,7 @@ h4 {
   gap: 9px;
   width: fit-content;
   min-height: 36px;
-  color: #c6d5c4;
+  color: #c1d4da;
   font-size: 13px;
   font-weight: 400;
 }
@@ -2642,11 +2658,11 @@ h4 {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  border-top: 1px solid #2a3b2d;
+  border-top: 1px solid #1a3b45;
   margin-top: 44px;
   padding-top: 24px;
   font-size: 12px;
-  color: #809782;
+  color: #7e93a1;
 }
 .mobile-bottom-nav {
   display: none;
@@ -2666,25 +2682,25 @@ h4 {
   background: linear-gradient(90deg, var(--color-surface), transparent 70%);
 }
 .dark .hero-search {
-  background: #202e24;
-  color: #ecf2e7;
+  background: #102e3c;
+  color: #e7f2f4;
 }
 .dark .hero-search > label {
-  color: #adbfad;
+  color: #a7bdc7;
 }
 .dark .hero-search input {
-  color: #ecf2e7;
+  color: #e7f2f4;
 }
 .dark .hero-search input::placeholder {
-  color: #a3b4a0;
+  color: #9cb2bd;
 }
 .dark .hero-search-results {
-  background: #24342a;
-  border-color: #48614d;
-  color: #e4eddf;
+  background: #13353f;
+  border-color: #465d6c;
+  color: #dfedef;
 }
 .dark .hero-search-results > a:hover {
-  background: #314634;
+  background: #244550;
 }
 
 @media (min-width: 1600px) {
@@ -2969,7 +2985,7 @@ h4 {
     right: 4px;
     min-width: 32px;
     min-height: 32px;
-    background: #f6f8f3;
+    background: #f4f8f9;
   }
   .hero-search-results {
     border-radius: 18px;
@@ -3008,7 +3024,7 @@ h4 {
     grid-template-columns: 1fr 1fr;
     gap: 18px 12px;
     padding-block: 24px;
-    border-color: #2b3d2d;
+    border-color: #1b3d47;
   }
   .hero-features > span,
   .hero-features > a {
@@ -3235,7 +3251,7 @@ h4 {
     height: 180px;
   }
   .destination-photo:after {
-    background: linear-gradient(180deg, #182a20, transparent 65%);
+    background: linear-gradient(180deg, #0f273b, transparent 65%);
   }
   .destination-photo.is-globe {
     display: none;

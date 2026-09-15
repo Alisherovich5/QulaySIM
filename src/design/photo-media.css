@@ -20,6 +20,20 @@
   background-color: #061c27;
 }
 
+/* The headline's own size, back.
+ *
+ * journey.css sets `.site-shell h1 { font-size: 42px }`, which beats every
+ * Tailwind size utility on every h1 in the app — the hero's
+ * `lg:text-[3.25rem]` has never taken effect, so the headline has been drawn
+ * at 42px where the approved design draws it at 52px. Fixed here for the hero
+ * only, in the same unlayered cascade journey.css is in. The same override is
+ * still flattening the headings on the other pages; that is a larger change
+ * than this one and is not smuggled in with it. */
+.hero-photo h1 {
+  font-size: clamp(1.75rem, 1.05rem + 2.6vw, 3.25rem);
+  line-height: 1.1;
+}
+
 .hero-art {
   position: absolute;
   inset: 0;
@@ -107,6 +121,42 @@
       rgb(4 22 29 / 0.55) 100%
     );
   }
+}
+
+/* The search box is smoked glass over the photograph, not a white card on it.
+ *
+ * A white panel sitting on the artwork is a hole punched in it — the approved
+ * design puts a dark, blurred pane there instead, so the picture reads through
+ * the control rather than stopping at it. The same treatment in both themes:
+ * the pane is dark because the photograph behind it is bright in one theme and
+ * dark in the other, and a control that changes colour with the theme while
+ * the thing behind it does not is how a hero ends up with two designs. */
+.hero-photo form {
+  border: 1px solid rgb(255 255 255 / 0.35);
+  background: rgb(6 30 39 / 0.78);
+  box-shadow: 0 20px 40px rgb(0 22 28 / 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.hero-photo form input {
+  color: #f4ffff;
+}
+
+.hero-photo form input::placeholder {
+  /* 0.76, not the design's 0.62.
+   *
+   * Measured off the rendered pixels rather than off the stylesheet: the pane
+   * is not opaque, so what the placeholder sits on is the photograph showing
+   * through it, and on the light artwork that composites to rgb(57 78 85).
+   * At 0.62 the placeholder measures 3.97:1 there — "Qayerga sayohat
+   * qilyapsiz?" is the only label this search box has, and a label that cannot
+   * be read is not one. 0.76 measures 5.09:1 on the light pane and 8.94:1 on
+   * the dark one. */
+  color: rgb(220 240 241 / 0.76);
+}
+
+.hero-photo form svg {
+  color: rgb(220 240 241 / 0.8);
 }
 
 /* ------------------------------------------------------------------ */

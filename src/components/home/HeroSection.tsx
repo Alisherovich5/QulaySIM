@@ -80,7 +80,7 @@ export default function HeroSection() {
                 measured against what is actually behind them — which is now a
                 photograph, so the scrim in HeroArt is part of that measurement
                 rather than a decoration. */}
-            <span className="text-brand-700 dark:text-accent-400">{t('home.title2')}</span>
+            <span className="text-brand-600 dark:text-accent-400">{t('home.title2')}</span>
           </h1>
           {/* The search, where the tagline used to be — the owner's actual
               instruction, second attempt. First reading put region chips here;
