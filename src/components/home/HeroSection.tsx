@@ -54,7 +54,20 @@ export default function HeroSection() {
     <section className="hero-photo relative isolate overflow-hidden">
       <HeroArt />
 
-      <div className="container-page relative z-10 grid items-center gap-10 py-10 sm:py-14 lg:min-h-[590px] lg:grid-cols-2 lg:gap-12 lg:py-24">
+      {/* Asymmetric padding, and the measurement is the reason.
+       *
+       * This was `lg:py-24` — 96px top and bottom — sized when the right column
+       * held a tall glass card with the globe in it and the left column was a
+       * headline and a search box. The card is gone and the quick links moved
+       * into the left column, so the content now ends 96px above the bottom of
+       * the photograph, and the destinations section adds another 64px of its
+       * own. 160px of empty canvas at the fold, which is what the owner saw as
+       * "the bottom is left open".
+       *
+       * The top keeps its 96: the headline needs the air, and the artwork's sky
+       * is up there anyway. The bottom closes to 40, which is the gap under the
+       * links rather than a shelf beneath them. */}
+      <div className="container-page relative z-10 grid items-center gap-10 py-10 sm:py-14 lg:min-h-[540px] lg:grid-cols-2 lg:gap-12 lg:pt-24 lg:pb-10">
         {/* Left — copy + search. min-w-0 is load-bearing: the links below are a
             grid inside a grid item, and a grid item's automatic minimum width
             lets their content size push the whole column — and the headline

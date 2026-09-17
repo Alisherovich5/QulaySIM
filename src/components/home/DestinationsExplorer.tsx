@@ -105,23 +105,40 @@ export default function DestinationsExplorer() {
           colour inside the sentence instead of by a font size. The words stay
           in the translator's order; `aria-label` reads the untouched string. */}
       <Reveal>
-        {/* The heading stands alone now, by the owner's instruction — the
-            supporting line beside it ("Hozirda o'zbekistonliklar uchun eng
-            ommabop davlatlar…") is gone. The two-column head went with it:
-            one column is a column, not a layout. `home.exploreSubtitle` is
-            left in all three locale files rather than deleted, so turning it
-            back on is one element and not a translation round. */}
-        <h2
-          id={TITLE_ID}
-          aria-label={title}
-          className="max-w-2xl font-display text-[1.75rem] font-700 leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl"
-        >
-          {before && <span>{before} </span>}
-          {count && (
-            <span className="tabular-nums text-brand-600 dark:text-accent-400">{count}</span>
-          )}
-          {after && <span> {after}</span>}
-        </h2>
+        {/* The supporting line that used to sit beside the heading is gone by
+            the owner's instruction, and that left the row two thirds empty —
+            a heading alone above a label alone above the grid. "See all" moves
+            up into it: existing content, and it belongs with the heading it
+            qualifies rather than at the foot of a list somebody has already
+            scrolled past. `home.exploreSubtitle` stays in all three locale
+            files, so turning the line back on is one element and not a
+            translation round. */}
+        <div className="flex items-end justify-between gap-6">
+          <h2
+            id={TITLE_ID}
+            aria-label={title}
+            className="max-w-2xl font-display text-[1.75rem] font-700 leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl"
+          >
+            {before && <span>{before} </span>}
+            {count && (
+              <span className="tabular-nums text-brand-600 dark:text-accent-400">{count}</span>
+            )}
+            {after && <span> {after}</span>}
+          </h2>
+
+          {/* Hidden on phones, where it would crowd the heading onto three
+              lines — the copy at the foot of the section serves them. */}
+          <Link
+            to="/destinations"
+            className="focus-ring group hidden shrink-0 items-center gap-1.5 whitespace-nowrap pb-1 text-sm font-700 text-brand-700 transition hover:text-brand-600 sm:inline-flex dark:text-accent-400 dark:hover:text-accent-300"
+          >
+            {t('home.exploreMore')}
+            <ArrowRight
+              size={17}
+              className="transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+            />
+          </Link>
+        </div>
       </Reveal>
 
       <div className="mt-8 sm:mt-10">
@@ -206,7 +223,8 @@ export default function DestinationsExplorer() {
         )}
       </div>
 
-      <div className="mt-8 flex justify-center sm:mt-10">
+      {/* Phones only: the heading row's link is hidden there. */}
+      <div className="mt-8 flex justify-center sm:hidden">
         <Button
           to="/destinations"
           variant="ghost"
