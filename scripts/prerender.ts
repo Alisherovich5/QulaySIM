@@ -37,6 +37,7 @@ import type { Plugin } from 'vite'
 import en from '../src/i18n/locales/en'
 import ru from '../src/i18n/locales/ru'
 import uz from '../src/i18n/locales/uz'
+import { DEVICE_CHECK_COPY } from '../src/i18n/locales/device-check'
 import {
   absoluteUrl,
   alternatesFor,
@@ -465,19 +466,25 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
   switch (route) {
     case '/destinations':
       return {
+        ...base,
+        title: s.destinationsTitle,
         heading: STRINGS[lang].destinations.pickTitle.replace(
           '{{word}}',
           STRINGS[lang].destinations.pickWord,
         ),
-        ...base,
-        title: s.destinationsTitle,
         description: s.destinationsDescription,
         jsonLd: [],
       }
     case '/global':
       return { ...base, title: s.globalPageTitle, description: s.globalPageDescription, jsonLd: [] }
     case '/device-check':
-      return { ...base, title: s.deviceTitle, description: s.deviceDescription, jsonLd: [] }
+      return {
+        ...base,
+        title: s.deviceTitle,
+        heading: DEVICE_CHECK_COPY[lang].dc.title,
+        description: s.deviceDescription,
+        jsonLd: [],
+      }
     case '/data-calculator':
       return {
         ...base,
@@ -528,6 +535,9 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
       return {
         ...base,
         title: s.homeTitle,
+        // The hero's two halves. The SEO title is a different sentence, written
+        // for a result listing rather than for the top of the page.
+        heading: `${STRINGS[lang].home.title1} ${STRINGS[lang].home.title2}`,
         description: s.homeDescription,
         // The storefront is about Uzbekistan: the market it is written for,
         // priced in and supported in. Destination pages each name their own.
