@@ -16,6 +16,24 @@
      never flashes the page canvas through a half-decoded image. */
   background-color: #e1f7fa;
 }
+
+/* The band has to grow with the window, or the photograph is sliced.
+ *
+ * Its height came from the copy inside it and settled at 556px, which does not
+ * change when the window gets wider — so `cover` had to throw away 23% of the
+ * artwork's height at 1440, 36% at 1728 and 42% at 1920. Anchored to the
+ * bottom, that meant a wide screen saw little but the stone wall.
+ *
+ * Tying the floor to the viewport's width keeps the crop at roughly a quarter
+ * wherever the window is: 38.6vw is the artwork's own 2.59:1 at this band. The
+ * cap stops an ultrawide monitor from turning the hero into a wall of photo,
+ * and at 1440 and below the copy is still taller than the floor, so nothing
+ * moves where most people read the page. */
+@media (min-width: 1024px) {
+  .hero-photo {
+    min-height: min(38.6vw, 760px);
+  }
+}
 :root.dark .hero-photo {
   background-color: #061c27;
 }
