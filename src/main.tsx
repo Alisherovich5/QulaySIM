@@ -9,6 +9,7 @@ import './design/travel-palette.css'
 // Last: the device-check page's exact numbers, which nothing else may outrank.
 import './design/device-check.css'
 import './design/footer.css'
+import './design/destinations.css'
 import './i18n'
 import App from './App.tsx'
 

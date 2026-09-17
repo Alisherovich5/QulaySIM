@@ -1,10 +1,10 @@
 import PriceTag from '../PriceTag'
-import { useMemo } from 'react'
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { ArrowRight, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
-import type { Country, Region } from '../../lib/types'
+import type { Country } from '../../lib/types'
 import { destinationPhoto } from '../../lib/destination-media'
 import DestinationPhotoBed from '../media/DestinationPhotoBed'
 import Flag from '../Flag'
@@ -27,30 +27,14 @@ const NO_COUNTRIES: Country[] = []
  */
 const BROWSE_LIMIT = 12
 
-const GRID = 'grid grid-cols-2 gap-2.5 min-[360px]:grid-cols-3 sm:gap-4 lg:gap-5'
+/* Three across is the design's grid at 1536. Held to two between 1024 and
+   1279: at three the card is 296px, which leaves 60px of text column once the
+   picture has its half — not enough for "Ozarbayjon" at the size the design
+   sets the name. */
+const GRID = 'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3'
 
 const TITLE_ID = 'home-destinations-title'
 
-/**
- * The count is the strongest fact in the section and was reading as an ordinary
- * heading. Setting it at display scale means finding it inside the heading
- * string rather than storing it apart, so the words around it stay exactly
- * where the translator put them and every language keeps its own order:
- * "200+ countries", "200 dan ortiq mamlakatlar", "Более 200 стран".
- */
-const COUNT_IN_TITLE = /\d+(?:[ .,\u00A0\u202F]\d{3})*\+?/
-
-function splitOnCount(title: string) {
-  const match = COUNT_IN_TITLE.exec(title)
-  // A heading with no numeral in it still has to render, so it falls back to
-  // the whole string set at the ordinary size.
-  if (!match) return { before: title, count: '', after: '' }
-  return {
-    before: title.slice(0, match.index).trim(),
-    count: match[0],
-    after: title.slice(match.index + match[0].length).trim(),
-  }
-}
 
 const CARD_SHAPE =
   'min-h-[122px] rounded-2xl border border-line sm:min-h-[176px] sm:rounded-3xl lg:min-h-[188px] dark:border-white/10'
@@ -73,25 +57,30 @@ export default function DestinationsExplorer() {
   // Region names are admin-owned catalogue data and arrive in English, which is
   // wrong on an Uzbek page. The slug is the stable key; the API's own name is
   // the fallback so a region added later still reads as a name, not a raw key.
-  const regionLabel = (r: Region) => t(`region.${r.slug}`, { defaultValue: r.name })
 
-  const { shown, promoted } = useMemo(() => {
+  const shown = useMemo(() => {
     const popular = countries.filter((c) => c.is_popular)
     // No cap here: the promoted list is curated in the admin, so trimming it to
     // a round number silently dropped whichever destination sorted last. The
     // API already returns it in the admin's own order, so it is not re-sorted
     // either — that order is the business's ranking, not an accident.
-    if (popular.length > 0) return { shown: popular, promoted: true }
+    if (popular.length > 0) return popular
     // A catalogue with nothing promoted still shows what it has, capped so a
     // whole continent of cards does not bury the rest of the landing page.
-    return { shown: countries.slice(0, BROWSE_LIMIT), promoted: false }
+    return countries.slice(0, BROWSE_LIMIT)
   }, [countries])
 
-  // Only the promoted list may claim to be the popular one.
-  const gridTitle = promoted ? t('home.popularTitle') : t('destinations.allDestinations')
-
-  const title = t('home.exploreTitle')
-  const { before, count, after } = splitOnCount(title)
+  /* The filter is over what the section already shows, not a second request.
+     The promoted list is nine cards; asking the API for a substring of nine
+     rows it has already sent is a round trip for nothing, and it would make
+     every keystroke depend on the network. Typing past the promoted list is
+     what the destinations page is for, which is where "see all" goes. */
+  const [query, setQuery] = useState('')
+  const visible = useMemo(() => {
+    const needle = query.trim().toLocaleLowerCase()
+    if (!needle) return shown
+    return shown.filter((c) => c.name.toLocaleLowerCase().includes(needle))
+  }, [shown, query])
 
   return (
     <section className="container-page py-12 sm:py-16" aria-labelledby={TITLE_ID}>
@@ -113,40 +102,39 @@ export default function DestinationsExplorer() {
             scrolled past. `home.exploreSubtitle` stays in all three locale
             files, so turning the line back on is one element and not a
             translation round. */}
-        <div className="flex items-end justify-between gap-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
           <h2
             id={TITLE_ID}
-            aria-label={title}
-            className="max-w-2xl font-display text-[1.75rem] font-700 leading-[1.1] tracking-tight text-ink sm:text-4xl lg:text-5xl"
+            className="font-display text-[26px] font-800 leading-[1.12] tracking-[-0.02em] text-[#06294a] sm:text-[34px] lg:text-[40px] dark:text-ink"
           >
-            {before && <span>{before} </span>}
-            {count && (
-              <span className="tabular-nums text-brand-600 dark:text-accent-400">{count}</span>
-            )}
-            {after && <span> {after}</span>}
+            {t('home.exploreHeading')}
           </h2>
 
-          {/* Hidden on phones, where it would crowd the heading onto three
-              lines — the copy at the foot of the section serves them. */}
-          <Link
-            to="/destinations"
-            className="focus-ring group hidden shrink-0 items-center gap-1.5 whitespace-nowrap pb-1 text-sm font-700 text-brand-700 transition hover:text-brand-600 sm:inline-flex dark:text-accent-400 dark:hover:text-accent-300"
-          >
-            {t('home.exploreMore')}
-            <ArrowRight
-              size={17}
-              className="transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+          {/* Filters the nine cards below rather than navigating: the section is
+              a shortlist, and sending somebody to another page to find out it
+              has no Peru is a worse answer than showing them it has none. */}
+          <div className="relative w-full shrink-0 sm:w-[340px] lg:w-[392px]">
+            <Search
+              size={19}
+              aria-hidden
+              className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-slate-soft"
             />
-          </Link>
+            <label htmlFor="home-dest-search" className="sr-only">
+              {t('home.searchCountry')}
+            </label>
+            <input
+              id="home-dest-search"
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={t('home.searchCountry')}
+              className="focus-ring h-[54px] w-full rounded-[14px] border border-line bg-surface pl-[52px] pr-4 text-[16px] text-ink placeholder:text-slate-soft"
+            />
+          </div>
         </div>
       </Reveal>
 
       <div className="mt-8 sm:mt-10">
-        <div className="mb-3 flex items-center gap-2 sm:mb-4">
-          <span aria-hidden className="h-4 w-1 rounded-full bg-accent-400" />
-          <p className="text-sm font-700 text-ink">{gridTitle}</p>
-        </div>
-
         {loading ? (
           // Placeholders rather than the empty-state copy: an empty catalogue
           // and a catalogue still in flight are not the same thing to a reader.
@@ -158,73 +146,60 @@ export default function DestinationsExplorer() {
               />
             ))}
           </div>
-        ) : shown.length === 0 ? (
+        ) : visible.length === 0 ? (
           <Card className="p-8 text-center text-slate-soft sm:p-10">{t('home.exploreEmpty')}</Card>
         ) : (
           <div className={GRID}>
-            {shown.map((c, i) => (
+            {visible.map((c, i) => (
               // The stagger is capped: the list is no longer eight items long,
               // and a card that waits half a second reads as a slow page.
               <Reveal key={c.id} delay={Math.min(i, 5) * 45} className="h-full">
-                <Link
-                  to={`/destinations/${c.slug}`}
-                  className={`${CARD_SHAPE} group relative isolate flex h-full flex-col justify-between overflow-hidden bg-surface p-2.5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:bg-brand-50/45 hover:shadow-xl hover:shadow-brand-900/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas active:translate-y-0 active:scale-[0.99] sm:p-4 lg:p-5 dark:shadow-black/20 dark:hover:border-accent-400/45 dark:hover:bg-white/[0.04] dark:hover:shadow-black/35 dark:focus-visible:ring-accent-400`}
-                >
-                  {/* The photograph of the place, where we have one, and the
-                      abstract wash where we do not. The wash was standing in
-                      for a picture on every card; on a page whose whole job is
-                      "where do you want to go", a real photograph of Istanbul
-                      answers the question and a mint-coloured circle does not.
-                      Lazy-loaded and scrimmed — see DestinationPhotoBed. */}
-                  {destinationPhoto(c.slug) ? (
-                    <DestinationPhotoBed slug={c.slug} />
-                  ) : (
-                    <span
-                      aria-hidden
-                      className={`absolute -right-5 -top-5 -z-10 h-24 w-24 rounded-full opacity-80 transition duration-500 group-hover:scale-125 group-hover:opacity-100 sm:-right-7 sm:-top-7 sm:h-36 sm:w-36 ${
-                        i % 3 === 1
-                          ? 'bg-[radial-gradient(circle,rgba(241,217,138,.30)_0%,transparent_68%)]'
-                          : 'bg-[radial-gradient(circle,rgba(52,227,176,.28)_0%,transparent_68%)]'
-                      }`}
-                    />
-                  )}
-                  <Flag
-                    iso2={c.iso2}
-                    alt=""
-                    className="h-7 w-10 rounded-md object-cover shadow-sm ring-1 ring-line transition duration-300 group-hover:ring-brand-200 sm:h-9 sm:w-14 sm:rounded-lg lg:h-10 lg:w-16 dark:ring-white/15"
-                  />
+                {/* A ticket: flag, name and picture above the perforation, the
+                    price and the button on the stub below it. The shape — the
+                    notch bitten out of each edge — is cut in destinations.css,
+                    with the reason it is a mask and not two circles. */}
+                <article className={`dest-card h-full ${i === 0 ? 'is-featured' : ''}`}>
+                  <div className="dest-top">
+                    <Flag iso2={c.iso2} alt="" className="dest-flag" />
+                    <p className="dest-name">{c.name}</p>
 
-                  <div className="mt-2.5 sm:mt-4">
-                    {/* The region is the first thing to go at three-up: the flag
-                        and the name already identify the destination. */}
-                    {c.region && (
-                      <p className="hidden truncate text-[11px] font-600 text-slate-soft sm:block">
-                        {regionLabel(c.region)}
-                      </p>
+                    {/* The picture of the place, where there is one. No stand-in
+                        where there is not: a generic travel image under a
+                        country name is a claim about somewhere the visitor is
+                        about to buy data for. */}
+                    {destinationPhoto(c.slug) && (
+                      <span className="dest-art" aria-hidden>
+                        <DestinationPhotoBed slug={c.slug} />
+                      </span>
                     )}
-                    <p className="truncate font-display text-[13px] font-700 leading-tight text-ink sm:mt-0.5 sm:text-lg lg:text-xl">
-                      {c.name}
-                    </p>
                   </div>
 
-                  <div className="mt-2.5 flex items-end justify-between gap-2 border-t border-line pt-2 sm:mt-4 sm:pt-3.5">
+                  <hr className="dest-split" />
+
+                  <div className="dest-foot">
                     <span className="min-w-0">
-                      <small className="hidden text-[11px] text-slate-soft sm:block">{t('common.from')}</small>
-                      <PriceTag usd={c.starting_price} size="xs" className="text-brand-600 dark:text-accent-300" />
+                      <small className="dest-from block">{t('home.startingFrom')}</small>
+                      <PriceTag usd={c.starting_price} size="xs" className="dest-price" />
                     </span>
-                    <span className="hidden h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600 transition duration-200 group-hover:bg-brand-600 group-hover:text-white sm:grid dark:bg-white/10 dark:text-accent-300 dark:group-hover:bg-accent-400 dark:group-hover:text-brand-950">
-                      <ArrowUpRight size={17} />
-                    </span>
+                    <Link
+                      to={`/destinations/${c.slug}`}
+                      className="dest-cta dest-hit focus-ring"
+                      aria-label={`${c.name} — ${t('home.choose')}`}
+                    >
+                      {t('home.choose')}
+                      <ArrowRight size={17} aria-hidden />
+                    </Link>
                   </div>
-                </Link>
+                </article>
               </Reveal>
             ))}
           </div>
         )}
       </div>
 
-      {/* Phones only: the heading row's link is hidden there. */}
-      <div className="mt-8 flex justify-center sm:hidden">
+      {/* Centred under the grid, at every width: in the design it closes the
+          section rather than sitting beside the heading that opens it. */}
+      <div className="mt-8 flex justify-center sm:mt-10">
         <Button
           to="/destinations"
           variant="ghost"

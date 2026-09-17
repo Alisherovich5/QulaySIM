@@ -42,6 +42,10 @@ const en = {
     currencySwitchTo: 'Switch currency to {{code}}',
   },
   home: {
+    exploreHeading: 'Next stop — somewhere new',
+    searchCountry: 'Search for a country...',
+    startingFrom: 'Starting price',
+    choose: 'Choose',
     quickDestinations: 'Quick destinations',
     badge: 'Trusted by travellers in 200+ destinations',
     title1: 'A solution to the connectivity problem many travellers face —',

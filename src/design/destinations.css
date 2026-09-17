@@ -1,0 +1,276 @@
+/* The destination cards, to the approved design.
+ *
+ * Its own file, loaded last, for the reason travel-palette.css states: the
+ * earlier stylesheets are plain CSS rather than Tailwind layers and outrank any
+ * utility on the element.
+ *
+ * The card is a ticket: a top half with the flag, the name and the picture, a
+ * perforation across the middle with a notch bitten out of each edge, and a
+ * stub underneath carrying the price and the button.
+ *
+ * The notch is cut with a mask rather than drawn with two circles in the page
+ * colour, because the page colour changes — dark theme, and the section sits on
+ * a tinted band — and a circle painted the wrong colour is a visible bump. A
+ * mask removes the pixels, so whatever is behind shows through.
+ *
+ * That also removes any border, which is why the outline is four 1px
+ * `drop-shadow`s instead: a filter follows the masked silhouette, so the line
+ * bends around the notches. A `border` would be clipped straight through them.
+ */
+
+.dest-card {
+  --notch: 11px;
+  --split: 148px;
+  position: relative;
+  display: block;
+  background: var(--color-surface);
+  border-radius: 18px;
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 var(--split), transparent 96%, #000 100%),
+    radial-gradient(circle var(--notch) at 100% var(--split), transparent 96%, #000 100%);
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle var(--notch) at 0 var(--split), transparent 96%, #000 100%),
+    radial-gradient(circle var(--notch) at 100% var(--split), transparent 96%, #000 100%);
+  mask-composite: intersect;
+  filter:
+    drop-shadow(0 1px 0 #e3eef0) drop-shadow(0 -1px 0 #e3eef0) drop-shadow(1px 0 0 #e3eef0)
+    drop-shadow(-1px 0 0 #e3eef0) drop-shadow(0 10px 22px rgb(16 40 62 / 0.06));
+  transition:
+    filter 0.25s ease,
+    transform 0.25s ease;
+}
+
+.dest-card:hover {
+  transform: translateY(-2px);
+  filter:
+    drop-shadow(0 1px 0 #7fcfbe) drop-shadow(0 -1px 0 #7fcfbe) drop-shadow(1px 0 0 #7fcfbe)
+    drop-shadow(-1px 0 0 #7fcfbe) drop-shadow(0 16px 30px rgb(16 40 62 / 0.10));
+}
+
+/* The design shows the first card carrying the accent, which is what tells a
+   reader the cards are choosable rather than just listed. */
+.dest-card.is-featured {
+  background: #f7fefb;
+  filter:
+    drop-shadow(0 1px 0 #2fa88e) drop-shadow(0 -1px 0 #2fa88e) drop-shadow(1px 0 0 #2fa88e)
+    drop-shadow(-1px 0 0 #2fa88e) drop-shadow(0 10px 22px rgb(16 40 62 / 0.06));
+}
+
+/* The whole ticket is the link. One interactive element, not a link wrapping a
+   button — nesting those is invalid, and a screen reader reads the inner one
+   twice. The button is the link; this stretches its hit area over the card. */
+.dest-card .dest-hit::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+}
+
+/* The right padding reserves the picture's column. Without it the name is laid
+   out across the full card and simply runs underneath the artwork — which is
+   invisible until a long one arrives: "Ozarbayjon" and "Dubay (BAA)" were both
+   cut in half at three columns. `min()` because the picture is a percentage
+   that stops growing at 226px. */
+.dest-top {
+  position: relative;
+  min-height: var(--split);
+  padding: 22px calc(min(52%, 226px) + 10px) 0 22px;
+}
+
+.dest-flag {
+  width: 56px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgb(16 40 62 / 0.14);
+}
+
+/* `.dest-card` in the selector, not `.dest-name` alone: the shared stylesheets
+   size every `p` inside the shell and a single class loses to them. */
+.dest-card .dest-name {
+  margin-top: 16px;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #06294a;
+}
+
+/* The picture sits in the top half's right side and is allowed to run to the
+   card's edge: in the design it is an object on the card, not a panel with a
+   frame of its own. */
+.dest-art {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 52%;
+  max-width: 226px;
+  pointer-events: none;
+}
+
+/* `.photo-bed` is built to lie behind a card — absolute, inset 0, z-index -1.
+   Here the picture is an object in the layout with a size of its own, so the
+   bed is put back into the flow. Rounded on the inner corner only: in the
+   design the artwork runs off the card's edge rather than sitting in a frame. */
+.dest-art .photo-bed {
+  position: static;
+  z-index: 0;
+  display: block;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px 0 0 0;
+  overflow: hidden;
+}
+
+/* The bed's scrim fades the picture into the card because there the text sits
+   on top of it. Here the picture has a column of its own and the text never
+   crosses it, so the scrim only greys the photograph out. A soft fade on the
+   left edge alone keeps the join from being a hard vertical line. */
+.dest-art .photo-bed::after {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    color-mix(in srgb, var(--color-surface) 55%, transparent) 26%,
+    transparent 62%
+  );
+}
+
+.dest-art .photo-bed picture,
+.dest-art .photo-bed img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The perforation. Dashed, and the same colour as the outline so the notch
+   reads as the end of this line rather than a dent in the card. */
+.dest-split {
+  margin: 0 22px;
+  border: 0;
+  border-top: 1.5px dashed #cfdfe3;
+}
+
+.dest-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 22px 20px;
+}
+
+/* One line: wrapped, it pushes the price down and the foot rows stop agreeing
+   from card to card. */
+.dest-card .dest-from {
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: #6b8299;
+}
+
+.dest-card .dest-price {
+  margin-top: 4px;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #06294a;
+}
+
+.dest-card .dest-price small {
+  margin-left: 6px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #8da0b3;
+}
+
+.dest-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 10px;
+  background: #0e8675;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.dest-card:hover .dest-cta {
+  background: #0b6f61;
+}
+
+/* --- Dark theme ---------------------------------------------------------- */
+
+:root.dark .dest-card {
+  background: var(--color-surface);
+  filter:
+    drop-shadow(0 1px 0 rgb(255 255 255 / 0.1)) drop-shadow(0 -1px 0 rgb(255 255 255 / 0.1))
+    drop-shadow(1px 0 0 rgb(255 255 255 / 0.1)) drop-shadow(-1px 0 0 rgb(255 255 255 / 0.1));
+}
+:root.dark .dest-card.is-featured {
+  background: rgb(14 134 117 / 0.08);
+}
+:root.dark .dest-name,
+:root.dark .dest-price {
+  color: var(--color-ink);
+}
+:root.dark .dest-from,
+:root.dark .dest-card .dest-price small {
+  color: var(--color-slate-soft);
+}
+:root.dark .dest-split {
+  border-top-color: var(--color-line);
+}
+
+/* --- Narrow screens ------------------------------------------------------ */
+
+@media (max-width: 1279px) {
+  .dest-card {
+    --split: 128px;
+  }
+  .dest-name {
+    font-size: 25px;
+  }
+  .dest-price {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 639px) {
+  .dest-card {
+    --split: 118px;
+  }
+  .dest-top {
+    /* Keeps the reserve the base rule sets — a plain `18px` on the right puts
+       the name back under the picture, which is what it looked like here. */
+    padding: 18px calc(min(52%, 226px) + 8px) 0 18px;
+  }
+  .dest-name {
+    font-size: 22px;
+    margin-top: 12px;
+  }
+  .dest-flag {
+    width: 48px;
+    height: 34px;
+  }
+  .dest-split {
+    margin: 0 18px;
+  }
+  .dest-foot {
+    padding: 14px 18px 18px;
+  }
+  .dest-price {
+    font-size: 24px;
+  }
+  .dest-cta {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 15px;
+  }
+}
