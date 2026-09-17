@@ -6,6 +6,8 @@ import './design/navigation.css'
 import './design/photo-media.css'
 /* Last: it is the layer that decides what colour the site is. */
 import './design/travel-palette.css'
+// Last: the device-check page's exact numbers, which nothing else may outrank.
+import './design/device-check.css'
 import './i18n'
 import App from './App.tsx'
 

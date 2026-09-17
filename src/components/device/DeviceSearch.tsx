@@ -32,7 +32,16 @@ export default function DeviceSearch({
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [cursor, setCursor] = useState(0)
-  const [brand, setBrand] = useState<string | null>(null)
+  /* Apple carries the highlight on arrival, as the design shows it: the tile
+     has the green border and the mint fill before anything is clicked.
+     
+     The model list under the grid is NOT opened by it, and that is deliberate
+     rather than an oversight — the design's first paint shows the selection and
+     no list, and a list nobody asked for would push the answer below the fold
+     on the very screen whose job is to answer. It opens on a click, which is
+     what `browsed` records. */
+  const [brand, setBrand] = useState<string | null>('Apple')
+  const [browsed, setBrowsed] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const results = useMemo(() => findDevices(query), [query])
@@ -85,17 +94,17 @@ export default function DeviceSearch({
   )
 
   return (
-    <section className="card elev-1 mt-5 p-4 sm:mt-7 sm:p-6 lg:p-7">
+    <section className="dc-panel relative z-10 mt-6 rounded-[18px] border border-line bg-surface p-4 shadow-[0_18px_50px_-24px_rgba(16,40,62,0.28)] sm:mt-8 sm:p-6 lg:mt-[22px]">
       <label htmlFor="dc-search" className="sr-only">
         {t('device.searchLabel')}
       </label>
 
-      <div className="relative flex flex-col gap-2.5 sm:flex-row sm:gap-3">
+      <div className="relative flex flex-col gap-2.5 sm:flex-row sm:gap-3 lg:gap-[19px]">
         <div className="relative flex-1">
           <Search
             size={19}
             aria-hidden
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-soft"
+            className="pointer-events-none absolute left-4 top-1/2 h-[19px] w-[19px] -translate-y-1/2 text-slate-soft lg:left-[22px] lg:h-[26px] lg:w-[26px]"
           />
           <input
             id="dc-search"
@@ -118,7 +127,7 @@ export default function DeviceSearch({
             onBlur={() => setOpen(false)}
             onKeyDown={onKeyDown}
             placeholder={t('dc.placeholder')}
-            className="focus-ring h-14 w-full rounded-2xl bg-canvas pl-12 pr-11 text-[15px] font-500 text-ink ring-1 ring-line placeholder:font-400 placeholder:text-slate-soft sm:text-base"
+            className="focus-ring h-14 w-full rounded-[11px] bg-canvas pl-12 pr-11 text-[15px] font-500 text-ink ring-1 ring-line placeholder:font-400 placeholder:text-slate-soft sm:text-base lg:h-[71px] lg:pl-[58px] lg:text-[21px] lg:placeholder:text-[21px]"
           />
           {query && (
             <button
@@ -139,7 +148,7 @@ export default function DeviceSearch({
         <button
           type="button"
           onClick={submit}
-          className="focus-ring group inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-brand-600 px-7 text-[15px] font-700 text-white transition duration-200 hover:bg-brand-700 active:scale-[0.99] sm:text-base"
+          className="focus-ring group inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-[11px] bg-[#0E8675] px-7 text-[15px] font-600 text-white transition duration-200 hover:bg-brand-700 active:scale-[0.99] sm:text-base lg:h-[71px] lg:w-[221px] lg:gap-2.5 lg:px-0 lg:text-[22px]"
         >
           {t('dc.check')}
           <ArrowRight
@@ -184,7 +193,7 @@ export default function DeviceSearch({
       <div
         role="group"
         aria-label={t('dc.brandsLabel')}
-        className="mt-4 grid grid-cols-3 gap-2.5 sm:mt-5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5"
+        className="dc-grid mt-4 grid grid-cols-2 gap-2.5 sm:mt-5 sm:grid-cols-3 sm:gap-3 lg:mt-[27px] lg:grid-cols-5"
       >
         {DEVICE_BRANDS.map((entry) => (
           <BrandTile
@@ -193,12 +202,15 @@ export default function DeviceSearch({
             selected={brand === entry.brand}
             supported={entry.supported}
             total={entry.total}
-            onToggle={() => setBrand(brand === entry.brand ? null : entry.brand)}
+            onToggle={() => {
+              setBrowsed(true)
+              setBrand(brand === entry.brand && browsed ? null : entry.brand)
+            }}
           />
         ))}
       </div>
 
-      {brand && (
+      {brand && browsed && (
         <div className={`mt-3 rounded-2xl bg-canvas p-2 ring-1 ring-line ${REVEAL}`}>
           <p className="px-2 py-1.5 text-[11.5px] font-600 leading-tight text-slate-soft">
             {t('device.brandStat', {
@@ -217,13 +229,13 @@ export default function DeviceSearch({
 
       {/* The way out for a model nobody can name: *#06# on the phone itself,
           which is the only method that is certain. */}
-      <div className="mt-5 flex justify-center sm:mt-6">
+      <div className="mt-5 flex justify-center sm:mt-6 lg:mt-[38px]">
         <button
           type="button"
           onClick={onCheckExactly}
-          className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-[14px] font-600 text-brand-700 transition-colors hover:text-brand-600 dark:text-accent-400 dark:hover:text-accent-300"
+          className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-[14px] font-500 text-[#06836A] transition-colors hover:text-brand-600 lg:gap-2.5 lg:text-[20px] dark:text-accent-400 dark:hover:text-accent-300"
         >
-          <HelpCircle size={17} aria-hidden />
+          <HelpCircle size={17} aria-hidden className="lg:h-[26px] lg:w-[26px]" />
           {t('dc.unknownModel')}
         </button>
       </div>

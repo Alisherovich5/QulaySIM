@@ -1,0 +1,173 @@
+/* The device-check page, to the approved design.
+ *
+ * A file of its own, loaded last, for the same reason travel-palette.css is:
+ * redesign.css and journey.css are plain stylesheets rather than Tailwind
+ * layers, so `.site-shell h1 { font-size: 42px }` beats any utility class on
+ * the element no matter how specific the utility looks. Utilities still do the
+ * responsive work below `lg`; the numbers that have to be exact at the 1536
+ * reference width live here, where nothing outranks them.
+ *
+ * Every measurement is taken off the reference image rather than estimated:
+ * the panel is 1410x583 at x=63,y=402; the search row is 71 tall with a 221
+ * button and a 19px gap; the grid is 5 x 258x107 with 16/14 gaps. Those are
+ * the numbers, and they are why the values here are not round.
+ */
+
+.dc-page {
+  --dc-shell: 1410px;
+  --dc-pad: 32px;
+}
+
+/* --- Hero ---------------------------------------------------------------- */
+
+.dc-page .dc-title {
+  font-size: 40px;
+  line-height: 1;
+  /* Near zero, not the -0.035em the rest of the site's headlines use:
+     measured, the design's first line is 636px wide and -0.035em renders it
+     589px. Tight tracking is right for a 44px heading and wrong for a 70px one. */
+  letter-spacing: -0.004em;
+  font-weight: 800;
+}
+
+.dc-page .dc-lead {
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+@media (min-width: 640px) {
+  .dc-page .dc-title {
+    font-size: 54px;
+  }
+  .dc-page .dc-lead {
+    font-size: 22px;
+  }
+}
+
+/* 1024-1279: the design's own numbers do not fit here and must not be forced.
+   At 70px the question is 636px wide and the picture starts 902px into the
+   column — which at this width lands the phone on top of "tayyormi?". The
+   headline steps down and the picture shrinks until there is room for both. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .dc-page .dc-title {
+    font-size: 58px;
+    line-height: 56px;
+  }
+  .dc-page .dc-lead {
+    font-size: 24px;
+  }
+  .dc-page .dc-heading-block {
+    max-width: 560px;
+    padding-left: 0;
+  }
+}
+
+/* 1280 and up: the reference geometry, unmodified. */
+@media (min-width: 1280px) {
+  .dc-page .dc-title {
+    /* 70px with a 64px line step, both measured. The line box is tighter than
+       the type size, which is what stops two lines of a 70px headline reading
+       as two separate sentences. */
+    font-size: 70px;
+    line-height: 64px;
+  }
+  .dc-page .dc-lead {
+    font-size: 28px;
+    line-height: 1.2;
+    margin-top: 22px;
+  }
+  /* Capped so the question breaks after "eSIM'ga", as the design does. Left to
+     run it sets on one line and stops reading as a headline — it reads as a
+     sentence that happens to be large. */
+  .dc-page .dc-heading-block {
+    /* Wide enough for the 636px first line the design sets, narrow enough
+       that the question still breaks before "tayyormi?". */
+    max-width: 700px;
+    padding-left: 45px;
+  }
+}
+
+/* --- Panel --------------------------------------------------------------- */
+
+@media (min-width: 1280px) {
+  /* The hero sits 23px higher and the panel 27px lower than the shared page
+     rhythm puts them: measured against the design, which gives the question
+     more air above it and the picture room to overlap the panel below. */
+  .dc-page .dc-hero {
+    padding-top: 55px;
+  }
+  .dc-page .dc-panel {
+    margin-top: 49px;
+    padding: var(--dc-pad);
+    padding-bottom: 23px;
+  }
+  .dc-page .dc-grid {
+    /* 258px columns are what 1346 of inner width divides into at a 16px gap;
+       stated as a fraction so the row still fills an odd viewport exactly. */
+    gap: 14px 16px;
+  }
+}
+
+/* --- The header, at rest ------------------------------------------------- */
+
+/* The site already has this pill — navigation.css draws it the moment the page
+ * scrolls, through `[data-detached]`. The design shows it at rest, on this page,
+ * with wider margins than the scrolled one uses: 48px each side at 1536 rather
+ * than the 24px cap, and 16px from the top.
+ *
+ * Hooked to a class the page puts on <html> rather than edited into
+ * navigation.css, for two reasons. The header is shared by every page, and only
+ * this one has been designed against a reference — a change there would move
+ * eleven pages nobody has looked at. And navigation.css is being worked on
+ * elsewhere; a page-scoped rule cannot collide with that.
+ */
+.dc-route .site-header {
+  top: 16px;
+  margin-inline: clamp(12px, 3.125vw, 48px);
+  border-radius: 20px;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  box-shadow: 0 10px 34px rgb(13 62 70 / 0.08);
+}
+
+/* The bottom border belongs to a bar that spans the window. A detached pill
+   has four sides, and keeping the fifth line draws a rule across the page. */
+.dc-route .site-header {
+  border-bottom-color: var(--color-line);
+}
+
+@media (max-width: 640px) {
+  .dc-route .site-header {
+    top: 8px;
+    border-radius: 16px;
+  }
+}
+
+/* The three actions on the right, at the size the design draws them.
+ *
+ * 48px squares with one hairline each, rather than the 40px pair plus a
+ * name-carrying pill the header uses elsewhere. Page-scoped for the same reason
+ * as the pill above: this is the only page drawn against a reference.
+ *
+ * What they are is not up for redesign. The design shows an envelope with a
+ * count on the first one; this shop has no inbox, and the badge-carrying action
+ * it does have is the cart. Inventing a messages page to match a picture would
+ * be inventing a feature, so the cart keeps its own icon and its own count.
+ */
+@media (min-width: 1280px) {
+  .dc-route .site-header a[aria-label='Cart'],
+  .dc-route .site-header button[aria-label='Log out'],
+  .dc-route .site-header a[href='/account'] {
+    height: 48px;
+    width: 48px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+  }
+  /* The name beside the avatar is what makes that one a pill; without it the
+     three read as one set. */
+  .dc-route .site-header a[href='/account'] > span {
+    display: none;
+  }
+}

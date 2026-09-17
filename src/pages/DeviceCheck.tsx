@@ -44,6 +44,15 @@ export default function DeviceCheck() {
   const [unknownModel, setUnknownModel] = useState<string | null>(null)
   const [manual, setManual] = useState(false)
 
+  /* The design draws the header as a floating pill from the first paint, not
+     only once the page has scrolled. The class goes on <html> because the
+     header is rendered by the layout, above this page in the tree — and it is
+     removed on the way out, so no other route inherits it. */
+  useEffect(() => {
+    document.documentElement.classList.add('dc-route')
+    return () => document.documentElement.classList.remove('dc-route')
+  }, [])
+
   const verdictRef = useRef<HTMLDivElement>(null)
   const manualRef = useRef<HTMLDivElement>(null)
 
@@ -100,50 +109,60 @@ export default function DeviceCheck() {
   }, [])
 
   return (
-    <div className="qs-page qs-device container-page">
+    /* Deliberately NOT `.qs-page .qs-device .container-page`.
+     *
+     * Those three carry the previous layout — a 1184px cap, a 42px headline, a
+     * 700px header — set in journey.css and redesign.css, and they win over the
+     * utilities here by load order. The approved design is a 1410px column (63px
+     * from each edge at 1536) with a 70px headline, so the page states its own
+     * geometry instead of fighting rules written for the old one. Nothing else
+     * on the site reads these classes, so no other page moves.
+     *
+     * 1474 = the 1410px column plus its own 32px padding, which is why the cap
+     * is not the round number: at 1536 it centres to exactly the 63px margin
+     * the design has, and below that the padding keeps a gutter instead of
+     * letting the panel touch the edge. */
+    /* `overflow-x-clip`, not `hidden`: the glow behind the phone is a 230px
+     * circle centred on the picture and it reaches past the right edge on a
+     * tablet. Clip trims it without making this a scroll container, so the
+     * phone can still hang over the panel below — which `hidden` would cut. */
+    <div className="dc-page mx-auto w-full max-w-[1474px] overflow-x-clip px-4 pb-20 pt-4 sm:px-8 sm:pt-6">
       <Seo title={t('seo.deviceTitle')} description={t('seo.deviceDescription')} />
 
       {/* The question, and the object the question is about.
        *
-       * The back link and the "QURILMA TEKSHIRUVI" eyebrow above the headline
-       * are gone to the approved design. The navigation already says where the
-       * visitor is — its own tab is underlined — and an eyebrow repeating the
-       * page title above the page title is a label on a label. */}
-      {/* `relative`, and the phone inside it is absolutely placed.
-       *
-       * In the grid it was a 280px-tall row item, so the header was as tall as
-       * the picture and the two lines of type floated in the middle of it with
-       * 150px of nothing above and below. Out of the flow, the header is as
-       * tall as its text and the phone hangs beside it, which is the
-       * proportion the design has. */}
-      <header className="relative pt-1 sm:min-h-[210px] sm:pt-3 lg:min-h-[268px]">
-        <div className="max-w-2xl lg:max-w-[560px]">
-          {/* Capped so "tayyormi?" takes its own line, as the design does. Left
-              to run, the question sets on one 600px line and stops reading as a
-              headline — it reads as a sentence that happens to be large. */}
-          <h1 className="font-display text-[28px] font-800 leading-[1.08] tracking-[-0.03em] text-ink min-[360px]:text-[32px] sm:text-[44px] lg:text-[52px]">
+       * `relative`, and the phone inside it is absolutely placed: in the flow it
+       * was a row item as tall as the picture, so two lines of type floated in
+       * the middle of 280px of nothing. Out of the flow, the header is as tall
+       * as its text and the phone hangs beside it — the design's proportion. */}
+      <header className="dc-hero relative pt-6 sm:pt-10">
+        {/* 45px in from the shell edge at desktop, which is x=108 at 1536 —
+            the design insets the sentence from the panel below it. */}
+        <div className="dc-heading-block relative z-10 max-w-2xl">
+          <h1 className="dc-title font-display text-ink">
             {t('dc.title')}
           </h1>
-          <p className="mt-2 text-[14px] leading-[1.5] text-slate-soft sm:mt-3 sm:text-[18px] sm:leading-[1.6]">
+          <p className="dc-lead mt-3 text-slate-soft">
             {t('dc.lead')}
           </p>
         </div>
 
-        {/* A phone, at the angle the render was made at, on a green wash that
-            is the page's own accent rather than a box the picture brought with
-            it — the file is a cut-out with an alpha channel for exactly that.
-            `priority`: it is the largest thing above the fold here. */}
-        <div className="pointer-events-none absolute -top-1 right-0 hidden sm:block lg:top-0 lg:right-6">
+        {/* A phone at the angle the render was made at, on the page's own green
+            wash rather than a box the picture brought with it — the file is a
+            cut-out with an alpha channel for exactly that.
+            Its foot is deliberately behind the panel below: the design overlaps
+            them, which is what stops the picture reading as a separate tile. */}
+        <div className="pointer-events-none absolute right-0 top-2 hidden sm:block lg:top-[-4px] xl:right-[253px] xl:top-[-17px]">
           <span
             aria-hidden
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(52,227,176,0.30)_0%,transparent_68%)] blur-xl lg:h-[250px] lg:w-[250px]"
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[230px] w-[230px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(52,227,176,0.26)_0%,transparent_68%)] blur-xl xl:h-[420px] xl:w-[420px]"
           />
           <Photo
             name="device-esim"
             alt=""
-            sizes="(min-width: 1024px) 175px, 130px"
+            sizes="(min-width: 1280px) 290px, (min-width: 1024px) 210px, 150px"
             priority
-            className="relative w-[130px] rotate-[8deg] drop-shadow-[0_24px_38px_rgba(9,46,40,0.22)] lg:w-[175px]"
+            className="relative w-[150px] rotate-[8deg] drop-shadow-[0_28px_44px_rgba(9,46,40,0.20)] lg:w-[210px] xl:w-[290px]"
           />
         </div>
       </header>
