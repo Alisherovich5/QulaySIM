@@ -21,12 +21,15 @@
 /* --- Hero ---------------------------------------------------------------- */
 
 .dc-page .dc-title {
+  /* `text-wrap: balance` is set on every h1 by redesign.css and journey.css,
+     and it is the wrong rule for this one: balancing splits the question into
+     "Telefoningiz" and the rest, where the design fills the first line and
+     drops only "tayyormi?". `wrap`, not `normal` — `normal` is not one of this
+     property's values and a browser drops the whole declaration. */
+  text-wrap: wrap;
   font-size: 40px;
   line-height: 1;
-  /* Near zero, not the -0.035em the rest of the site's headlines use:
-     measured, the design's first line is 636px wide and -0.035em renders it
-     589px. Tight tracking is right for a 44px heading and wrong for a 70px one. */
-  letter-spacing: -0.004em;
+  letter-spacing: -0.02em;
   font-weight: 800;
 }
 
@@ -70,6 +73,11 @@
        as two separate sentences. */
     font-size: 70px;
     line-height: 64px;
+    /* Measured, not chosen: at this size Manrope sets "Telefoningiz eSIM'ga"
+       707px wide with the tracking the rest of the site uses, and the design
+       has that line at 636px. -0.055em renders it 635px, which is what puts
+       the break after "eSIM'ga" rather than after the first word. */
+    letter-spacing: -0.055em;
   }
   .dc-page .dc-lead {
     font-size: 28px;

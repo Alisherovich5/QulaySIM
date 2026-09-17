@@ -160,9 +160,9 @@ export default function DeviceCheck() {
           <Photo
             name="device-esim"
             alt=""
-            sizes="(min-width: 1280px) 290px, (min-width: 1024px) 210px, 150px"
+            sizes="(min-width: 1280px) 302px, (min-width: 1024px) 210px, 150px"
             priority
-            className="relative w-[150px] rotate-[8deg] drop-shadow-[0_28px_44px_rgba(9,46,40,0.20)] lg:w-[210px] xl:w-[290px]"
+            className="relative w-[150px] rotate-[8deg] drop-shadow-[0_28px_44px_rgba(9,46,40,0.20)] lg:w-[210px] xl:w-[302px]"
           />
         </div>
       </header>
