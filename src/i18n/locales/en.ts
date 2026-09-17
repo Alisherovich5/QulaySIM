@@ -701,6 +701,7 @@ const en = {
   // Titles stay under ~50 characters because " | QulaySIM" is added to them and
   // Google truncates the pair at roughly 60.
   seo: {
+    prerenderedPlans: 'Plans',
     globalPageTitle: 'Global eSIM — one plan, many countries',
     globalPageDescription:
       'Buy once and use it in every country on your route. Coverage list and prices on the page.',

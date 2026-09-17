@@ -1,3 +1,4 @@
+import './world-picker.css'
 import { useMemo, useState } from 'react'
 import { ArrowRight, BarChart3, ChevronRight, Globe, Map as MapIcon, Minus, Plus, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'

@@ -229,3 +229,39 @@ export function destinationListLd(
     })),
   }
 }
+
+/**
+ * The install guide, as steps a machine can follow.
+ *
+ * Google retired the HowTo rich result, which is the usual reason given for
+ * dropping the markup — and the wrong one here. The audience that matters for
+ * this page is an assistant being asked "how do I install an eSIM on iPhone",
+ * and an assistant reading the page benefits from the steps being named as
+ * steps rather than inferred from a heading and four paragraphs. It costs a
+ * few hundred bytes on one page.
+ *
+ * The numbering is stripped: the copy reads "1. Settings → Mobile data" because
+ * it is printed under a screenshot, and a `HowToStep` that repeats its own
+ * position is describing the list rather than the action.
+ */
+export function howToLd(
+  name: string,
+  steps: string[],
+  { totalTime, description }: { totalTime?: string; description?: string } = {},
+): Record<string, unknown> | null {
+  const clean = steps.map((s) => s.replace(/^\s*\d+[.)]\s*/, '').trim()).filter(Boolean)
+  if (clean.length < 2) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name,
+    ...(description ? { description } : {}),
+    ...(totalTime ? { totalTime } : {}),
+    step: clean.map((text, index) => ({
+      '@type': 'HowToStep',
+      position: index + 1,
+      name: text.length > 70 ? text.slice(0, 67).trimEnd() + '…' : text,
+      text,
+    })),
+  }
+}

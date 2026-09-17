@@ -53,6 +53,7 @@ import {
   breadcrumbLd,
   destinationLd,
   faqLd,
+  howToLd,
   organisationLd,
   webSiteLd,
 } from '../src/lib/structured-data'
@@ -164,6 +165,100 @@ interface PageMeta {
    * background refresh rather than a wait.
    */
   boot?: Record<string, unknown>
+}
+
+/**
+ * The page's content, as HTML, for a reader that will never run the script.
+ *
+ * Measured on the live site before this existed: every URL served
+ * `<div id="root"></div>` and nothing else. The head was perfect — title,
+ * description, canonical, hreflang, Product and AggregateOffer — and the body
+ * was empty, so a crawler that does not execute JavaScript could read what the
+ * page *claims* to be and not one word of what it says.
+ *
+ * That is not a hypothetical audience. Googlebot renders, late but reliably;
+ * GPTBot, ClaudeBot and PerplexityBot fetch the HTML once, take what is in it
+ * and leave. Anthropic's own fetch documentation states plainly that it does not
+ * support pages rendered by JavaScript. So the site was fully indexable by
+ * Google and invisible to every assistant a customer might ask "which eSIM works
+ * in Turkey" — on a catalogue whose whole value is answering that question.
+ *
+ * `createRoot` replaces whatever is inside #root when it mounts, so this costs
+ * nothing at runtime beyond a moment of real content where there used to be a
+ * white screen. It is deliberately plain: headings, paragraphs, prices and
+ * links, in the order they are meant to be read.
+ */
+type Locale = (typeof STRINGS)[SeoLang]
+
+function planRows(plans: unknown, locale: Locale): string {
+  if (!Array.isArray(plans) || plans.length === 0) return ''
+  const rows = plans
+    .slice(0, 40)
+    .map((raw) => {
+      const plan = raw as Record<string, unknown>
+      const bits = [
+        String(plan.data_label ?? ''),
+        typeof plan.validity_days === 'number'
+          ? locale.topup.days.replace('{{count}}', String(plan.validity_days))
+          : '',
+        String(plan.network_type ?? ''),
+      ].filter(Boolean)
+      const price = typeof plan.price_usd === 'number' ? `$${plan.price_usd.toFixed(2)}` : ''
+      return `<li>${escapeAttr(String(plan.title ?? ''))} — ${escapeAttr(bits.join(' · '))}${
+        price ? ` — <strong>${price}</strong>` : ''
+      }</li>`
+    })
+    .join('')
+  return `<h2>${escapeAttr(locale.seo.prerenderedPlans)}</h2><ul>${rows}</ul>`
+}
+
+function countryLinks(countries: unknown, lang: SeoLang, locale: Locale): string {
+  if (!Array.isArray(countries) || countries.length === 0) return ''
+  const rows = (countries as ApiCountry[])
+    .map((c) => {
+      const price = typeof c.starting_price === 'number' ? ` — $${c.starting_price.toFixed(2)}` : ''
+      return `<li><a href="${pathForLang('/destinations/' + c.slug, lang)}">${escapeAttr(
+        c.name,
+      )}</a>${price}</li>`
+    })
+    .join('')
+  return `<h2>${escapeAttr(locale.nav.destinations)}</h2><ul>${rows}</ul>`
+}
+
+/** The site's own links, so a crawler that runs no script can still find the
+ *  rest of the site. Without them every baked page was an island, reachable
+ *  only from the sitemap. */
+function siteNav(lang: SeoLang, locale: Locale): string {
+  const links: [string, string][] = [
+    ['/destinations', locale.nav.destinations],
+    ['/global', locale.nav.global],
+    ['/device-check', locale.nav.deviceCheck],
+    ['/esim-nima', locale.guides.what.title],
+    ['/esim-ornatish', locale.guides.install.title],
+    ['/support', locale.nav.support],
+  ]
+  return `<nav aria-label="${escapeAttr(locale.nav.destinations)}"><ul>${links
+    .map(
+      ([path, label]) =>
+        `<li><a href="${pathForLang(path, lang)}">${escapeAttr(label)}</a></li>`,
+    )
+    .join('')}</ul></nav>`
+}
+
+function bodyFor(page: PageMeta): string {
+  const locale = STRINGS[page.lang]
+  const boot = page.boot ?? {}
+  const country = boot.country as Record<string, unknown> | undefined
+  const global = boot.global as Record<string, unknown> | undefined
+  const parts = [
+    `<h1>${escapeAttr(page.title)}</h1>`,
+    `<p>${escapeAttr(page.description)}</p>`,
+    country ? planRows(country.plans, locale) : '',
+    global ? planRows(global.plans, locale) : '',
+    countryLinks(boot.countries, page.lang, locale),
+    siteNav(page.lang, locale),
+  ]
+  return `<div id="baked">${parts.filter(Boolean).join('')}</div>`
 }
 
 /**
@@ -297,14 +392,40 @@ interface Detail {
   body: Record<string, unknown>
 }
 
+/**
+ * One request, retried when the edge says "too many".
+ *
+ * Measured against the live site: 207 destination details fetched eight at a
+ * time get 102 answers and 105 Cloudflare 1015s. Half the catalogue was
+ * therefore built from no plan data at all — generic descriptions, no
+ * Product/AggregateOffer, and nothing for a crawler to read — and the build
+ * reported it as a warning nobody acted on because the build still succeeded.
+ *
+ * A rate limit is not a failure, it is a request to wait. `Retry-After` when
+ * the edge sends one, otherwise a doubling wait from two seconds. Four attempts
+ * covers the window Cloudflare applies here; past that the page falls back to
+ * the generic template exactly as before, so a genuinely unreachable API still
+ * ships a release.
+ */
+async function fetchWithRetry(url: string, attempts = 4): Promise<Response> {
+  let wait = 2000
+  for (let attempt = 1; ; attempt += 1) {
+    const res = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(20_000),
+    })
+    if (res.status !== 429 || attempt >= attempts) return res
+    const after = Number(res.headers.get('retry-after'))
+    await new Promise((r) => setTimeout(r, Number.isFinite(after) && after > 0 ? after * 1000 : wait))
+    wait *= 2
+  }
+}
+
 async function fetchFacts(apiBase: string, slug: string): Promise<Detail | null> {
   const snapshot = await readSnapshot<{ plans?: Plan[] }>(`detail/${slug}.json`)
   if (snapshot)
     return { facts: factsFor(snapshot.plans ?? []), body: snapshot as Record<string, unknown> }
-  const res = await fetch(`${apiBase}/countries/${slug}`, {
-    headers: { Accept: 'application/json' },
-    signal: AbortSignal.timeout(20_000),
-  })
+  const res = await fetchWithRetry(`${apiBase}/countries/${slug}`)
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
   const body = (await res.json()) as { plans?: Plan[] }
   return { facts: factsFor(body.plans ?? []), body: body as Record<string, unknown> }
@@ -371,7 +492,22 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
         ...base,
         title: s.guideInstallTitle,
         description: s.guideInstallDescription,
-        jsonLd: [guideFaqLd(STRINGS[lang].guides.install.faqs)],
+        jsonLd: [
+          // The steps, named as steps. The page's own <Seo> emits the same
+          // thing once React mounts; baking it is what puts it in front of a
+          // crawler that never gets that far.
+          howToLd(
+            STRINGS[lang].guides.install.title,
+            [
+              STRINGS[lang].guides.install.shot1,
+              STRINGS[lang].guides.install.shot2,
+              STRINGS[lang].guides.install.shot3,
+              STRINGS[lang].guides.install.shot4,
+            ],
+            { totalTime: 'PT5M', description: STRINGS[lang].guides.install.lead },
+          ),
+          guideFaqLd(STRINGS[lang].guides.install.faqs),
+        ],
       }
     default:
       return {
@@ -554,7 +690,9 @@ export function prerender(): Plugin {
             return [slug, null] as const
           }
         }),
-        8,
+        // Four, not eight: the edge starts refusing at about a hundred requests
+        // and a slower build that gets every page beats a fast one that gets half.
+        4,
       )
       for (const [slug, f] of fetched) {
         if (!f) continue
@@ -606,6 +744,8 @@ export function prerender(): Plugin {
           const html = shell
             .replace('<html lang="uz">', `<html lang="${page.lang}">`)
             .replace(MARKER, headFor(page) + bootFor(page))
+            // Into #root, which createRoot empties the moment it mounts.
+            .replace('<div id="root"></div>', `<div id="root">${bodyFor(page)}</div>`)
           const file = outputFile(outDir, page.path, page.lang)
           await mkdir(dirname(file), { recursive: true })
           await writeFile(file, html, 'utf8')

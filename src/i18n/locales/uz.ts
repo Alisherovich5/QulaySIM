@@ -692,6 +692,7 @@ const uz: Translation = {
     backHome: 'Bosh sahifaga',
   },
   seo: {
+    prerenderedPlans: 'Tariflar',
     globalPageTitle: 'Global eSIM — bir tarif, ko‘p davlat',
     globalPageDescription:
       'Bir marta sotib oling va yo‘lingizdagi hamma davlatda ishlatavering. Qamrov ro‘yxati va narxlar sahifada.',

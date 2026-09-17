@@ -688,6 +688,7 @@ const ru: Translation = {
     backHome: 'На главную',
   },
   seo: {
+    prerenderedPlans: 'Тарифы',
     globalPageTitle: 'Глобальный eSIM — один тариф, много стран',
     globalPageDescription:
       'Купите один раз и пользуйтесь во всех странах маршрута. Список покрытия и цены на странице.',
