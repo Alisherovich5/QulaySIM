@@ -1,8 +1,7 @@
-import { ArrowUpRight, Camera, Send } from 'lucide-react'
+import { Camera, Send } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useDesignCopy } from '../lib/design-copy'
-import Logo from './Logo'
 
 export default function Footer() {
   const { t } = useTranslation()
@@ -38,22 +37,10 @@ export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="container-page">
-        <div className="footer-top">
-          <div>
-            <Logo light />
-            <p className="footer-thesis">{c.footer}</p>
-            <p>{c.footerNote}</p>
-          </div>
-          <a
-            className="footer-contact"
-            href="https://t.me/qulaysim_support"
-            target="_blank"
-            rel="noreferrer"
-          >
-            {c.contact}
-            <ArrowUpRight size={22} />
-          </a>
-        </div>
+        {/* The footer opened with the logo, a tagline and a "get in touch"
+            link — taken out by the owner's instruction. Telegram is still one
+            click away in the social column below, so nothing was lost but the
+            height. */}
         <div className="footer-columns">
           {groups.map((group) => (
             <div key={group.title}>
