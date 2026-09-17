@@ -713,3 +713,87 @@
     font-size: 3.25rem;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* The wordmark that closes the footer                                 */
+/* ------------------------------------------------------------------ */
+
+/* A name at the size a name deserves, and a slow sweep of the brand greens
+ * across it.
+ *
+ * The letters are a tint of the surface they sit on rather than a colour of
+ * their own — so the mark is felt before it is read, and the sweep is the only
+ * thing that arrives. `background-clip: text` is safe here in a way it was not
+ * in the hero: that was a headline, where text with no colour has no contrast
+ * ratio to check, and this is decoration carrying nothing. It is aria-hidden
+ * for the same reason.
+ *
+ * Cropped by the footer's own bottom edge. A mark that fits neatly inside its
+ * box reads as a heading somebody forgot to size; one that runs off the edge
+ * reads as a mark. */
+.footer-wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3.5rem, 17vw, 16rem);
+  line-height: 0.78;
+  letter-spacing: -0.055em;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  margin-top: 0.15em;
+  /* The descender-less cap height leaves a gap the eye reads as padding, so
+     the mark is pulled down into it and clipped by the footer instead. */
+  margin-bottom: -0.22em;
+  overflow: hidden;
+
+  /* The band is narrow on purpose, and the arithmetic is worth writing down:
+     at `background-size: 280%` the word shows 1/2.8 — about 36% — of the
+     gradient at any moment, so a stop range of 8% of the gradient lights
+     roughly 22% of the word and the 3% core lights about one letter. The first
+     version used a 28% range, which lit four fifths of the name at once and
+     read as a colour change rather than as something passing over it. */
+  background-image: linear-gradient(
+    100deg,
+    var(--footer-wordmark-base) 0%,
+    var(--footer-wordmark-base) 46%,
+    var(--color-brand-400) 48.5%,
+    var(--color-accent-400) 50%,
+    var(--color-brand-400) 51.5%,
+    var(--footer-wordmark-base) 54%,
+    var(--footer-wordmark-base) 100%
+  );
+  background-size: 280% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: footer-wordmark-sweep 9s linear infinite;
+}
+
+/* The base tint, per theme. Light enough to be a watermark on the footer's own
+   surface and no lighter — at 0.10 it competed with the links above it. */
+:root {
+  --footer-wordmark-base: rgb(16 40 62 / 0.07);
+}
+
+:root.dark {
+  --footer-wordmark-base: rgb(231 243 244 / 0.07);
+}
+
+@keyframes footer-wordmark-sweep {
+  from {
+    background-position: 160% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
+}
+
+/* Somebody who asked for less movement gets the mark and not the sweep. */
+@media (prefers-reduced-motion: reduce) {
+  .footer-wordmark {
+    animation: none;
+    background-image: none;
+    color: var(--footer-wordmark-base);
+  }
+}
