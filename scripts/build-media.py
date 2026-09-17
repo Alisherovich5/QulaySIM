@@ -51,6 +51,9 @@ class Job:
     #: Crop to this width:height ratio before resizing, or None to keep the
     #: original framing.
     ratio: tuple[int, int] | None = None
+    #: Keep the alpha channel. Only the cut-out renders need it — a photograph
+    #: with an alpha channel is a photograph paying for a channel of 255s.
+    alpha: bool = False
 
 
 def crop_to(image: Image.Image, ratio: tuple[int, int]) -> Image.Image:
@@ -81,7 +84,13 @@ def crop_to(image: Image.Image, ratio: tuple[int, int]) -> Image.Image:
 def variants(job: Job) -> list[dict]:
     written: list[dict] = []
     with Image.open(job.src) as raw:
-        source = raw.convert('RGB')
+        source = raw.convert('RGBA' if job.alpha else 'RGB')
+    if job.alpha:
+        # The render arrives on a canvas larger than the object. Trimming to the
+        # ink means the element is sized by the phone rather than by the empty
+        # space around it, which is what stops a layout being tuned against a
+        # margin baked into a PNG.
+        source = source.crop(source.getbbox())
     if job.ratio:
         source = crop_to(source, job.ratio)
 
@@ -95,11 +104,20 @@ def variants(job: Job) -> list[dict]:
             height = round(source.height * width / source.width)
             resized = source.resize((width, height), Image.LANCZOS)
 
-        crisp = (
-            resized.filter(ImageFilter.UnsharpMask(radius=1.1, percent=job.sharpen, threshold=3))
-            if job.sharpen
-            else resized
-        )
+        if not job.sharpen:
+            crisp = resized
+        elif job.alpha:
+            # Sharpen the colour only. Run over the alpha channel as well and
+            # the unsharp mask puts a halo on the cut-out edge, which on a
+            # transparent render reads as a fringe against every background.
+            rgb = resized.convert('RGB').filter(
+                ImageFilter.UnsharpMask(radius=1.1, percent=job.sharpen, threshold=3)
+            )
+            crisp = Image.merge('RGBA', (*rgb.split(), resized.getchannel('A')))
+        else:
+            crisp = resized.filter(
+                ImageFilter.UnsharpMask(radius=1.1, percent=job.sharpen, threshold=3)
+            )
 
         stem = f'{job.out.stem}-{width}' if len(job.widths) > 1 else job.out.stem
         base = job.out.with_name(stem)
@@ -133,6 +151,14 @@ def main() -> int:
         if src.exists():
             jobs.append(Job(src, public / 'media' / f'hero-{theme}.png',
                             widths=(1024, 1774), avif_quality=62, webp_quality=76))
+
+    # The cut-out phone on the device-check page. Alpha, so it sits on the
+    # page's own background rather than carrying a rectangle of its own.
+    device = SOURCES / 'device-esim.png'
+    if device.exists():
+        jobs.append(Job(device, public / 'media' / 'device-esim.png',
+                        widths=(480, 900), avif_quality=62, webp_quality=80,
+                        sharpen=70, alpha=True))
 
     # Destination photographs are drawn into a card roughly 380 CSS px wide and
     # into the country page heading, in both cases under a scrim that is opaque

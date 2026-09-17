@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowLeft, ShieldCheck, Smartphone } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import Photo from '../components/media/Photo'
 import Seo from '../components/Seo'
 import DeviceSearch from '../components/device/DeviceSearch'
 import ManualCheck from '../components/device/ManualCheck'
 import VerdictCard from '../components/device/Verdict'
-import { ESIM_DEVICES, findDevices, type EsimDevice } from '../data/esimDevices'
+import { findDevices, type EsimDevice } from '../data/esimDevices'
 import { detectDevice } from '../lib/deviceHint'
 
 /* ==========================================================================
@@ -103,23 +103,49 @@ export default function DeviceCheck() {
     <div className="qs-page qs-device container-page">
       <Seo title={t('seo.deviceTitle')} description={t('seo.deviceDescription')} />
 
-      <Link
-        to="/"
-        className="focus-ring -ml-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 py-2 text-[13px] font-600 text-slate-soft transition-colors hover:text-brand-600 dark:hover:text-brand-300"
-      >
-        <ArrowLeft size={15} /> {t('device.back')}
-      </Link>
+      {/* The question, and the object the question is about.
+       *
+       * The back link and the "QURILMA TEKSHIRUVI" eyebrow above the headline
+       * are gone to the approved design. The navigation already says where the
+       * visitor is — its own tab is underlined — and an eyebrow repeating the
+       * page title above the page title is a label on a label. */}
+      {/* `relative`, and the phone inside it is absolutely placed.
+       *
+       * In the grid it was a 280px-tall row item, so the header was as tall as
+       * the picture and the two lines of type floated in the middle of it with
+       * 150px of nothing above and below. Out of the flow, the header is as
+       * tall as its text and the phone hangs beside it, which is the
+       * proportion the design has. */}
+      <header className="relative pt-1 sm:min-h-[210px] sm:pt-3 lg:min-h-[268px]">
+        <div className="max-w-2xl lg:max-w-[560px]">
+          {/* Capped so "tayyormi?" takes its own line, as the design does. Left
+              to run, the question sets on one 600px line and stops reading as a
+              headline — it reads as a sentence that happens to be large. */}
+          <h1 className="font-display text-[28px] font-800 leading-[1.08] tracking-[-0.03em] text-ink min-[360px]:text-[32px] sm:text-[44px] lg:text-[52px]">
+            {t('dc.title')}
+          </h1>
+          <p className="mt-2 text-[14px] leading-[1.5] text-slate-soft sm:mt-3 sm:text-[18px] sm:leading-[1.6]">
+            {t('dc.lead')}
+          </p>
+        </div>
 
-      <header className="max-w-2xl">
-        <span className="inline-flex items-center gap-2 rounded-full bg-brand-500/10 px-3 py-1.5 text-[11px] font-700 uppercase tracking-[0.12em] text-brand-700 dark:text-brand-300">
-          <Smartphone size={13} aria-hidden /> {t('device.eyebrow')}
-        </span>
-        <h1 className="mt-3 font-display text-[26px] font-700 leading-[1.1] tracking-[-0.02em] text-ink min-[360px]:text-[30px] sm:text-[42px] lg:text-[46px]">
-          {t('device.title')}
-        </h1>
-        <p className="mt-2 text-[13px] leading-[1.5] text-slate-soft sm:mt-4 sm:text-[17px] sm:leading-[1.6]">
-          {t('device.lead', { count: ESIM_DEVICES.length })}
-        </p>
+        {/* A phone, at the angle the render was made at, on a green wash that
+            is the page's own accent rather than a box the picture brought with
+            it — the file is a cut-out with an alpha channel for exactly that.
+            `priority`: it is the largest thing above the fold here. */}
+        <div className="pointer-events-none absolute -top-1 right-0 hidden sm:block lg:top-0 lg:right-6">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(52,227,176,0.30)_0%,transparent_68%)] blur-xl lg:h-[250px] lg:w-[250px]"
+          />
+          <Photo
+            name="device-esim"
+            alt=""
+            sizes="(min-width: 1024px) 175px, 130px"
+            priority
+            className="relative w-[130px] rotate-[8deg] drop-shadow-[0_24px_38px_rgba(9,46,40,0.22)] lg:w-[175px]"
+          />
+        </div>
       </header>
 
       <DeviceSearch onPick={pick} onCheckExactly={openManual} />

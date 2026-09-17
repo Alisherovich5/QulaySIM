@@ -1,18 +1,25 @@
 import { useMemo, useRef, useState } from 'react'
-import { Search, X } from 'lucide-react'
+import { ArrowRight, HelpCircle, Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { DEVICE_BRANDS, ESIM_DEVICES, deviceLabel, findDevices, type EsimDevice } from '../../data/esimDevices'
-import { CheckExactlyButton, DeviceRow } from './shared'
+import BrandTile from './BrandTile'
+import { DeviceRow } from './shared'
 import { REVEAL } from './verdictRules'
 
 /**
- * The instrument: a search field over every model on the list.
+ * The instrument: a search field over every model on the list, and the brands
+ * beside it for somebody who would rather look than type.
  *
  * Everything about *which* model the visitor means lives here — the query, the
  * suggestion list, the keyboard, the brand browse. The page above only learns
  * the answer, through `onPick`, which is what makes this testable without
  * rendering the rest of the page.
+ *
+ * The brands used to be a scrolling rail of pills reading "Apple 11/14". They
+ * are a grid of marks now, to the approved design: a logo is recognised before
+ * a word is read, and the count moved into the accessible name rather than
+ * being printed fifteen times.
  */
 export default function DeviceSearch({
   onPick,
@@ -29,7 +36,6 @@ export default function DeviceSearch({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const results = useMemo(() => findDevices(query), [query])
-  const supported = useMemo(() => ESIM_DEVICES.filter((d) => d.compatible).length, [])
 
   const pick = (device: EsimDevice) => {
     setOpen(false)
@@ -37,9 +43,27 @@ export default function DeviceSearch({
     onPick(device)
   }
 
+  /* What the button does, and what Enter does — the same thing, deliberately.
+     A visitor who types a model and presses the green button expects the answer
+     the list is already showing; a button that only submitted a form and
+     cleared the field would be a second, worse way of doing what the list does. */
+  const submit = () => {
+    if (results.length) {
+      pick(results[Math.min(cursor, results.length - 1)])
+      return
+    }
+    // Nothing matched what they typed, so the certain method is the answer.
+    onCheckExactly()
+  }
+
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
       setOpen(false)
+      return
+    }
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      submit()
       return
     }
     if (!results.length) return
@@ -47,11 +71,6 @@ export default function DeviceSearch({
       event.preventDefault()
       setOpen(true)
       setCursor((c) => (c + (event.key === 'ArrowDown' ? 1 : results.length - 1)) % results.length)
-      return
-    }
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      pick(results[Math.min(cursor, results.length - 1)])
     }
   }
 
@@ -66,16 +85,17 @@ export default function DeviceSearch({
   )
 
   return (
-      <section className="card elev-1 mt-5 p-4 sm:mt-8 sm:p-6">
-        <label htmlFor="dc-search" className="text-[10.5px] font-700 uppercase tracking-[0.16em] text-slate-soft">
-          {t('device.searchLabel')}
-        </label>
+    <section className="card elev-1 mt-5 p-4 sm:mt-7 sm:p-6 lg:p-7">
+      <label htmlFor="dc-search" className="sr-only">
+        {t('device.searchLabel')}
+      </label>
 
-        <div className="relative mt-2">
+      <div className="relative flex flex-col gap-2.5 sm:flex-row sm:gap-3">
+        <div className="relative flex-1">
           <Search
-            size={18}
+            size={19}
             aria-hidden
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-soft"
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-soft"
           />
           <input
             id="dc-search"
@@ -97,8 +117,8 @@ export default function DeviceSearch({
             onFocus={() => setOpen(true)}
             onBlur={() => setOpen(false)}
             onKeyDown={onKeyDown}
-            placeholder={t('device.searchPlaceholder')}
-            className="focus-ring h-13 w-full rounded-xl bg-canvas pl-11 pr-11 font-display text-[15px] font-600 text-ink ring-1 ring-line placeholder:font-400 placeholder:text-slate-soft sm:text-base"
+            placeholder={t('dc.placeholder')}
+            className="focus-ring h-14 w-full rounded-2xl bg-canvas pl-12 pr-11 text-[15px] font-500 text-ink ring-1 ring-line placeholder:font-400 placeholder:text-slate-soft sm:text-base"
           />
           {query && (
             <button
@@ -113,6 +133,20 @@ export default function DeviceSearch({
               <X size={15} />
             </button>
           )}
+
+        </div>
+
+        <button
+          type="button"
+          onClick={submit}
+          className="focus-ring group inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-brand-600 px-7 text-[15px] font-700 text-white transition duration-200 hover:bg-brand-700 active:scale-[0.99] sm:text-base"
+        >
+          {t('dc.check')}
+          <ArrowRight
+            size={18}
+            className="transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+          />
+        </button>
 
           {open && (query.length > 0 || results.length > 0) && (
             <div
@@ -137,59 +171,62 @@ export default function DeviceSearch({
                   <p className="mt-1 text-[12px] leading-[1.5] text-slate-soft">
                     {t('device.noResultsHint')}
                   </p>
-                  <CheckExactlyButton onClick={onCheckExactly} tone="loud" className="mt-2.5" />
                 </div>
               )}
             </div>
           )}
-        </div>
+      </div>
 
-        <p className="mt-2 text-[11.5px] leading-[1.5] text-slate-soft">
-          {t('device.searchHint', { supported, total: ESIM_DEVICES.length })}
-        </p>
+      {/* Three across on a phone, five where the design has five. Wrapped into
+          six rows on a narrow screen the grid pushed the answer itself below
+          the fold — the page would have been asking a question and hiding its
+          own reply. */}
+      <div
+        role="group"
+        aria-label={t('dc.brandsLabel')}
+        className="mt-4 grid grid-cols-3 gap-2.5 sm:mt-5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5"
+      >
+        {DEVICE_BRANDS.map((entry) => (
+          <BrandTile
+            key={entry.brand}
+            brand={entry.brand}
+            selected={brand === entry.brand}
+            supported={entry.supported}
+            total={entry.total}
+            onToggle={() => setBrand(brand === entry.brand ? null : entry.brand)}
+          />
+        ))}
+      </div>
 
-        {/* Brands, for a visitor who would rather look than type.
-            One scrolling row on a phone rather than a wrapped block: wrapped,
-            fifteen brands took six rows and pushed the answer itself below the
-            fold — the page would have been asking a question and hiding its own
-            reply. It wraps once there is width to wrap into. */}
-        <div className="account-tab-rail -mx-1 mt-4 flex snap-x gap-1.5 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
-          {DEVICE_BRANDS.map((entry) => (
-            <button
-              key={entry.brand}
-              type="button"
-              aria-pressed={brand === entry.brand}
-              onClick={() => setBrand(brand === entry.brand ? null : entry.brand)}
-              className={`focus-ring inline-flex min-h-9 shrink-0 snap-start items-center gap-1.5 rounded-full px-3 text-[12.5px] font-700 ring-1 transition-colors ${
-                brand === entry.brand
-                  ? 'bg-brand-600 text-white ring-brand-600'
-                  : 'bg-canvas text-ink ring-line hover:ring-brand-300'
-              }`}
-            >
-              {entry.brand}
-              <span className={brand === entry.brand ? 'text-white/70' : 'text-slate-soft'}>
-                {entry.supported}/{entry.total}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {brand && (
-          <div className={`mt-3 rounded-2xl bg-canvas p-2 ring-1 ring-line ${REVEAL}`}>
-            <p className="px-2 py-1.5 text-[11.5px] font-600 leading-tight text-slate-soft">
-              {t('device.brandStat', {
-                brand,
-                supported: DEVICE_BRANDS.find((b) => b.brand === brand)?.supported ?? 0,
-                total: DEVICE_BRANDS.find((b) => b.brand === brand)?.total ?? 0,
-              })}
-            </p>
-            <div className="max-h-[46vh] overflow-y-auto sm:grid sm:grid-cols-2 sm:gap-x-2">
-              {brandModels.map((device) => (
-                <DeviceRow key={deviceLabel(device)} device={device} onPick={() => pick(device)} />
-              ))}
-            </div>
+      {brand && (
+        <div className={`mt-3 rounded-2xl bg-canvas p-2 ring-1 ring-line ${REVEAL}`}>
+          <p className="px-2 py-1.5 text-[11.5px] font-600 leading-tight text-slate-soft">
+            {t('device.brandStat', {
+              brand,
+              supported: DEVICE_BRANDS.find((b) => b.brand === brand)?.supported ?? 0,
+              total: DEVICE_BRANDS.find((b) => b.brand === brand)?.total ?? 0,
+            })}
+          </p>
+          <div className="max-h-[46vh] overflow-y-auto sm:grid sm:grid-cols-2 sm:gap-x-2">
+            {brandModels.map((device) => (
+              <DeviceRow key={deviceLabel(device)} device={device} onPick={() => pick(device)} />
+            ))}
           </div>
-        )}
-      </section>
+        </div>
+      )}
+
+      {/* The way out for a model nobody can name: *#06# on the phone itself,
+          which is the only method that is certain. */}
+      <div className="mt-5 flex justify-center sm:mt-6">
+        <button
+          type="button"
+          onClick={onCheckExactly}
+          className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-[14px] font-600 text-brand-700 transition-colors hover:text-brand-600 dark:text-accent-400 dark:hover:text-accent-300"
+        >
+          <HelpCircle size={17} aria-hidden />
+          {t('dc.unknownModel')}
+        </button>
+      </div>
+    </section>
   )
 }

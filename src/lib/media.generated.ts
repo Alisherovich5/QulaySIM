@@ -8,6 +8,7 @@ export interface MediaVariant {
 }
 
 export const MEDIA: Record<string, MediaVariant[]> = {
+  'device-esim': [{ w: 480, h: 704, avif: '/media/device-esim-480.avif', webp: '/media/device-esim-480.webp' }, { w: 900, h: 1321, avif: '/media/device-esim-900.avif', webp: '/media/device-esim-900.webp' }],
   'hero-dark': [{ w: 1024, h: 512, avif: '/media/hero-dark-1024.avif', webp: '/media/hero-dark-1024.webp' }, { w: 1774, h: 887, avif: '/media/hero-dark-1774.avif', webp: '/media/hero-dark-1774.webp' }],
   'hero-light': [{ w: 1024, h: 512, avif: '/media/hero-light-1024.avif', webp: '/media/hero-light-1024.webp' }, { w: 1774, h: 887, avif: '/media/hero-light-1774.avif', webp: '/media/hero-light-1774.webp' }],
   'photos/azerbaijan': [{ w: 480, h: 270, avif: '/media/photos/azerbaijan-480.avif', webp: '/media/photos/azerbaijan-480.webp' }, { w: 900, h: 506, avif: '/media/photos/azerbaijan-900.avif', webp: '/media/photos/azerbaijan-900.webp' }],
