@@ -79,6 +79,19 @@ export default function Footer() {
   ]
   return (
     <footer className="site-footer">
+      {/* The name, at the size a name deserves, cut in half by the footer's
+       * own top edge.
+       *
+       * Decorative and aria-hidden: the copyright line below already says
+       * QulaySIM, and a screen reader meeting it twice learns nothing the
+       * second time. One span per letter because the letters light
+       * individually under the cursor — see navigation.css. */}
+      <div className="footer-wordmark" aria-hidden>
+        {'QulaySIM'.split('').map((letter, index) => (
+          <span key={index}>{letter}</span>
+        ))}
+      </div>
+
       <div className="container-page">
         <div className="footer-main">
           <div className="footer-brand">
