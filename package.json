@@ -63,9 +63,9 @@
       "limit": "150 kB"
     },
     {
-      "name": "globus (alohida, kech yuklanadi)",
-      "path": "dist/assets/HeroGlobe-*.js",
-      "limit": "40 kB"
+      "name": "globus (profil xaritasi, kech yuklanadi)",
+      "path": "dist/assets/GlobeCore-*.js",
+      "limit": "420 kB"
     }
   ]
 }
