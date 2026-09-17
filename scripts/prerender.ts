@@ -66,6 +66,7 @@ import {
   type DestinationFacts,
 } from '../src/lib/destination-facts'
 import { copy as DESIGN_COPY } from '../src/lib/design-copy'
+import { MEDIA } from '../src/lib/media.generated'
 import { geoFor, HOME_GEO, type GeoFacts } from '../src/lib/geo'
 import type { Plan } from '../src/lib/types'
 
@@ -154,6 +155,10 @@ interface PageMeta {
   jsonLd: Array<Record<string, unknown> | null>
   /** og:image override. Only destinations set one — see metaForCountry. */
   image?: string
+  /** Head links that start a download before the bundle has run. Only the home
+      page has one: its hero photograph is the LCP element, and React is what
+      discovers it. */
+  preload?: string[]
   /** The place this page is about — see src/lib/geo.ts. Omitted for pages that
       are about no particular place. */
   geo?: GeoFacts
@@ -299,7 +304,7 @@ function bootFor({ boot }: PageMeta): string {
   return `\n    <script type="application/json" id="__DATA__">${escapeJson(boot)}</script>`
 }
 
-function headFor({ title, description, path, lang, jsonLd, image, geo }: PageMeta): string {
+function headFor({ title, description, path, lang, jsonLd, image, geo, preload }: PageMeta): string {
   const full = `${title} | ${SITE_NAME}`
   const canonical = absoluteUrl(path, lang)
   const card = image ?? OG_IMAGE
@@ -342,6 +347,7 @@ function headFor({ title, description, path, lang, jsonLd, image, geo }: PageMet
       `<meta name="ICBM" content="${geo.lat}, ${geo.lon}"${BAKED} />`,
     )
   }
+  if (preload) tags.push(...preload)
   for (const block of jsonLd) {
     if (block) tags.push(`<script type="application/ld+json"${BAKED}>${escapeJson(block)}</script>`)
   }
@@ -458,6 +464,37 @@ async function withConcurrency<T>(jobs: (() => Promise<T>)[], limit: number): Pr
   return results
 }
 
+/**
+ * Start the hero photograph downloading before the bundle has parsed.
+ *
+ * The hero is the home page's LCP element and React is what discovers it: the
+ * `<picture>` does not exist in the served HTML, so the browser learns about the
+ * image only after the bundle has run. Measured on the live site, three loads at
+ * 1440: the request started at 604ms, 644ms and 1651ms against a TTFB of ~390ms,
+ * and LCP landed at 1460ms, 1220ms and 2348ms.
+ *
+ * `imagesrcset` and `imagesizes` repeat exactly what Photo renders — a preload
+ * that disagrees with the element downloads a second copy instead of saving the
+ * first. `type` keeps a browser without AVIF from preloading a file it will not
+ * use; it falls through to the WebP source as it does today.
+ *
+ * Which theme is a guess, and the media query is the honest form of it: someone
+ * who has overridden the system setting gets one preload their browser drops.
+ */
+function heroPreloadLinks(): string[] {
+  const link = (name: string, scheme: 'light' | 'dark'): string | null => {
+    const variants = MEDIA[name]
+    if (!variants?.length) return null
+    const srcset = variants.map((v) => `${v.avif} ${v.w}w`).join(', ')
+    return (
+      `<link rel="preload" as="image" type="image/avif"` +
+      ` imagesrcset="${escapeAttr(srcset)}" imagesizes="100vw"` +
+      ` fetchpriority="high" media="(prefers-color-scheme: ${scheme})"${BAKED} />`
+    )
+  }
+  return [link('hero-light', 'light'), link('hero-dark', 'dark')].filter((x): x is string => !!x)
+}
+
 function guideFaqLd(faqs: { q: string; a: string }[]): Record<string, unknown> | null {
   return faqLd(faqs.map((f) => ({ question: f.q, answer: f.a })))
 }
@@ -562,6 +599,7 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
         // The storefront is about Uzbekistan: the market it is written for,
         // priced in and supported in. Destination pages each name their own.
         geo: HOME_GEO,
+        preload: heroPreloadLinks(),
         jsonLd: [organisationLd(), webSiteLd(lang)],
       }
   }
