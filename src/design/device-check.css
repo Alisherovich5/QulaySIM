@@ -1,8 +1,8 @@
 /* The device-check page, to the approved design.
  *
  * A file of its own, loaded last, for the same reason travel-palette.css is:
- * redesign.css and journey.css are plain stylesheets rather than Tailwind
- * layers, so `.site-shell h1 { font-size: 42px }` beats any utility class on
+ * journey.css is a plain stylesheet rather than a Tailwind
+ * layer, so `.site-shell h1 { font-size: 42px }` beats any utility class on
  * the element no matter how specific the utility looks. Utilities still do the
  * responsive work below `lg`; the numbers that have to be exact at the 1536
  * reference width live here, where nothing outranks them.
@@ -21,7 +21,7 @@
 /* --- Hero ---------------------------------------------------------------- */
 
 .dc-page .dc-title {
-  /* `text-wrap: balance` is set on every h1 by redesign.css and journey.css,
+  /* `text-wrap: balance` is set on every h1 by journey.css,
      and it is the wrong rule for this one: balancing splits the question into
      "Telefoningiz" and the rest, where the design fills the first line and
      drops only "tayyormi?". `wrap`, not `normal` — `normal` is not one of this

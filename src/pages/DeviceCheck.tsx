@@ -112,7 +112,7 @@ export default function DeviceCheck() {
     /* Deliberately NOT `.qs-page .qs-device .container-page`.
      *
      * Those three carry the previous layout — a 1184px cap, a 42px headline, a
-     * 700px header — set in journey.css and redesign.css, and they win over the
+     * 700px header — set in journey.css, and they win over the
      * utilities here by load order. The approved design is a 1410px column (63px
      * from each edge at 1536) with a 70px headline, so the page states its own
      * geometry instead of fighting rules written for the old one. Nothing else
