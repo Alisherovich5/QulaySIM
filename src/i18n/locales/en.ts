@@ -599,8 +599,8 @@ const en = {
   },
 
   footer: {
-    tagline:
-      'Convenient eSIM data plans for travel. Choose a plan, receive your QR code, and connect.',
+    tagline: 'A simple eSIM for travel. Pick one, connect and go.',
+    toTop: 'Back to top',
     pages: 'Pages',
     contacts: 'Contacts',
     product: 'Product',

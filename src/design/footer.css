@@ -1,0 +1,307 @@
+/* The footer, to the approved design.
+ *
+ * Its own file, loaded last, for the reason travel-palette.css states: the
+ * earlier stylesheets are plain CSS rather than Tailwind layers, so
+ * `.site-shell h3 { … }` outranks any utility on the element. Every number
+ * below is measured off the reference rather than estimated — the divider is
+ * 1425px wide at x=55, the columns start at 68/504/829/1186, the social chips
+ * are 61px across with a 30px gap, and the link rows are 50px apart. That is
+ * why so few of them are round.
+ */
+
+/* journey.css puts 72px/28px on the element itself; the shell owns the
+   spacing here so the wordmark behind it can start above the first row. */
+.site-footer {
+  padding: 0;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-top: 1px solid #d1e7e4;
+  background: var(--color-surface);
+}
+
+.site-footer .footer-shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1489px;
+  margin-inline: auto;
+  padding-inline: 32px;
+  /* 72px puts the logo where the design has it, measured from the hairline. */
+  padding-top: 72px;
+  padding-bottom: 28px;
+}
+
+/* The footer wordmark is nearly twice the navbar's: 246px wide against 128,
+   which is what makes the brand the anchor of the column rather than a label
+   above the sentence. */
+/* `> a > svg`, not `svg`: the two social marks live in this column too, and a
+   loose descendant selector blew them up to 246px each. */
+.site-footer .footer-brand > a > svg {
+  width: 246px;
+  height: auto;
+}
+
+/* --- The wordmark behind everything ------------------------------------- */
+
+/* Set as type rather than shipped as an image: at this size a raster would be
+   a 1000px-wide asset for a decoration, and an SVG would still need the font.
+   It is `aria-hidden` and sits under the content on its own layer, so nothing
+   here can be selected, read aloud, or land on top of a link. */
+.footer-wordmark {
+  position: absolute;
+  top: 26px;
+  left: 50%;
+  /* Not centred: the design sits it 38px right of the page's middle. */
+  transform: translateX(calc(-50% + 38px));
+  z-index: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  /* 235px sets it 998px wide, which is the width it has in the design. */
+  font-size: 235px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #eff4f5;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* The flight path, drawn across the same band as the wordmark. */
+.footer-trail {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 420px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* --- Columns ------------------------------------------------------------- */
+
+.site-footer .footer-main {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.site-footer .footer-brand p {
+  /* 10px, not the 30 the gap looks like: the line box is taller than the ink,
+     so the measured 30px gap between the wordmark and the first line is what
+     this produces. 320px rather than a ch count because the design sets it in
+     two lines — "Sayohat uchun qulay eSIM." then the rest — and a ch cap
+     wraps it into three. */
+  margin-top: 10px;
+  max-width: 320px;
+  font-size: 21px;
+  line-height: 1.7;
+  color: #1a3b61;
+}
+
+.site-footer .footer-chips {
+  display: flex;
+  gap: 30px;
+  margin-top: 23px;
+}
+
+.site-footer .footer-chips a {
+  display: grid;
+  place-items: center;
+  width: 61px;
+  height: 61px;
+  border-radius: 999px;
+  border: 1px solid #b9ddd3;
+  color: #0e8675;
+  background: transparent;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.site-footer .footer-chips a:hover {
+  border-color: #0e8675;
+  background: #f0fefa;
+}
+
+/* journey.css stacks groups vertically and puts 32px above each one after the
+   first. They are grid columns now, so that rule pushed the second and third
+   headings a row below the first — visible as "Yordam" and "Hujjatlar" sitting
+   lower than "Sayohat". */
+.site-footer .footer-group + .footer-group {
+  margin-top: 0;
+}
+
+.site-footer .footer-group h3,
+.site-shell .site-footer .footer-group h3 {
+  margin: 0 0 34px;
+  font-family: var(--font-display);
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #052f52;
+  text-transform: none;
+}
+
+.site-footer .footer-group a {
+  display: block;
+  font-size: 21px;
+  line-height: 1.25;
+  color: #1b3a5e;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* 24px between rows sets the 50px pitch the design has — the rows are 26px
+   tall, so the gap is not the pitch. */
+.site-footer .footer-group a + a {
+  margin-top: 24px;
+}
+
+.site-footer .footer-group a:hover {
+  color: #0e8675;
+}
+
+/* --- The line and the row under it --------------------------------------- */
+
+.site-footer .footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 48px;
+  padding-top: 26px;
+  border-top: 1px solid #cce1dd;
+  font-size: 19px;
+  color: #1b3b64;
+}
+
+.site-footer .footer-bottom-right {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.site-footer .footer-top-link {
+  display: grid;
+  place-items: center;
+  width: 51px;
+  height: 51px;
+  border-radius: 999px;
+  border: 1px solid #b9ddd3;
+  color: #0e8675;
+  background: transparent;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.site-footer .footer-top-link:hover {
+  border-color: #0e8675;
+  background: #f0fefa;
+}
+
+/* --- Dark theme ---------------------------------------------------------- */
+
+:root.dark .site-footer {
+  border-top-color: var(--color-line);
+}
+:root.dark .footer-wordmark {
+  color: rgb(255 255 255 / 0.04);
+}
+:root.dark .site-footer .footer-brand p,
+:root.dark .site-footer .footer-group a,
+:root.dark .site-footer .footer-bottom {
+  color: var(--color-slate-soft);
+}
+:root.dark /* journey.css stacks groups vertically and puts 32px above each one after the
+   first. They are grid columns now, so that rule pushed the second and third
+   headings a row below the first — visible as "Yordam" and "Hujjatlar" sitting
+   lower than "Sayohat". */
+.site-footer .footer-group + .footer-group {
+  margin-top: 0;
+}
+
+.site-footer .footer-group h3,
+:root.dark .site-shell .site-footer .footer-group h3 {
+  color: var(--color-ink);
+}
+:root.dark .site-footer .footer-group a:hover {
+  color: var(--color-accent-400, #4fd1b5);
+}
+
+/* --- Narrow screens ------------------------------------------------------ */
+
+@media (max-width: 1023px) {
+  .site-footer .footer-main {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px 32px;
+  }
+  .site-footer .footer-brand {
+    grid-column: 1 / -1;
+  }
+  .footer-wordmark {
+    font-size: 132px;
+  }
+}
+
+/* The bottom navigation appears below 768 and is fixed to the viewport, so the
+   last row of the footer has to clear it. journey.css did this with
+   `padding: 44px 0 100px` on the element; the shell owns the padding now, and
+   dropping the rule put the copyright line underneath the nav bar. */
+@media (max-width: 767px) {
+  .site-footer .footer-shell {
+    padding-bottom: 104px;
+  }
+}
+
+@media (max-width: 639px) {
+  .site-footer .footer-shell {
+    padding-inline: 16px;
+    padding-top: 40px;
+  }
+  .site-footer .footer-main {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .site-footer .footer-brand p {
+    font-size: 16px;
+    margin-top: 18px;
+  }
+  /* journey.css stacks groups vertically and puts 32px above each one after the
+   first. They are grid columns now, so that rule pushed the second and third
+   headings a row below the first — visible as "Yordam" and "Hujjatlar" sitting
+   lower than "Sayohat". */
+.site-footer .footer-group + .footer-group {
+  margin-top: 0;
+}
+
+.site-footer .footer-group h3,
+  .site-shell .site-footer .footer-group h3 {
+    font-size: 19px;
+    margin-bottom: 16px;
+  }
+  .site-footer .footer-group a {
+    font-size: 16px;
+  }
+  .site-footer .footer-group a + a {
+    margin-top: 14px;
+  }
+  .site-footer .footer-chips a {
+    width: 46px;
+    height: 46px;
+  }
+  .site-footer .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 15px;
+  }
+  .footer-wordmark {
+    font-size: 84px;
+    top: 24px;
+  }
+}

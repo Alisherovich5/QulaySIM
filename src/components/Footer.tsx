@@ -35,76 +35,103 @@ function InstagramMark() {
 }
 
 /**
+ * A paper plane and the line it has flown, behind the columns.
+ *
+ * Inline rather than a file: it is two paths and a dotted stroke, which costs
+ * less here than a request, and the colour has to follow the theme. Decorative
+ * only — `aria-hidden`, and it sits on the layer below the content so it can
+ * never intercept a click meant for a link.
+ */
+function FlightTrail() {
+  return (
+    <svg
+      className="footer-trail"
+      viewBox="0 0 1536 420"
+      preserveAspectRatio="xMaxYMin meet"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* Coordinates are the design's own, in a 1536-wide space measured from
+          the hairline at the top: the line enters the left edge at y≈146, sags
+          to y≈230 behind the middle columns and rises to the plane at x≈1330.
+          Shallow on purpose — a steeper diagonal cuts across the columns
+          instead of passing behind them. */}
+      <path
+        d="M0 146C250 198 520 232 900 188 1090 165 1240 134 1326 114"
+        fill="none"
+        stroke="#d7e9e6"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M1400 92c42-12 86-22 136-28"
+        fill="none"
+        stroke="#d7e9e6"
+        strokeWidth="1.6"
+        strokeDasharray="4 8"
+        strokeLinecap="round"
+      />
+      <path d="M1330 94l44 18-44 18 10-18-10-18z" fill="#cfe6e2" />
+    </svg>
+  )
+}
+
+/**
  * The footer carries the brand and the whole site map.
  *
- * It sits on the page surface rather than a dark slab: the shop is light
- * everywhere else and the dark block read as a different site. Links are laid
- * out in two columns instead of four thin ones — four columns left three of
- * them half empty and pushed the social block off to the side.
+ * Four columns to the approved design: the brand with its two lines and the two
+ * social marks, then travel, help and the legal texts. It sits on the page
+ * surface rather than a dark slab — the shop is light everywhere else and the
+ * dark block read as a different site.
+ *
+ * The wordmark behind it is set as type rather than shipped as an image, and
+ * carries `aria-hidden`: it is the brand at the size of a watermark, not a
+ * second heading for a screen reader to read out.
  */
 export default function Footer() {
   const { t } = useTranslation()
   const c = useDesignCopy()
-  const columns = [
-    [
-      {
-        title: c.explore,
-        links: [
-          ['/destinations', t('nav.destinations')],
-          ['/global', t('nav.global')],
-          ['/account', t('nav.account')],
-        ] as const,
-      },
-      {
-        title: c.legal,
-        links: [
-          ['/oferta', t('legal.oferta.title')],
-          ['/maxfiylik', t('legal.privacy.title')],
-          ['/qaytarish', t('legal.refund.title')],
-        ] as const,
-      },
-    ],
-    [
-      {
-        title: c.learn,
-        links: [
-          ['/device-check', t('nav.deviceCheck')],
-          ['/data-calculator', c.navEnough],
-          ['/esim-nima', t('guides.what.title')],
-          ['/esim-ornatish', c.howLink],
-          ['/support', c.help],
-        ] as const,
-      },
-    ],
+
+  const groups = [
+    {
+      title: c.explore,
+      links: [
+        ['/destinations', t('nav.destinations')],
+        ['/global', t('nav.global')],
+        ['/account', t('nav.account')],
+      ] as const,
+    },
+    {
+      title: t('nav.support'),
+      links: [
+        ['/device-check', t('nav.deviceCheck')],
+        ['/esim-nima', t('guides.what.title')],
+        ['/esim-ornatish', c.howLink],
+        ['/support', c.help],
+      ] as const,
+    },
+    {
+      title: c.legal,
+      links: [
+        ['/oferta', t('legal.oferta.title')],
+        ['/maxfiylik', t('legal.privacy.title')],
+        ['/qaytarish', t('legal.refund.title')],
+      ] as const,
+    },
   ]
+
   return (
     <footer className="site-footer">
-      <div className="container-page">
+      <span className="footer-wordmark" aria-hidden="true">
+        Qulaysim
+      </span>
+      <FlightTrail />
+
+      <div className="footer-shell">
         <div className="footer-main">
           <div className="footer-brand">
             <Logo />
             <p>{t('footer.tagline')}</p>
-          </div>
-
-          <nav className="footer-links" aria-label={t('footer.pages')}>
-            {columns.map((column, index) => (
-              <div key={index}>
-                {column.map((group) => (
-                  <div key={group.title} className="footer-group">
-                    <h3>{group.title}</h3>
-                    {group.links.map(([to, label]) => (
-                      <Link key={to} to={to}>
-                        {label}
-                      </Link>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </nav>
-
-          <div className="footer-social">
-            <h3>{t('footer.social')}</h3>
             {/* Round chips, the same shape the live site uses, so the two
                 marks read as buttons and not as another link in the list. */}
             <div className="footer-chips">
@@ -126,14 +153,45 @@ export default function Footer() {
               </a>
             </div>
           </div>
+
+          {groups.map((group) => (
+            <nav key={group.title} className="footer-group" aria-label={group.title}>
+              <h3>{group.title}</h3>
+              {group.links.map(([to, label]) => (
+                <Link key={to} to={to}>
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          ))}
         </div>
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} QulaySIM</span>
-          <span>O‘zbekcha · Русский · English</span>
+          <span>© {new Date().getFullYear()} Qulaysim</span>
+          <div className="footer-bottom-right">
+            <span>O‘zbekcha · Русский · English</span>
+            {/* Scrolls rather than navigates: an anchor to "#" adds a history
+                entry and leaves a stray hash in the address bar. */}
+            <button
+              type="button"
+              className="footer-top-link"
+              aria-label={t('footer.toTop')}
+              onClick={() =>
+                window.scrollTo({
+                  top: 0,
+                  behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+                    ? 'auto'
+                    : 'smooth',
+                })
+              }
+            >
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M18 15l-6-6-6 6" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
-
     </footer>
   )
 }

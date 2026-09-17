@@ -599,8 +599,8 @@ const uz: Translation = {
   },
 
   footer: {
-    tagline:
-      'Sayohat uchun qulay eSIM internet tariflari. Tarifni tanlang, QR-kodni oling va ulaning.',
+    tagline: 'Sayohat uchun qulay eSIM. Tanlang, ulang va foydalaning.',
+    toTop: 'Yuqoriga',
     pages: 'Sahifalar',
     contacts: 'Kontaktlar',
     product: 'Mahsulot',
