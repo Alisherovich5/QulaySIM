@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ArrowRight, Search, X } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { useCurrency } from '../context/CurrencyContext'
 import { useDesignCopy } from '../lib/design-copy'
 import Seo from '../components/Seo'
 import Flag from '../components/Flag'
+import WorldPicker from '../components/destinations/WorldPicker'
 import { api } from '../lib/api'
 import { boot } from '../lib/boot'
 import { useCatalogue } from '../lib/useCatalogue'
@@ -127,62 +128,35 @@ export default function Destinations() {
         ]}
       />
 
-      {/* 1 — the question, and the one control that answers it */}
+      {/* 1 — the question, the control that answers it, and the map.
+       *
+       * The search, the promoted list and the map are one panel now rather than
+       * three stacked blocks: they are all answering "where", and stacked they
+       * put the map — the part that shows a visitor somewhere they had not
+       * thought of — below the fold on every laptop. */}
       <header className="dst-head">
-        <p className="eyebrow">{t('nav.destinations')}</p>
-        <h1>{c.catalogueTitle}</h1>
-        <p className="dst-lead">{c.catalogueNote}</p>
-
-        <div className="dst-search">
-          <Search size={20} aria-hidden />
-          <input
-            type="search"
-            name="country"
-            aria-label={c.searchHint}
-            placeholder={c.searchHint}
-            value={search}
-            autoComplete="off"
-            onChange={(event) => update('search', event.target.value)}
-          />
-          {search ? (
-            <button type="button" aria-label={c.clear} onClick={() => update('search', '')}>
-              <X size={18} aria-hidden />
-            </button>
-          ) : null}
-        </div>
-
-        <p className="dst-count" role="status">
-          {search ? `${t('destinations.resultsFor', { query: search })} · ` : ''}
-          {t('destinations.regionCountries', { count: countries.length })}
-        </p>
+        <h1 className="dst-pick-title">
+          {(() => {
+            const word = t('destinations.pickWord')
+            const [before, after] = t('destinations.pickTitle', { word: '\u0000' }).split('\u0000')
+            return (
+              <>
+                {before}
+                <span>{word}</span>
+                {after}
+              </>
+            )
+          })()}
+        </h1>
       </header>
 
-      {/* 2 — what people actually travel to, before the alphabet */}
-      {!filtering && popular.length ? (
-        <section className="dst-block">
-          <div className="dst-block__head">
-            <h2>{t('home.popularTitle')}</h2>
-            <p>{t('home.popularSubtitle')}</p>
-          </div>
-          <ul className="dst-popular">
-            {popular.map((country) => (
-              <li key={country.id}>
-                <Link
-                  to={'/destinations/' + country.slug}
-                  onMouseEnter={() => prefetch(country.slug)}
-                  onFocus={() => prefetch(country.slug)}
-                >
-                  <Flag iso2={country.iso2} w={160} />
-                  <span className="dst-popular__name">{country.name}</span>
-                  <span className="dst-popular__price">
-                    <span>{t('common.from')}</span> {formatPrice(country.starting_price)}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      <WorldPicker
+        countries={all}
+        regions={sellableRegions}
+        popular={popular}
+        search={search}
+        onSearch={(value) => update('search', value)}
+      />
 
       {/* 3 — a regional eSIM is a product, not a filter, so it gets its own block */}
       {!filtering && sellableRegions.length ? (
@@ -234,7 +208,7 @@ export default function Destinations() {
       ) : null}
 
       {/* 4 — the directory itself */}
-      <section className="dst-block dst-index">
+      <section className="dst-block dst-index" id="hammasi">
         {/* "All destinations" over two search results is a lie; the count
             line under the search box already names what is on screen. */}
         {!filtering ? (

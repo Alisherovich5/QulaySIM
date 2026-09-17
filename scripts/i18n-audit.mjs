@@ -45,6 +45,7 @@ const SAME_IS_FINE = [
   /^plan\.mostPopular$/,
   /^auth\.emailPlaceholder$/, // an e-mail address, identical by design
   /^auth\.email$/, // "Email" is used as-is in Uzbek; Russian does differ
+  /^destinations\.tabGlobal$/, // "Global" is the word all three use for the worldwide tier
 ]
 
 /**
