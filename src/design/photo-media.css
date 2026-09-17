@@ -54,8 +54,15 @@
   /* The subject — the traveller and the skyline — is on the right of the
      frame, and the copy is on the left. Anchoring the crop right means that
      when a narrow viewport takes a slice out of the middle, the slice it keeps
-     is the half with something in it. */
-  object-position: 72% 50%;
+     is the half with something in it.
+
+     Anchored to the bottom, not the middle. The artwork is 2:1 and the band is
+     2.59:1 at 1440, so `cover` has 164px of height to lose. Centred, it took 82
+     of them off the bottom and cut the traveller off at the thigh. Taken off the
+     top instead, the same 164px come out of empty sky — the cost is the small
+     aeroplane in the top corner, which is a cheaper thing to lose than a person's
+     legs. Below 1024 the overflow is horizontal, so this has nothing to do. */
+  object-position: 72% 100%;
 }
 
 /* The scrim is a contrast budget, not a mood.
