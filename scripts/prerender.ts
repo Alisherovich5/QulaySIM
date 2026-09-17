@@ -165,6 +165,17 @@ interface PageMeta {
    * background refresh rather than a wait.
    */
   boot?: Record<string, unknown>
+  /**
+   * The page's own <h1>, when it differs from the SEO title.
+   *
+   * They usually agree, and where they do this is left unset. Where they do
+   * not, the baked heading has to be the one the page actually shows: a crawler
+   * reading "Where shall we go next" while every visitor sees "Where are you
+   * going" is two different pages as far as anything comparing them is
+   * concerned, and it is the sort of mismatch a spam classifier is built to
+   * notice.
+   */
+  heading?: string
 }
 
 /**
@@ -251,7 +262,7 @@ function bodyFor(page: PageMeta): string {
   const country = boot.country as Record<string, unknown> | undefined
   const global = boot.global as Record<string, unknown> | undefined
   const parts = [
-    `<h1>${escapeAttr(page.title)}</h1>`,
+    `<h1>${escapeAttr(page.heading ?? page.title)}</h1>`,
     `<p>${escapeAttr(page.description)}</p>`,
     country ? planRows(country.plans, locale) : '',
     global ? planRows(global.plans, locale) : '',
@@ -454,6 +465,10 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
   switch (route) {
     case '/destinations':
       return {
+        heading: STRINGS[lang].destinations.pickTitle.replace(
+          '{{word}}',
+          STRINGS[lang].destinations.pickWord,
+        ),
         ...base,
         title: s.destinationsTitle,
         description: s.destinationsDescription,

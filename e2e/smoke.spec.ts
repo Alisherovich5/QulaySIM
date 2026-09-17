@@ -149,7 +149,10 @@ test('the language prefix decides the edition, whatever is stored', async ({ pag
   await page.goto('/ru/destinations')
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
-  await expect(page.getByRole('heading', { level: 1 })).toContainText(/Куда отправимся дальше/i)
+  // The destinations heading, in Russian. Any Russian-only string proves the
+  // point; this one is the page's own h1, so it also fails if the heading stops
+  // being an h1 — which is what a crawler reads first.
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(/Куда вы едете/i)
 })
 
 test('the worldwide filter narrows by country', async ({ page }) => {
