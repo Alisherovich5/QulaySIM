@@ -208,11 +208,16 @@ test('the region filter never offers a region that empties the page', async ({ p
     }),
   )
   await page.goto('/destinations')
-  const menu = page.getByRole('combobox', { name: /Mintaqa/i })
-  await expect(menu.locator('option', { hasText: 'Yevropa' })).toHaveCount(1)
-  await expect(menu.locator('option', { hasText: 'Butun dunyo' })).toHaveCount(0)
+  // The regions are chips now rather than a <select>, but the rule they follow
+  // is the same one: a region with no countries behind it is not offered here.
+  const chips = page.locator('.dst-chips')
+  await expect(chips.getByRole('button', { name: 'Yevropa' })).toHaveCount(1)
+  await expect(chips.getByRole('button', { name: 'Butun dunyo' })).toHaveCount(0)
   // Offered instead as a link to the page that actually sells those plans.
-  await expect(page.locator('.catalogue-tabs a')).toHaveAttribute('href', '/global')
+  await expect(page.getByRole('link', { name: /Butun dunyo|dunyo bo/i }).first()).toHaveAttribute(
+    'href',
+    '/global',
+  )
 })
 
 test('the device check answers by typing, and refuses to overstate', async ({ page }) => {
@@ -278,81 +283,66 @@ test('the globe keeps its countries when the catalogue request is lost', async (
   expect(await quick.count()).toBeGreaterThan(0)
 })
 
-test('the floating navigation keeps its controls and eSIM destination', async ({ page }) => {
+/** The language button carries an aria-label, so its name follows the UI language. */
+const LANGUAGE_BUTTON = /^(Til|Language|Язык)$/
+
+test('the header keeps its currency, theme and language controls', async ({ page }) => {
   await page.goto('/destinations')
-  const header = page.locator('.floating-nav')
-  const language = header.getByRole('button', { name: 'Language', exact: true })
-  const menu = header.locator('.floating-nav__toggle')
+  const header = page.locator('.site-header')
 
-  await language.click()
-  await header.getByRole('button', { name: 'USD', exact: true }).click()
-  await expect(header.getByRole('button', { name: 'USD', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  )
-  await page.keyboard.press('Escape')
-  await expect(language).toBeFocused()
-  await expect(language).toHaveAttribute('aria-expanded', 'false')
+  // Currency: one pair of buttons on desktop, a single toggle on a phone —
+  // either way the other currency has to be reachable afterwards.
+  await header
+    .getByRole('button', { name: /USD/ })
+    .first()
+    .click()
+  await expect(header.getByRole('button', { name: /UZS/ }).first()).toBeVisible()
 
-  if (await menu.isVisible()) await menu.click()
-  await header.getByRole('button', { name: 'Switch to dark mode' }).click()
+  await header.getByRole('button', { name: /Tungi rejim/ }).click()
   await expect(page.locator('html')).toHaveClass(/dark/)
-  await header.getByRole('button', { name: 'Switch to light mode' }).click()
+  await header.getByRole('button', { name: /Kunduzgi rejim/ }).click()
   await expect(page.locator('html')).not.toHaveClass(/dark/)
 
-  if (await menu.isVisible()) {
-    await language.click()
-    await page.keyboard.press('Escape')
-    await expect(menu).toHaveAttribute('aria-expanded', 'true')
-    await page.keyboard.press('Escape')
-    await expect(menu).toHaveAttribute('aria-expanded', 'false')
-    await expect(menu).toBeFocused()
-    await menu.click()
-  }
+  // Escape closes the language list and puts focus back where it started.
+  const language = header.getByRole('button', { name: LANGUAGE_BUTTON })
+  await language.click()
+  await expect(language).toHaveAttribute('aria-expanded', 'true')
+  await page.keyboard.press('Escape')
+  await expect(language).toHaveAttribute('aria-expanded', 'false')
+  await expect(language).toBeFocused()
 
-  await header
-    .getByRole('link', { name: 'Mening eSIM’im', exact: true })
-    .filter({ visible: true })
-    .click()
-  await expect(page).toHaveURL(/\/login$/)
-  expect(await page.evaluate(() => history.state.usr.from)).toBe('/account?tab=esims')
+  await expect(header.getByRole('link', { name: 'Cart' })).toBeVisible()
 })
 
-test('the floating navigation changes language without losing the page', async ({ page }) => {
+test('the header changes language without losing the page', async ({ page }) => {
   await page.goto('/destinations/turkey')
-  await page.locator('.floating-nav').getByRole('button', { name: 'Language' }).click()
-  await page
-    .locator('.navigation-language__popover')
-    .getByRole('button', { name: 'Русский' })
-    .click()
+  await page.locator('.site-header').getByRole('button', { name: LANGUAGE_BUTTON }).click()
+  await page.getByRole('button', { name: 'Русский' }).click()
   await expect(page).toHaveURL(/\/ru\/destinations\/turkey$/)
   await expect(page.locator('html')).toHaveAttribute('lang', 'ru')
   // The API fixture deliberately keeps its Uzbek country name; page copy is translated locally.
   await expect(page.getByRole('button', { name: 'Выбрать тариф', exact: true })).toBeVisible()
 })
 
-test('the navigation fits a phone and tablet with a filled cart', async ({ page }) => {
+test('the header fits every width with a filled cart', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 844 })
   await page.goto('/destinations/turkey')
   await page
     .getByRole('button', { name: /Tarifni tanlash/i })
     .first()
     .click()
-  await expect(page.locator('.floating-nav__cart')).toBeVisible()
+
+  const header = page.locator('.site-header')
+  await expect(header.getByRole('link', { name: 'Cart' })).toBeVisible()
   for (const width of [320, 360, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 844 })
-    await expect(page.locator('.floating-nav__theme > button')).toHaveCount(width >= 768 ? 1 : 0)
+    // Nothing in the bar may push it wider than the screen at any width.
     await expect
-      .poll(() =>
-        page.locator('.floating-nav__bar').evaluate((bar) => {
-          const brand = bar.querySelector('.floating-nav__brand')!.getBoundingClientRect()
-          const controls = bar.querySelector('.floating-nav__controls')!.getBoundingClientRect()
-          return bar.scrollWidth <= bar.clientWidth && brand.right <= controls.left
-        }),
-      )
+      .poll(() => header.evaluate((bar) => bar.scrollWidth <= bar.clientWidth + 1))
       .toBe(true)
-    await page.locator('.navigation-language__trigger').click()
-    const bounds = await page.locator('.navigation-language__popover').boundingBox()
+    await header.getByRole('button', { name: LANGUAGE_BUTTON }).click()
+    const list = page.getByRole('button', { name: "O'zbekcha" }).first()
+    const bounds = await list.boundingBox()
     expect(bounds!.x).toBeGreaterThanOrEqual(0)
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width)
     await page.keyboard.press('Escape')
@@ -365,11 +355,8 @@ test('Uzbek can be selected on an unprefixed page with another stored language',
   await page.addInitScript(() => localStorage.setItem('fastsim_lang', 'en'))
   await page.goto('/destinations/turkey')
   await expect(page.getByRole('button', { name: 'Choose plan', exact: true })).toBeVisible()
-  await page.locator('.navigation-language__trigger').click()
-  await page
-    .locator('.navigation-language__popover')
-    .getByRole('button', { name: "O'zbekcha" })
-    .click()
+  await page.locator('.site-header').getByRole('button', { name: LANGUAGE_BUTTON }).click()
+  await page.getByRole('button', { name: "O'zbekcha" }).click()
   await expect(page).toHaveURL(/\/destinations\/turkey$/)
   await expect(page.getByRole('button', { name: 'Tarifni tanlash', exact: true })).toBeVisible()
 })
