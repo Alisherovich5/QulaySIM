@@ -32,6 +32,18 @@
 @media (min-width: 1024px) {
   .hero-photo {
     min-height: min(38.6vw, 760px);
+    /* The copy has to grow with the band, or the height the band gains becomes
+       a hole under the quick links — the same "the bottom is left open" the
+       asymmetric padding was written to close. The artwork is absolutely
+       positioned, so it stays out of this column; the only flex child is the
+       copy, and `items-center` inside it then spreads the new height above and
+       below the text instead of piling it underneath. */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-photo > .container-page {
+    flex: 1 1 auto;
   }
 }
 :root.dark .hero-photo {
