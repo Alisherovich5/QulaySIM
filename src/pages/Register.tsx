@@ -43,9 +43,14 @@ export default function Register() {
       })
   }, [])
 
+  // `from`, not a hardcoded /account. Someone who came here from the checkout
+  // came to pay, and this effect fires on the state change that `register`
+  // itself causes — so it used to overrule the `navigate(from)` below and land
+  // every new customer on the account page, one step short of the purchase they
+  // had already chosen. Login.tsx has always done it this way.
   useEffect(() => {
-    if (customer) navigate('/account', { replace: true })
-  }, [customer, navigate])
+    if (customer) navigate(from, { replace: true })
+  }, [customer, from, navigate])
 
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
