@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next'
 
 /** Copy for the shared travel interface, in all three site languages. */
-const copy = {
+// Exported as well as hooked: the prerender runs in Node, where a hook cannot,
+// and it needs the same words the navigation shows so a baked breadcrumb and a
+// rendered link cannot name the page differently.
+export const copy = {
   uz: {
     eyebrow: 'Sayohat uchun eSIM',
     title: 'Qayerga',

@@ -53,6 +53,7 @@ import {
 import {
   breadcrumbLd,
   destinationLd,
+  destinationListLd,
   faqLd,
   howToLd,
   organisationLd,
@@ -64,6 +65,7 @@ import {
   interpolate,
   type DestinationFacts,
 } from '../src/lib/destination-facts'
+import { copy as DESIGN_COPY } from '../src/lib/design-copy'
 import { geoFor, HOME_GEO, type GeoFacts } from '../src/lib/geo'
 import type { Plan } from '../src/lib/types'
 
@@ -464,6 +466,12 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
   const s = STRINGS[lang].seo
   const base = { path: route, lang }
   switch (route) {
+    // These five carried `jsonLd: []` while the pages themselves emitted a
+    // breadcrumb, a list or an FAQ once React had run. A crawler that does not
+    // execute JavaScript therefore read a bare page where the visitor's browser
+    // built rich data — the destinations index worst of all, since its ItemList
+    // is what earns a carousel rather than one blue link. Baked from the same
+    // locale strings the pages read, so the two cannot disagree.
     case '/destinations':
       return {
         ...base,
@@ -473,27 +481,39 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
           STRINGS[lang].destinations.pickWord,
         ),
         description: s.destinationsDescription,
-        jsonLd: [],
+        // The ItemList needs the catalogue and is added by the caller, which
+        // has it; the trail needs only the locale.
+        jsonLd: [breadcrumbLd([{ name: STRINGS[lang].nav.destinations, path: route }], lang)],
       }
     case '/global':
-      return { ...base, title: s.globalPageTitle, description: s.globalPageDescription, jsonLd: [] }
+      return {
+        ...base,
+        title: s.globalPageTitle,
+        description: s.globalPageDescription,
+        jsonLd: [breadcrumbLd([{ name: STRINGS[lang].global.title, path: route }], lang)],
+      }
     case '/device-check':
       return {
         ...base,
         title: s.deviceTitle,
         heading: DEVICE_CHECK_COPY[lang].dc.title,
         description: s.deviceDescription,
-        jsonLd: [],
+        jsonLd: [breadcrumbLd([{ name: STRINGS[lang].nav.deviceCheck, path: route }], lang)],
       }
     case '/data-calculator':
       return {
         ...base,
         title: s.dataCalculatorTitle,
         description: s.dataCalculatorDescription,
-        jsonLd: [],
+        jsonLd: [breadcrumbLd([{ name: DESIGN_COPY[lang].navEnough, path: route }], lang)],
       }
     case '/support':
-      return { ...base, title: s.supportTitle, description: s.supportDescription, jsonLd: [] }
+      return {
+        ...base,
+        title: s.supportTitle,
+        description: s.supportDescription,
+        jsonLd: [guideFaqLd(STRINGS[lang].support.faqs)],
+      }
     // The guides bake their FAQ schema from the same locale arrays the pages
     // render, so what a crawler reads and what a visitor sees cannot diverge.
     case '/esim-nima':
@@ -740,6 +760,11 @@ export function prerender(): Plugin {
           // catalogue, so it is the one that gains from carrying it.
           if ((route === '/destinations' || route === '/data-calculator') && catalogue.length)
             meta.boot = { countries: catalogue }
+          // The ItemList is the one piece of structured data on a static route
+          // that is made of catalogue rather than copy, so it is built here
+          // where the catalogue is in hand.
+          if (route === '/destinations' && catalogue.length)
+            meta.jsonLd.push(destinationListLd(catalogue, lang))
           // The home page shows destination cards and the worldwide strip; the
           // worldwide page is nothing but those plans. Both went blank when a
           // request was lost, which is the failure this whole mechanism exists
