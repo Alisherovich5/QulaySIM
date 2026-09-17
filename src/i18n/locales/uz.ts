@@ -294,11 +294,17 @@ const uz: Translation = {
     signInNote: 'eSIM hisobingizga yetkaziladi, shuning uchun to‘lovdan oldin kirish kerak.',
     promoApplied: '{{code}} promo-kodi qo‘llandi',
     payFailed: 'To‘lov amalga oshmadi. Qaytadan urinib ko‘ring.',
+    confirming: 'To‘lov tekshirilmoqda…',
+    unconfirmed:
+      'To‘lovni hozircha tasdiqlab bo‘lmadi. Pul yechilgan bo‘lsa, eSIM bir necha daqiqada hisobingizda paydo bo‘ladi — savatingiz esa joyida qoldi.',
     successTitle: 'To‘lov muvaffaqiyatli',
     successSubtitle: 'Buyurtma #{{id}} · {{count}} ta eSIM tayyor. O‘rnatish uchun skanerlang.',
     installHint:
       'Sozlamalar → Uyali aloqa → eSIM qo‘shish bo‘limini oching va ushbu kodni skanerlang.',
     goToMyEsims: 'Mening eSIM‘larimga',
+    startOver: 'To‘lamadim — qaytadan boshlash',
+    startOverBlocked:
+      'To‘lov hali jarayonda. Bir daqiqadan so‘ng qayta urinib ko‘ring yoki hisobingizni tekshiring.',
     keepShopping: 'Xaridni davom ettirish',
   },
   topup: {

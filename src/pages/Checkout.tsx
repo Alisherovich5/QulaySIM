@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type MouseEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import PriceTag from '../components/PriceTag'
 import { useDesignCopy } from '../lib/design-copy'
 import { CreditCard, Lock, LogIn, Minus, Plus, ShoppingBag, Tag, Trash2 } from 'lucide-react'
@@ -10,18 +11,46 @@ import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { promoRejection } from '../lib/promoRejection'
+import { checkoutKey } from '../lib/checkout-key'
+import { isOrderSettled } from '../lib/order-status'
 import Flag from '../components/Flag'
 import { Button, Card } from '../components/ui'
 import type { Quote } from '../lib/types'
 
 export default function Checkout() {
   const c = useDesignCopy()
-  const { items, setQuantity, remove, subtotal } = useCart()
+  const { items, setQuantity, remove, subtotal, clear } = useCart()
   const { customer } = useAuth()
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [payUrl, setPayUrl] = useState<string | null>(null)
   const payTrigger = useRef<HTMLButtonElement>(null)
-  const [payState, setPayState] = useState<'idle' | 'starting' | 'error' | 'unavailable'>('idle')
+  const [payState, setPayState] = useState<
+    | 'idle'
+    | 'starting'
+    | 'error'
+    | 'unavailable'
+    | 'confirming'
+    | 'unconfirmed'
+    | 'cancelBlocked'
+  >('idle')
+  /** The order the open payment window belongs to, so its outcome can be asked for. */
+  const [orderId, setOrderId] = useState<number | null>(null)
+  /**
+   * Whether this screen is still the one on screen.
+   *
+   * Confirming a payment takes a few seconds of polling, and the customer is
+   * free to leave during them — closing the window and tapping "Account" is an
+   * entirely reasonable thing to do. The same `alive` guard the rest of the app
+   * uses for a request that outlives its screen (see TopUpSheet, GoogleSignIn).
+   */
+  const onScreen = useRef(true)
+  useEffect(() => {
+    onScreen.current = true
+    return () => {
+      onScreen.current = false
+    }
+  }, [])
 
   /**
    * Ask the API to place the order and hand back a payment URL.
@@ -30,15 +59,23 @@ export default function Checkout() {
    * this browser is a suggestion, not an authority — and the URL that comes
    * back belongs to whichever provider is configured. A 503 means no provider
    * is live yet, which is a different message from a failure.
+   *
+   * `Idempotency-Key` is what stops one cart becoming two orders. See
+   * lib/checkout-key.ts for why it is derived from the cart rather than minted.
    */
   const startPayment = async (event: MouseEvent<HTMLButtonElement>) => {
     payTrigger.current = event.currentTarget
     setPayState('starting')
     try {
-      const { data } = await api.post<{ payment_url: string }>('/checkout', {
-        items: items.map((i) => ({ plan_id: i.plan.id, quantity: i.quantity })),
-        promo_code: appliedPromo || undefined,
-      })
+      const { data } = await api.post<{ order_id: number; payment_url: string }>(
+        '/checkout',
+        {
+          items: items.map((i) => ({ plan_id: i.plan.id, quantity: i.quantity })),
+          promo_code: appliedPromo || undefined,
+        },
+        { headers: { 'Idempotency-Key': checkoutKey(items, appliedPromo) } },
+      )
+      setOrderId(data.order_id)
       setPayUrl(data.payment_url)
       setPayState('idle')
     } catch (error: unknown) {
@@ -46,6 +83,72 @@ export default function Checkout() {
       setPayState(status === 503 ? 'unavailable' : 'error')
     }
   }
+
+  /**
+   * The payment window has been closed. Find out whether anything was paid.
+   *
+   * Closing the frame used to be the end of it: the cart stayed exactly as it
+   * was, nothing moved, and a customer who had just paid was left looking at
+   * the same "pay" button over the same items — with no way to tell whether it
+   * had worked, and every reason to press it again.
+   *
+   * The frame is a different origin, so it cannot be asked. The API can: an
+   * order that shows up in the customer's history has been settled. Confirmed
+   * ones clear the cart and land on the eSIM tab, which is what the customer
+   * opened the payment window to reach. Anything else leaves the cart untouched
+   * — a cancelled payment must not throw a cart away — and says so.
+   */
+  const finishPayment = async () => {
+    setPayUrl(null)
+    if (orderId === null) return
+    setPayState('confirming')
+    const settled = await isOrderSettled(orderId)
+    // Emptying the cart is not this screen's business to postpone: the cart
+    // belongs to the whole app, and an order confirmed while the customer was
+    // already walking away is paid for either way. Left in, those items are
+    // waiting to be bought a second time. Only what this screen draws is
+    // skipped once it is gone.
+    if (settled) clear()
+    if (!onScreen.current) return
+    if (settled) {
+      navigate('/account?tab=esims')
+      return
+    }
+    setPayState('unconfirmed')
+  }
+
+  /**
+   * "I did not pay" — give the pending order back so the next attempt is fresh.
+   *
+   * Needed because of where the idempotency key comes from. It is derived from
+   * the cart, so a customer whose payment link has gone stale cannot ask for a
+   * new one by rebuilding the cart: removing the only item and adding it again
+   * produces the very same key, and the API replays the very same dead link.
+   * Cancelling the order is what actually releases it — the API refuses to
+   * replay anything that is not pending.
+   *
+   * Only ever reached from the "we could not confirm it" notice, so the
+   * customer is the one asserting no money moved. If one did move after all,
+   * the provider's confirmation arrives against a cancelled order, is refused,
+   * and — with ATMOS, which asks before it debits — nothing is charged. A 409
+   * is the API saying a payment is genuinely in flight; that is not a failure
+   * to report as one, it is a reason to wait.
+   */
+  const startOver = async () => {
+    if (orderId === null) {
+      setPayState('idle')
+      return
+    }
+    try {
+      await api.post(`/checkout/${orderId}/cancel`)
+      setOrderId(null)
+      setPayState('idle')
+    } catch (error: unknown) {
+      const status = (error as { response?: { status?: number } })?.response?.status
+      setPayState(status === 409 ? 'cancelBlocked' : 'error')
+    }
+  }
+
   const { formatPrice } = useCurrency()
 
   const [promo, setPromo] = useState('')
@@ -72,6 +175,14 @@ export default function Checkout() {
   })
 
   useEffect(() => {
+    // Both notices describe the cart as it was a moment ago, so editing it
+    // retires them: "we could not confirm the payment, your cart has been kept"
+    // is a false statement about a cart that has since changed. `unavailable`
+    // is not cleared — no provider is configured, and rearranging a cart does
+    // not configure one.
+    setPayState((state) =>
+      state === 'unconfirmed' || state === 'error' || state === 'cancelBlocked' ? 'idle' : state,
+    )
     if (items.length === 0) {
       setQuote(null)
       return
@@ -253,14 +364,20 @@ export default function Checkout() {
                 <Button
                   fullWidth
                   className="mt-5 py-3.5"
-                  loading={payState === 'starting'}
-                  disabled={payState === 'starting' || payState === 'unavailable'}
+                  loading={payState === 'starting' || payState === 'confirming'}
+                  disabled={
+                    payState === 'starting' ||
+                    payState === 'confirming' ||
+                    payState === 'unavailable'
+                  }
                   onClick={startPayment}
                 >
-                  <CreditCard size={18} />
+                  {payState !== 'confirming' && <CreditCard size={18} />}
                   {payState === 'unavailable'
                     ? t('checkout.paymentSetup')
-                    : t('checkout.payWithCard')}
+                    : payState === 'confirming'
+                      ? t('checkout.confirming')
+                      : t('checkout.payWithCard')}
                 </Button>
                 <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-soft">
                   <Lock size={12} />
@@ -270,6 +387,42 @@ export default function Checkout() {
                 </p>
                 {payState === 'error' && (
                   <p className="mt-2 text-center text-xs text-bad">{t('checkout.payFailed')}</p>
+                )}
+                {/* Not an error, and deliberately not worded as one: the two
+                    cases that land here are a payment the provider has not
+                    confirmed to us yet and a window the customer simply closed.
+                    Telling them apart from this side is not possible, so the
+                    copy covers both and the cart is left where it was. */}
+                {payState === 'unconfirmed' && (
+                  <div
+                    role="status"
+                    className="mt-3 rounded-xl bg-gold-500/10 px-4 py-3 text-xs leading-5 text-gold-700 ring-1 ring-gold-500/20 dark:text-gold-300"
+                  >
+                    {t('checkout.unconfirmed')}
+                    <Button
+                      to="/account?tab=esims"
+                      variant="ghost"
+                      className="mt-2.5 min-h-11 w-full text-sm"
+                    >
+                      {t('checkout.goToMyEsims')}
+                    </Button>
+                    {/* Second, and quieter: most people who land here did pay
+                        and want the first button. This one is for the other
+                        case, and it is the only way out of a stale payment
+                        link — see startOver. */}
+                    <button
+                      type="button"
+                      onClick={() => void startOver()}
+                      className="mt-2 min-h-11 w-full rounded-xl text-sm underline underline-offset-4 opacity-80 hover:opacity-100"
+                    >
+                      {t('checkout.startOver')}
+                    </button>
+                  </div>
+                )}
+                {payState === 'cancelBlocked' && (
+                  <p role="status" className="mt-2 text-center text-xs text-slate-soft">
+                    {t('checkout.startOverBlocked')}
+                  </p>
                 )}
               </>
             ) : (
@@ -290,7 +443,7 @@ export default function Checkout() {
       {payUrl && (
         <PaymentFrame
           url={payUrl}
-          onClose={() => setPayUrl(null)}
+          onClose={() => void finishPayment()}
           returnFocus={payTrigger.current}
         />
       )}

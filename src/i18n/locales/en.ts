@@ -293,10 +293,16 @@ const en = {
     signInNote: 'Your eSIM is delivered to your account, so payment needs you signed in.',
     promoApplied: 'Promo {{code}} applied',
     payFailed: 'Payment failed. Please try again.',
+    confirming: 'Checking your payment…',
+    unconfirmed:
+      'We could not confirm the payment yet. If you were charged, the eSIM appears in your account within a couple of minutes — your cart has been kept.',
     successTitle: 'Payment successful',
     successSubtitle: 'Order #{{id}} · {{count}} eSIM ready. Scan to install.',
     installHint: 'Open Settings → Cellular → Add eSIM, then scan this code.',
     goToMyEsims: 'Go to My eSIMs',
+    startOver: 'I did not pay — start over',
+    startOverBlocked:
+      'A payment is still going through. Try again in a minute, or check your account.',
     keepShopping: 'Keep shopping',
   },
   topup: {
