@@ -55,17 +55,6 @@
   top: calc(var(--header-h, 74px) + 8px);
 }
 
-/* `.site-shell p { font-size: 16px }` in journey.css beats a single class on a
-   <p> — the three small tracked labels on this page are all paragraphs, and all
-   three rendered at 16px until these selectors matched it. */
-.dx-eyebrow,
-.site-shell .dx-eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  color: var(--dx-soft);
-}
-
 .dx-side-title,
 .site-shell .dx-side-title {
   margin-top: 14px;
@@ -78,13 +67,6 @@
   /* Not balanced: balancing splits it "Keyingi / bekat qayer?" where the design
      fills the first line and drops only the question word. */
   text-wrap: wrap;
-}
-
-.dx-side-lead,
-.site-shell .dx-side-lead {
-  margin-top: 12px;
-  font-size: 16px;
-  color: var(--dx-soft);
 }
 
 .dx-side hr {
@@ -101,7 +83,10 @@
   margin-bottom: 12px;
 }
 
+/* Not selectable: a double-click meant to pick a region painted the sidebar's
+   text blue instead, because the label is the only thing under the cursor. */
 .dx-region {
+  user-select: none;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -133,6 +118,13 @@
 .dx-region.is-on {
   background: var(--dx-green);
   color: #fff;
+}
+
+/* The shared focus ring is brand green, which on the green of the selected
+   region reads as a second border rather than as focus — two green edges with
+   a gap between them. White says the same thing and is legible on both. */
+.dx-region.is-on:focus-visible {
+  outline-color: #fff;
 }
 
 .dx-region.is-on .dx-region-go {
@@ -198,32 +190,6 @@
   white-space: nowrap;
 }
 
-.dx-title-globe {
-  flex: none;
-  color: var(--color-brand-200);
-}
-
-.dx-head-aside,
-.site-shell .dx-head-aside {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  line-height: 1.9;
-  color: var(--dx-soft);
-  text-align: right;
-}
-
-.dx-head-aside::before {
-  content: '';
-  width: 1px;
-  align-self: stretch;
-  background: var(--dx-line);
-}
-
 /* ---------- search + sort ---------- */
 
 .dx-tools {
@@ -285,42 +251,6 @@
   translate: 0 -50%;
   color: var(--dx-soft);
   pointer-events: none;
-}
-
-/* ---------- alphabet ---------- */
-
-.dx-alphabet {
-  display: flex;
-  justify-content: space-between;
-  gap: 2px;
-  margin-top: 20px;
-}
-
-.dx-letter {
-  display: grid;
-  place-items: center;
-  min-width: 36px;
-  height: 34px;
-  padding: 0 6px;
-  border-radius: 9px;
-  font-size: 14.5px;
-  font-weight: 600;
-  color: var(--dx-soft);
-  transition: background-color 170ms ease, color 170ms ease;
-}
-
-.dx-letter:hover:not(:disabled) {
-  color: var(--dx-ink);
-}
-
-.dx-letter.is-on {
-  background: var(--color-brand-50);
-  color: var(--dx-green);
-}
-
-.dx-letter:disabled {
-  opacity: 0.32;
-  cursor: default;
 }
 
 /* ---------- letter groups ---------- */
@@ -521,8 +451,7 @@
 @media (prefers-reduced-motion: reduce) {
   .dx-ticket,
   .dx-ticket::before,
-  .dx-region,
-  .dx-letter {
+  .dx-region {
     transition: none;
   }
 }
@@ -591,11 +520,6 @@
     white-space: normal;
   }
 
-  .dx-head-aside,
-  .dx-title-globe {
-    display: none;
-  }
-
   /* Search owns its own line — it is the control people actually use — and the
      sort and the region filter share the one under it. */
   .dx-tools {
@@ -625,17 +549,6 @@
 
   .dx-sort > svg {
     right: 14px;
-  }
-
-  .dx-alphabet {
-    justify-content: flex-start;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding-bottom: 4px;
-  }
-
-  .dx-alphabet::-webkit-scrollbar {
-    display: none;
   }
 
   .dx-grid {

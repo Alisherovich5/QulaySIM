@@ -6,7 +6,7 @@
 import '../components/destinations/destinations-page.css'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { ChevronDown, Globe, Search, SlidersHorizontal, X } from 'lucide-react'
+import { ChevronDown, Search, SlidersHorizontal, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { useCurrency } from '../context/CurrencyContext'
@@ -57,8 +57,6 @@ const SORT_KEY: Record<Sort, string> = {
   cheap: 'dx.sortCheap',
   dear: 'dx.sortDear',
 }
-
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
 export default function Destinations() {
   const [params, setParams] = useSearchParams()
@@ -146,19 +144,7 @@ export default function Destinations() {
     return [...map.entries()]
   }, [sorted, sort, lang])
 
-  const live = useMemo(() => new Set((groups ?? []).map(([letter]) => letter)), [groups])
-  const [active, setActive] = useState<string | null>(null)
-
-  /* The first letter that exists is lit before anybody presses one: the design
-     shows A marked, and an alphabet with nothing marked reads as disabled. */
-  const marked = active && live.has(active) ? active : (groups?.[0]?.[0] ?? null)
-
   useEffect(() => setSheet(false), [region])
-
-  const jump = (letter: string) => {
-    setActive(letter)
-    document.getElementById(`dx-${letter}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
 
   const clear = () => setParams(new URLSearchParams(), { replace: true })
 
@@ -177,9 +163,7 @@ export default function Destinations() {
 
       <div className="dx">
         <aside className="dx-side">
-          <p className="dx-eyebrow">{t('dx.eyebrow')}</p>
           <h2 className="dx-side-title">{t('dx.sideTitle')}</h2>
-          <p className="dx-side-lead">{t('dx.sideLead')}</p>
 
           <hr />
 
@@ -207,14 +191,6 @@ export default function Destinations() {
         <main className="dx-main">
           <div className="dx-head">
             <h1 className="dx-title">{t('dx.title')}</h1>
-            <Globe size={56} strokeWidth={1.4} aria-hidden className="dx-title-globe" />
-            <p className="dx-head-aside">
-              <span>
-                {t('dx.asideTop')}
-                <br />
-                {t('dx.asideBottom')}
-              </span>
-            </p>
           </div>
 
           <div className="dx-tools">
@@ -263,22 +239,6 @@ export default function Destinations() {
               {t('dx.openRegions')}
             </button>
           </div>
-
-          {groups && (
-            <div className="dx-alphabet" role="group" aria-label={t('dx.alphabet')}>
-              {ALPHABET.map((letter) => (
-                <button
-                  key={letter}
-                  type="button"
-                  disabled={!live.has(letter)}
-                  onClick={() => jump(letter)}
-                  className={`dx-letter focus-ring ${marked === letter ? 'is-on' : ''}`}
-                >
-                  {letter}
-                </button>
-              ))}
-            </div>
-          )}
 
           {loading && all.length === 0 && (
             <div className="dx-group">

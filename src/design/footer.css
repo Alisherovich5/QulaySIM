@@ -125,20 +125,25 @@
 
 .site-footer .footer-group h3,
 .site-shell .site-footer .footer-group h3 {
-  margin: 0 0 34px;
+  /* 25/800 over 21/400 was a heading twice the weight and a fifth larger than
+     the links under it — a display scale in a place nobody reads for pleasure.
+     17/700 over 16/500 keeps the heading first without shouting, and the two
+     sizes sit close enough to read as one block instead of two. */
+  margin: 0 0 18px;
   font-family: var(--font-display);
-  font-size: 25px;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
   color: #052f52;
   text-transform: none;
 }
 
 .site-footer .footer-group a {
   display: block;
-  font-size: 21px;
-  line-height: 1.25;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
   color: #1b3a5e;
   text-decoration: none;
   transition: color 0.2s ease;
@@ -147,7 +152,7 @@
 /* 24px between rows sets the 50px pitch the design has — the rows are 26px
    tall, so the gap is not the pitch. */
 .site-footer .footer-group a + a {
-  margin-top: 24px;
+  margin-top: 13px;
 }
 
 .site-footer .footer-group a:hover {
