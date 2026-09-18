@@ -1,0 +1,542 @@
+/* The help page, to the approved design.
+ *
+ * Imported by the page rather than by main.tsx, so Vite puts it in the lazy
+ * route chunk instead of the stylesheet every visitor downloads. These rules
+ * are used on exactly one page and the landing budget is 150KB — the first-load
+ * cost of a page nobody on the home page can see is what a budget is for.
+ *
+ * Load order still holds: a chunk's CSS is injected after the main stylesheet,
+ * so these continue to outrank redesign.css and journey.css the same way.
+ *
+ * Numbers are measured off the reference at its 1536 width — the column is
+ * 1340 wide with 98px margins, the search is 758x64 at x=99, the three cards
+ * are 434x164 with an 18px gap. Colours are sampled, not guessed: #011739 for
+ * the heading, #485368 for the lead, #7B8AA2 for the label, #D8F5EF for the
+ * selected category, #017567 for the emerald card.
+ */
+
+.sup {
+  --sup-ink: #011739;
+  --sup-soft: #485368;
+  --sup-label: #7b8aa2;
+  --sup-line: #e2edf1;
+  --sup-green: #008f7c;
+  --sup-green-dark: #017567;
+  width: 100%;
+  max-width: 1340px;
+  margin-inline: auto;
+  padding: 26px 20px 0;
+}
+
+@media (min-width: 1024px) {
+  .sup {
+    padding-inline: 0;
+  }
+}
+
+/* --- Hero ---------------------------------------------------------------- */
+
+.sup-hero {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .sup-hero {
+    grid-template-columns: minmax(0, 1fr) 560px;
+    align-items: center;
+    gap: 20px;
+  }
+}
+
+.sup-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sup-label);
+}
+
+.sup .sup-title,
+.site-shell .sup .sup-title {
+  margin: 14px 0 0;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--sup-ink);
+  max-width: 12ch;
+}
+
+@media (min-width: 640px) {
+  .sup .sup-title,
+  .site-shell .sup .sup-title {
+    font-size: 48px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sup .sup-title,
+  .site-shell .sup .sup-title {
+    font-size: 63px;
+    line-height: 1.04;
+  }
+}
+
+.sup-lead {
+  margin-top: 16px;
+  font-size: 17px;
+  color: var(--sup-soft);
+}
+
+@media (min-width: 1024px) {
+  .sup-lead {
+    font-size: 20px;
+  }
+}
+
+/* --- Search -------------------------------------------------------------- */
+
+.sup-search {
+  position: relative;
+  margin-top: 22px;
+  max-width: 758px;
+}
+
+.sup-search form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 58px;
+  padding: 0 7px 0 18px;
+  border: 1px solid var(--sup-line);
+  border-radius: 18px;
+  background: var(--color-surface);
+}
+
+@media (min-width: 1024px) {
+  .sup-search form {
+    height: 64px;
+  }
+}
+
+.sup-search .sup-search-icon {
+  flex-shrink: 0;
+  color: var(--sup-green);
+}
+
+.sup-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  color: var(--sup-ink);
+}
+
+.sup-search input::placeholder {
+  color: var(--sup-label);
+}
+
+.sup-search input:focus {
+  outline: none;
+}
+
+.sup-clear {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  color: var(--sup-label);
+  flex-shrink: 0;
+}
+
+.sup-clear:hover {
+  background: var(--color-mist);
+  color: var(--sup-ink);
+}
+
+.sup-go {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: var(--sup-green);
+  color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.sup-go:hover {
+  background: var(--sup-green-dark);
+}
+
+.sup-empty {
+  margin-top: 14px;
+  font-size: 15px;
+  color: var(--sup-soft);
+}
+
+.sup-empty a {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--sup-green);
+  font-weight: 600;
+}
+
+/* --- The illustration ---------------------------------------------------- */
+
+.sup-art {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .sup-art {
+    display: block;
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+  }
+}
+
+/* --- The three cards ----------------------------------------------------- */
+
+.sup-cards {
+  display: grid;
+  gap: 18px;
+  margin-top: 30px;
+}
+
+@media (min-width: 700px) {
+  .sup-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* A ticket, like the destination cards: a semicircle bitten out of each side.
+   Cut with a mask rather than drawn as two circles in the page colour — the
+   page colour changes with the theme and a circle painted the wrong one is a
+   visible bump. The outline is four 1px drop-shadows because a filter follows
+   the masked silhouette, where a border would be clipped straight through. */
+.sup-card {
+  --notch: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 164px;
+  padding: 26px 28px;
+  border-radius: 17px;
+  background: var(--color-surface);
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 50%, transparent 96%, #000 100%),
+    radial-gradient(circle var(--notch) at 100% 50%, transparent 96%, #000 100%);
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle var(--notch) at 0 50%, transparent 96%, #000 100%),
+    radial-gradient(circle var(--notch) at 100% 50%, transparent 96%, #000 100%);
+  mask-composite: intersect;
+  filter:
+    drop-shadow(0 1px 0 #eef4f7) drop-shadow(0 -1px 0 #eef4f7) drop-shadow(1px 0 0 #eef4f7)
+    drop-shadow(-1px 0 0 #eef4f7) drop-shadow(0 8px 18px rgb(16 40 62 / 0.05));
+}
+
+.sup-card-mark {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #e3f7f1;
+  color: var(--sup-green-dark);
+}
+
+.sup-card-body {
+  min-width: 0;
+}
+
+.sup-card h2,
+.site-shell .sup-card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--sup-ink);
+}
+
+.sup-card p {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--sup-soft);
+}
+
+.sup-card-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sup-card-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--sup-green-dark);
+}
+
+.sup-card-links a:hover {
+  color: var(--sup-green);
+}
+
+.sup-card-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--sup-line);
+}
+
+/* The third card carries the brand rather than the page surface. */
+.sup-card.is-brand {
+  background: linear-gradient(135deg, #017567 0%, #026054 100%);
+  filter: drop-shadow(0 8px 18px rgb(1 117 103 / 0.18));
+}
+
+.sup-card.is-brand .sup-card-mark {
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+}
+
+.sup-card.is-brand h2,
+.site-shell .sup-card.is-brand h2 {
+  color: #fff;
+}
+
+.sup-card.is-brand p {
+  color: rgb(255 255 255 / 0.82);
+}
+
+.sup-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--sup-green-dark);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sup-pill:hover {
+  background: #eafaf5;
+}
+
+/* --- FAQ ----------------------------------------------------------------- */
+
+/* `min-width: 0` on the children: a grid item defaults to `auto`, which refuses
+   to shrink below its content — and the category row is a flex strip wider than
+   a phone, so the column grew to 478px inside a 390px screen and took the page
+   with it. Overflow-x on the strip cannot help until the column can shrink. */
+.sup-faq > * {
+  min-width: 0;
+}
+
+.sup-faq {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--sup-line);
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .sup-faq {
+    grid-template-columns: 348px minmax(0, 1fr);
+    gap: 36px;
+  }
+}
+
+.sup .sup-faq-title,
+.site-shell .sup .sup-faq-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--sup-ink);
+}
+
+@media (min-width: 1024px) {
+  .sup .sup-faq-title,
+  .site-shell .sup .sup-faq-title {
+    font-size: 32px;
+    /* Wide enough for "Ko'p so'raladigan" on the first line, which is where the
+       design breaks it; 11ch put "so'raladigan" on a line of its own. */
+    max-width: 15ch;
+  }
+}
+
+.sup-faq-note {
+  margin-top: 10px;
+  font-size: 15px;
+  color: var(--sup-soft);
+}
+
+.sup-cats {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.sup-cats::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .sup-cats {
+    flex-direction: column;
+    overflow: visible;
+  }
+}
+
+.sup-cat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  flex-shrink: 0;
+  border: 1px solid var(--sup-line);
+  border-radius: 12px;
+  background: var(--color-surface);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sup-ink);
+  white-space: nowrap;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+@media (min-width: 1024px) {
+  .sup-cat {
+    height: 42px;
+  }
+}
+
+.sup-cat:hover {
+  border-color: #b9ddd3;
+}
+
+.sup-cat.is-on {
+  background: #d8f5ef;
+  border-color: #b9e6dc;
+}
+
+.sup-cat svg {
+  flex-shrink: 0;
+  color: var(--sup-label);
+}
+
+/* The accordion is one panel with hairlines between its rows, not a stack of
+   separate cards — that is what the design draws and it is also what stops the
+   list reading as five unrelated things. */
+.sup-acc {
+  border: 1px solid var(--sup-line);
+  border-radius: 16px;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.sup-acc-row + .sup-acc-row {
+  border-top: 1px solid var(--sup-line);
+}
+
+/* The question is a heading whose only child is the button — the heading gives
+   the list its outline, the button gives it the keyboard. */
+.sup-acc-row h3,
+.site-shell .sup-acc-row h3 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.sup-acc-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-height: 52px;
+  padding: 16px 22px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--sup-ink);
+}
+
+.sup-acc-q:hover {
+  color: var(--sup-green-dark);
+}
+
+.sup-acc-q svg {
+  flex-shrink: 0;
+  color: var(--sup-label);
+  transition: transform 0.2s ease;
+}
+
+.sup-acc-row.is-open .sup-acc-q svg {
+  transform: rotate(180deg);
+}
+
+.sup-acc-a {
+  padding: 0 22px 18px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--sup-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sup-acc-q svg {
+    transition: none;
+  }
+}
+
+/* --- Dark theme ---------------------------------------------------------- */
+
+:root.dark .sup {
+  --sup-ink: var(--color-ink);
+  --sup-soft: var(--color-slate-soft);
+  --sup-label: var(--color-slate-soft);
+  --sup-line: var(--color-line);
+}
+
+:root.dark .sup-card {
+  filter:
+    drop-shadow(0 1px 0 rgb(255 255 255 / 0.1)) drop-shadow(0 -1px 0 rgb(255 255 255 / 0.1))
+    drop-shadow(1px 0 0 rgb(255 255 255 / 0.1)) drop-shadow(-1px 0 0 rgb(255 255 255 / 0.1));
+}
+
+:root.dark .sup-card-mark {
+  background: rgb(0 143 124 / 0.16);
+  color: var(--color-accent-400, #4fd1b5);
+}
+
+:root.dark .sup-cat.is-on {
+  background: rgb(0 143 124 / 0.16);
+  border-color: rgb(0 143 124 / 0.34);
+}

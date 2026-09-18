@@ -98,7 +98,10 @@ export default function GuideInstallEsim() {
         {/* Per-platform steps ---------------------------------------------- */}
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <Card className="p-6 lg:col-span-2">
-            <h2 className="text-lg font-700">{t('guides.install.iosTitle')}</h2>
+            {/* The anchor the help page's "iPhone" link points at. */}
+            <h2 id="iphone" className="scroll-mt-28 text-lg font-700">
+              {t('guides.install.iosTitle')}
+            </h2>
             <ol className="mt-4 space-y-3.5">
               {ios.map((step, i) => (
                 <Step key={i} n={i + 1}>
@@ -115,7 +118,9 @@ export default function GuideInstallEsim() {
             <IosWalkthrough />
           </Card>
           <Card className="p-6 lg:col-span-2">
-            <h2 className="text-lg font-700">{t('guides.install.androidTitle')}</h2>
+            <h2 id="android" className="scroll-mt-28 text-lg font-700">
+              {t('guides.install.androidTitle')}
+            </h2>
             <ol className="mt-4 space-y-3.5">
               {android.map((step, i) => (
                 <Step key={i} n={i + 1}>
