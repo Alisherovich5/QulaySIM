@@ -35,48 +35,6 @@ function InstagramMark() {
 }
 
 /**
- * A paper plane and the line it has flown, behind the columns.
- *
- * Inline rather than a file: it is two paths and a dotted stroke, which costs
- * less here than a request, and the colour has to follow the theme. Decorative
- * only — `aria-hidden`, and it sits on the layer below the content so it can
- * never intercept a click meant for a link.
- */
-function FlightTrail() {
-  return (
-    <svg
-      className="footer-trail"
-      viewBox="0 0 1536 420"
-      preserveAspectRatio="xMaxYMin meet"
-      aria-hidden="true"
-      focusable="false"
-    >
-      {/* Coordinates are the design's own, in a 1536-wide space measured from
-          the hairline at the top: the line enters the left edge at y≈146, sags
-          to y≈230 behind the middle columns and rises to the plane at x≈1330.
-          Shallow on purpose — a steeper diagonal cuts across the columns
-          instead of passing behind them. */}
-      <path
-        d="M0 146C250 198 520 232 900 188 1090 165 1240 134 1326 114"
-        fill="none"
-        stroke="#d7e9e6"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-      <path
-        d="M1400 92c42-12 86-22 136-28"
-        fill="none"
-        stroke="#d7e9e6"
-        strokeWidth="1.6"
-        strokeDasharray="4 8"
-        strokeLinecap="round"
-      />
-      <path d="M1330 94l44 18-44 18 10-18-10-18z" fill="#cfe6e2" />
-    </svg>
-  )
-}
-
-/**
  * The footer carries the brand and the whole site map.
  *
  * Four columns to the approved design: the brand with its two lines and the two
@@ -125,7 +83,6 @@ export default function Footer() {
       <span className="footer-wordmark" aria-hidden="true">
         Qulaysim
       </span>
-      <FlightTrail />
 
       <div className="footer-shell">
         <div className="footer-main">
