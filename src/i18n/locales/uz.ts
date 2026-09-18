@@ -237,6 +237,8 @@ const uz: Translation = {
     seePlans: 'Tariflarni ko‘rish',
     allCountries: 'Barcha davlatlar',
     mapLabel: 'Dunyo xaritasi va mashhur yo‘nalishlar',
+    viewGlobe: 'Globus',
+    viewMap: 'Tekis xarita',
     zoomIn: 'Kattalashtirish',
     zoomOut: 'Kichiklashtirish',
     pickTitle: 'Keyingi {{word}} qayer?',

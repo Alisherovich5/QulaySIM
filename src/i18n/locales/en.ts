@@ -236,6 +236,8 @@ const en = {
     seePlans: 'See plans',
     allCountries: 'All countries',
     mapLabel: 'World map with popular destinations',
+    viewGlobe: 'Globe',
+    viewMap: 'Flat map',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
     pickTitle: 'Where are you {{word}}?',

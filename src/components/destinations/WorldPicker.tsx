@@ -1,10 +1,13 @@
 import './world-picker.css'
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useMemo, useState } from 'react'
 import { ArrowRight, BarChart3, ChevronRight, Globe, Map as MapIcon, Minus, Plus, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import Flag from '../Flag'
+
+// The planet is a separate chunk on purpose — see GlobePanel.
+const GlobePanel = lazy(() => import('./GlobePanel'))
 import { useCurrency } from '../../context/CurrencyContext'
 import { numericFor } from '../../lib/isoNumeric'
 import { CENTROIDS, LAND_PATH, MAP_HEIGHT, MAP_WIDTH } from '../../data/world-map.generated'
@@ -50,6 +53,16 @@ export default function WorldPicker({
      default: an empty map with nine pins and no card does not show a first-time
      visitor what a pin is for. */
   const [selected, setSelected] = useState<string | null>(null)
+  /* The planet is what the page opens on. The flat map stays a click away and
+     becomes the only option on a machine with no WebGL — `globeGone` latches so
+     a browser that has already failed once is not asked to try again on every
+     re-render. */
+  const [view, setView] = useState<'globe' | 'flat'>('globe')
+  const [globeGone, setGlobeGone] = useState(false)
+  const onGlobeUnavailable = useCallback(() => {
+    setGlobeGone(true)
+    setView('flat')
+  }, [])
   const firstSlug = popular[0]?.slug ?? null
   const [zoom, setZoom] = useState(0)
 
@@ -75,7 +88,23 @@ export default function WorldPicker({
     [listed],
   )
 
-  const active = pins.find((p) => p.country.slug === (selected ?? firstSlug)) ?? null
+  /* Two different questions, and they used to share one answer.
+   *
+   * The marker that is drawn highlighted has to be one of the pins, because a
+   * pin is the only thing on the projection that can be highlighted. The card
+   * is about the selected country, and the globe can select any of the two
+   * hundred we sell — not only the nine the list is showing. Sharing `active`
+   * between them meant a click on Saudi Arabia lit nothing and opened nothing,
+   * because it is not in the popular list and so has no pin. */
+  const activePin = pins.find((p) => p.country.slug === (selected ?? firstSlug)) ?? null
+  const active =
+    activePin ??
+    (selected
+      ? (() => {
+          const found = countries.find((c) => c.slug === selected)
+          return found ? { country: found, x: 0, y: 0 } : null
+        })()
+      : null)
 
   /* The viewBox is the zoom: scaling a transform would scale the stroke widths
      and the markers with it, and a 2px coastline drawn at 2.4x is a 5px one. */
@@ -196,6 +225,22 @@ export default function WorldPicker({
         </div>
 
         <div className="wp-map">
+          {/* The planet, and the projection behind it.
+            *
+            * Both are mounted while the globe is showing: the SVG is what fills
+            * the panel for the few hundred milliseconds three.js takes to arrive
+            * and what the box falls back to if it never does, so the panel is
+            * never empty and never changes height. */}
+          {view === 'globe' && !globeGone && (
+            <Suspense fallback={null}>
+              <GlobePanel
+                countries={countries}
+                onPick={(country) => setSelected(country.slug)}
+                onUnavailable={onGlobeUnavailable}
+              />
+            </Suspense>
+          )}
+
           <svg
             viewBox={`${vx} ${vy} ${vw} ${vh}`}
             role="img"
@@ -213,8 +258,8 @@ export default function WorldPicker({
                 <circle
                   cx={pin.x}
                   cy={pin.y}
-                  r={active?.country.id === pin.country.id ? 7 / scale : 5 / scale}
-                  className={`wp-pin ${active?.country.id === pin.country.id ? 'is-on' : ''}`}
+                  r={activePin?.country.id === pin.country.id ? 7 / scale : 5 / scale}
+                  className={`wp-pin ${activePin?.country.id === pin.country.id ? 'is-on' : ''}`}
                   onClick={() => setSelected(pin.country.slug)}
                 >
                   <title>{pin.country.name}</title>
@@ -238,7 +283,38 @@ export default function WorldPicker({
             </div>
           )}
 
-          <div className="wp-zoom">
+          {/* Which of the two the panel is showing. Hidden entirely when the
+              browser has no WebGL: an option that cannot be taken is worse than
+              no option. */}
+          {!globeGone && (
+            <div className="wp-view" role="group" aria-label={t('destinations.mapLabel')}>
+              <button
+                type="button"
+                onClick={() => setView('globe')}
+                aria-pressed={view === 'globe'}
+                className={view === 'globe' ? 'is-on' : ''}
+                title={t('destinations.viewGlobe')}
+              >
+                <Globe size={18} aria-hidden />
+                <span className="sr-only">{t('destinations.viewGlobe')}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setView('flat')}
+                aria-pressed={view === 'flat'}
+                className={view === 'flat' ? 'is-on' : ''}
+                title={t('destinations.viewMap')}
+              >
+                <MapIcon size={18} aria-hidden />
+                <span className="sr-only">{t('destinations.viewMap')}</span>
+              </button>
+            </div>
+          )}
+
+          {/* Zooming belongs to the projection. The globe has its own, driven by
+              the pointer, and two zoom controls for one panel would be a lie
+              about which one they move. */}
+          <div className="wp-zoom" hidden={view === 'globe' && !globeGone}>
             <button
               type="button"
               onClick={() => setZoom((z) => Math.min(z + 1, ZOOM_STEPS.length - 1))}

@@ -236,6 +236,8 @@ const ru: Translation = {
     seePlans: 'Смотреть тарифы',
     allCountries: 'Все страны',
     mapLabel: 'Карта мира и популярные направления',
+    viewGlobe: 'Глобус',
+    viewMap: 'Плоская карта',
     zoomIn: 'Приблизить',
     zoomOut: 'Отдалить',
     pickTitle: 'Куда вы {{word}}?',

@@ -21,6 +21,10 @@ interface Props {
   /** Camera distance. Lower fills more of the frame — the inline panel is a
       letterbox and the planet was lost in it at the default 2.5. */
   altitude?: number
+  /** Where the camera starts when nothing is highlighted. The account globe
+      opens on Africa because that is where an empty passport leaves it; the
+      destinations globe opens where its catalogue actually is. */
+  focus?: { lat: number; lng: number }
   enableZoom?: boolean
   onCountryClick: (country: Country) => void
 }
@@ -41,6 +45,7 @@ export default function GlobeCore({
   width,
   height,
   altitude = 2.2,
+  focus = { lat: 20, lng: 10 },
   enableZoom = true,
   onCountryClick,
 }: Props) {
@@ -118,11 +123,11 @@ export default function GlobeCore({
       // the library kept its own default distance and the planet sat small and
       // lonely in the middle of the panel.
       const first = features.find((f) => visited.has(Number(f.id)))
-      const [lng, lat] = first ? geoCentroid(first) : [10, 20]
+      const [lng, lat] = first ? geoCentroid(first) : [focus.lng, focus.lat]
       if (isFinite(lng) && isFinite(lat))
         g.pointOfView({ lat, lng, altitude }, first && !reduced ? 1200 : 0)
     }
-  }, [features, visited, enableZoom, reduced, altitude])
+  }, [features, visited, enableZoom, reduced, altitude, focus.lat, focus.lng])
 
   return (
     <Globe
