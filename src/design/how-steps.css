@@ -1,0 +1,353 @@
+/* "Getting connected — three steps", to the approved design.
+ *
+ * Its own file, loaded last: redesign.css and journey.css are plain stylesheets
+ * rather than Tailwind layers and outrank any utility on the element. It stays
+ * in the main bundle because this section is on the landing page.
+ *
+ * Measured off the reference: a mint panel with 28px corners, three columns cut
+ * by hairlines, a white screen inside each, and the arrows sitting on the
+ * dividers rather than between the cards.
+ */
+
+.hw {
+  background: var(--color-surface);
+}
+
+.hw .hw-title,
+.site-shell .hw .hw-title {
+  margin: 0 0 26px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #0b2545;
+}
+
+.hw .hw-title span {
+  color: #2f8f70;
+}
+
+@media (min-width: 640px) {
+  .hw .hw-title,
+  .site-shell .hw .hw-title {
+    font-size: 42px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hw .hw-title,
+  .site-shell .hw .hw-title {
+    font-size: 52px;
+    margin-bottom: 34px;
+  }
+}
+
+.hw-panel {
+  list-style: none;
+  margin: 0;
+  padding: 22px;
+  display: grid;
+  gap: 22px;
+  border-radius: 28px;
+  background: #edfbf6;
+}
+
+@media (min-width: 900px) {
+  .hw-panel {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    padding: 30px 26px;
+  }
+  /* The hairline belongs to the column, so the arrow can sit on it. */
+  .hw-col + .hw-col {
+    border-left: 1px solid #cfeadf;
+  }
+  .hw-col {
+    padding-inline: 26px;
+  }
+}
+
+.hw-col {
+  position: relative;
+  min-width: 0;
+}
+
+.hw-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hw-num {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #2f8f70;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.hw .hw-head h3,
+.site-shell .hw .hw-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #0b2545;
+}
+
+/* The screen inside each step. */
+.hw-mock {
+  margin-top: 16px;
+  min-height: 190px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 6px 18px -12px rgb(11 42 68 / 0.24);
+}
+
+/* The arrow rides the divider between two columns. */
+.hw-arrow {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .hw-arrow {
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background: #fff;
+    color: #2f8f70;
+    box-shadow: 0 4px 12px -4px rgb(11 42 68 / 0.2);
+  }
+}
+
+/* --- Step one --------------------------------------------------------- */
+
+.hw-search {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 9px;
+  background: #f2f5f7;
+  color: #8ba0b4;
+}
+
+.hw-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.hw-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 8px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b2545;
+}
+
+.hw-list li + li {
+  border-top: 1px solid #eef2f5;
+}
+
+.hw-list li.is-on {
+  background: #e4f6ef;
+  border-top-color: transparent;
+}
+
+.hw-list li > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+.hw-flag {
+  width: 26px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.hw-check {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #2f8f70;
+  color: #fff;
+}
+
+.hw-chev {
+  flex-shrink: 0;
+  color: #9fb2c4;
+}
+
+/* --- Step two --------------------------------------------------------- */
+
+.hw-qr-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding-top: 6px;
+}
+
+.hw-qr {
+  width: 108px;
+  height: 108px;
+  padding: 8px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.hw-dl {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: #e4f6ef;
+  color: #2f8f70;
+}
+
+/* --- Step three ------------------------------------------------------- */
+
+.hw-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 12px;
+  border-bottom: 1px solid #eef2f5;
+}
+
+.hw-signal {
+  width: 26px;
+  height: 19px;
+  fill: #2f8f70;
+}
+
+.hw-toggle {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: #2f8f70;
+}
+
+.hw-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.hw-done {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding-top: 20px;
+}
+
+.hw-done-mark {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background: #2f8f70;
+  color: #fff;
+}
+
+.hw-done p {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b2545;
+}
+
+/* --- The button under it ---------------------------------------------- */
+
+.hw-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 26px;
+}
+
+.hw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 28px;
+  border-radius: 12px;
+  background: #2f8f70;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.hw-btn:hover {
+  background: #26775d;
+}
+
+/* --- Dark theme -------------------------------------------------------- */
+
+:root.dark .hw-panel {
+  background: rgb(47 143 112 / 0.10);
+}
+:root.dark .hw-col + .hw-col {
+  border-left-color: rgb(255 255 255 / 0.08);
+}
+:root.dark .hw .hw-title,
+:root.dark .site-shell .hw .hw-title,
+:root.dark .hw .hw-head h3,
+:root.dark .site-shell .hw .hw-head h3,
+:root.dark .hw-list li,
+:root.dark .hw-done p {
+  color: var(--color-ink);
+}
+:root.dark .hw-mock,
+:root.dark .hw-qr,
+:root.dark .hw-arrow {
+  background: var(--color-surface);
+}
+:root.dark .hw-search {
+  background: rgb(255 255 255 / 0.06);
+}
+:root.dark .hw-list li + li,
+:root.dark .hw-bar {
+  border-color: rgb(255 255 255 / 0.08);
+}
+:root.dark .hw-list li.is-on,
+:root.dark .hw-dl {
+  background: rgb(47 143 112 / 0.20);
+}
+/* The code is drawn in ink, which disappears on a dark card. */
+:root.dark .hw-qr path {
+  fill: #cfe3ef;
+}
