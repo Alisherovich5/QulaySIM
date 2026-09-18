@@ -265,3 +265,53 @@ export function howToLd(
     })),
   }
 }
+
+/**
+ * A guide page, said in the vocabulary an assistant files things under.
+ *
+ * The page already emits FAQPage and HowTo, which describe its *shape*. This
+ * says what it is and who stands behind it: an article, in a named language,
+ * published by the organisation whose `@id` the rest of the graph already
+ * points at, and — the part that matters most for being cited — what it is
+ * *about*, linked to the same entity the model already knows.
+ *
+ * `about.sameAs` is the lever. "eSIM" as a bare string is a token; the same
+ * string with its Wikipedia and Wikidata identifiers is a node, and a system
+ * deciding whether this page is a relevant answer to "what is an eSIM" is
+ * matching nodes. It costs two URLs.
+ *
+ * Deliberately no `dateModified`. It is on every list of properties that help,
+ * and the only value available here is the build time — which would claim the
+ * text changed every time anything else in the repo did. Freshness that is not
+ * real is the one signal it is worst to fake.
+ */
+const ESIM_ENTITY = {
+  '@type': 'Thing',
+  name: 'eSIM',
+  sameAs: ['https://en.wikipedia.org/wiki/ESIM', 'https://www.wikidata.org/wiki/Q15096793'],
+}
+
+export function guideArticleLd({
+  headline,
+  description,
+  path,
+  lang,
+}: {
+  headline: string
+  description: string
+  path: string
+  lang: SeoLang
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline,
+    description,
+    inLanguage: lang,
+    url: absoluteUrl(path, lang),
+    mainEntityOfPage: { '@type': 'WebPage', '@id': absoluteUrl(path, lang) },
+    about: ESIM_ENTITY,
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    image: OG_IMAGE,
+  }
+}

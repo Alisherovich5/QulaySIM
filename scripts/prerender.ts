@@ -55,6 +55,7 @@ import {
   destinationLd,
   destinationListLd,
   faqLd,
+  guideArticleLd,
   howToLd,
   organisationLd,
   webSiteLd,
@@ -184,6 +185,33 @@ interface PageMeta {
    * notice.
    */
   heading?: string
+  /**
+   * The page's own prose, for the reader that will never run the script.
+   *
+   * A heading and a description is enough for a link preview and enough for a
+   * search engine to file the page. It is not enough to be *quoted*. An
+   * assistant asked "what is an eSIM" answers from sentences it can find, and
+   * the sentences that answer it were all inside the bundle: /esim-nima served
+   * 37 words of crawlable text over roughly six hundred words of real copy.
+   *
+   * So the guides carry their own text here. Nothing is written for the
+   * crawler — every string below is the one on the page, taken from the same
+   * locale file the app reads, which is what keeps the two from drifting into
+   * different answers to the same question.
+   */
+  sections?: BakedSection[]
+}
+
+interface BakedSection {
+  heading?: string
+  /** A lead paragraph. */
+  text?: string
+  /** A plain list — steps, checks. */
+  items?: readonly string[]
+  /** Titled points: `t` is the claim, `x` the explanation. */
+  pairs?: readonly { t: string; x: string }[]
+  /** Questions and their answers, which is the shape an assistant quotes. */
+  qa?: readonly { q: string; a: string }[]
 }
 
 /**
@@ -264,6 +292,30 @@ function siteNav(lang: SeoLang, locale: Locale): string {
     .join('')}</ul></nav>`
 }
 
+function sectionsFor(sections: readonly BakedSection[] | undefined): string {
+  if (!sections?.length) return ''
+  return sections
+    .map((section) => {
+      const parts = [
+        section.heading ? `<h2>${escapeAttr(section.heading)}</h2>` : '',
+        section.text ? `<p>${escapeAttr(section.text)}</p>` : '',
+        section.items?.length
+          ? `<ul>${section.items.map((i) => `<li>${escapeAttr(i)}</li>`).join('')}</ul>`
+          : '',
+        section.pairs?.length
+          ? section.pairs
+              .map((p) => `<h3>${escapeAttr(p.t)}</h3><p>${escapeAttr(p.x)}</p>`)
+              .join('')
+          : '',
+        section.qa?.length
+          ? section.qa.map((p) => `<h3>${escapeAttr(p.q)}</h3><p>${escapeAttr(p.a)}</p>`).join('')
+          : '',
+      ]
+      return parts.filter(Boolean).join('')
+    })
+    .join('')
+}
+
 function bodyFor(page: PageMeta): string {
   const locale = STRINGS[page.lang]
   const boot = page.boot ?? {}
@@ -272,6 +324,7 @@ function bodyFor(page: PageMeta): string {
   const parts = [
     `<h1>${escapeAttr(page.heading ?? page.title)}</h1>`,
     `<p>${escapeAttr(page.description)}</p>`,
+    sectionsFor(page.sections),
     country ? planRows(country.plans, locale) : '',
     global ? planRows(global.plans, locale) : '',
     countryLinks(boot.countries, page.lang, locale),
@@ -549,6 +602,12 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
         ...base,
         title: s.supportTitle,
         description: s.supportDescription,
+        /* The local copy, not the API's. The page prefers FAQs edited in the
+           admin and falls back to these; baking the fallback means a crawler
+           always finds an answer, and the live page still shows whichever the
+           operator last wrote. The first question here is "what is an eSIM",
+           which is the one this site most wants to be the answer to. */
+        sections: [{ qa: STRINGS[lang].support.faqs }],
         jsonLd: [guideFaqLd(STRINGS[lang].support.faqs)],
       }
     // The guides bake their FAQ schema from the same locale arrays the pages
@@ -558,7 +617,21 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
         ...base,
         title: s.guideWhatTitle,
         description: s.guideWhatDescription,
-        jsonLd: [guideFaqLd(STRINGS[lang].guides.what.faqs)],
+        sections: [
+          { text: STRINGS[lang].guides.what.lead },
+          { heading: STRINGS[lang].guides.what.diffTitle, pairs: STRINGS[lang].guides.what.diff },
+          { heading: STRINGS[lang].guides.what.whyTitle, pairs: STRINGS[lang].guides.what.why },
+          { heading: STRINGS[lang].guides.what.faqTitle, qa: STRINGS[lang].guides.what.faqs },
+        ],
+        jsonLd: [
+          guideArticleLd({
+            headline: STRINGS[lang].guides.what.title,
+            description: s.guideWhatDescription,
+            path: route,
+            lang,
+          }),
+          guideFaqLd(STRINGS[lang].guides.what.faqs),
+        ],
       }
     case '/oferta':
       return { ...base, title: s.ofertaTitle, description: s.legalDescription, jsonLd: [] }
@@ -571,7 +644,34 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
         ...base,
         title: s.guideInstallTitle,
         description: s.guideInstallDescription,
+        sections: [
+          { text: STRINGS[lang].guides.install.lead },
+          {
+            heading: STRINGS[lang].guides.install.beforeTitle,
+            items: STRINGS[lang].guides.install.before,
+          },
+          { heading: STRINGS[lang].guides.install.iosTitle, items: STRINGS[lang].guides.install.ios },
+          {
+            heading: STRINGS[lang].guides.install.androidTitle,
+            items: STRINGS[lang].guides.install.android,
+          },
+          {
+            heading: STRINGS[lang].guides.install.arriveTitle,
+            items: STRINGS[lang].guides.install.arrive,
+          },
+          {
+            heading: STRINGS[lang].guides.install.troubleTitle,
+            items: STRINGS[lang].guides.install.trouble,
+          },
+          { qa: STRINGS[lang].guides.install.faqs },
+        ],
         jsonLd: [
+          guideArticleLd({
+            headline: STRINGS[lang].guides.install.title,
+            description: s.guideInstallDescription,
+            path: route,
+            lang,
+          }),
           // The steps, named as steps. The page's own <Seo> emits the same
           // thing once React mounts; baking it is what puts it in front of a
           // crawler that never gets that far.

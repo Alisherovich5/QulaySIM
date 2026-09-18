@@ -5,7 +5,7 @@ import { ArrowRight, Globe2, PlaneTakeoff, Smartphone, Wallet, Zap } from 'lucid
 import Seo from '../components/Seo'
 import { Button, Card, FaqItem, IconBadge } from '../components/ui'
 import type { SeoLang } from '../lib/seo'
-import { breadcrumbLd, faqLd } from '../lib/structured-data'
+import { breadcrumbLd, faqLd, guideArticleLd } from '../lib/structured-data'
 
 /**
  * The page for the search a customer makes before they know they want us.
@@ -38,6 +38,12 @@ export default function GuideWhatIsEsim() {
         title={t('seo.guideWhatTitle')}
         description={t('seo.guideWhatDescription')}
         jsonLd={[
+          guideArticleLd({
+            headline: t('guides.what.title'),
+            description: t('seo.guideWhatDescription'),
+            path: '/esim-nima',
+            lang,
+          }),
           faqLd(faqs.map((f) => ({ question: f.q, answer: f.a })))!,
           breadcrumbLd([{ name: t('guides.what.title'), path: '/esim-nima' }], lang),
         ]}

@@ -6,7 +6,7 @@ import Seo from '../components/Seo'
 import IosWalkthrough from '../components/guide/IosWalkthrough'
 import { Button, Card, FaqItem } from '../components/ui'
 import type { SeoLang } from '../lib/seo'
-import { breadcrumbLd, faqLd, howToLd } from '../lib/structured-data'
+import { breadcrumbLd, faqLd, guideArticleLd, howToLd } from '../lib/structured-data'
 
 /** Apple's own five-ring mark would be wrong here; a plain numbered dot is honest. */
 function Step({ n, children }: { n: number; children: string }) {
@@ -48,6 +48,12 @@ export default function GuideInstallEsim() {
         title={t('seo.guideInstallTitle')}
         description={t('seo.guideInstallDescription')}
         jsonLd={[
+          guideArticleLd({
+            headline: t('guides.install.title'),
+            description: t('seo.guideInstallDescription'),
+            path: '/esim-ornatish',
+            lang,
+          }),
           howToLd(
             t('guides.install.title'),
             [t('guides.install.shot1'), t('guides.install.shot2'), t('guides.install.shot3'), t('guides.install.shot4')],
