@@ -1,7 +1,9 @@
-// Imported here rather than in main.tsx: this route is lazy, so its stylesheet
-// rides with its chunk instead of being downloaded by everyone who lands on the
-// home page and never opens the catalogue.
-import '../design/destinations-page.css'
+// Beside the components it dresses rather than in design/, which pages are not
+// allowed to reach into — and imported here rather than from main.tsx, because
+// this route is lazy and its stylesheet should ride with its chunk instead of
+// being downloaded by everyone who lands on the home page. Same arrangement as
+// world-picker.css next door.
+import '../components/destinations/destinations-page.css'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ChevronDown, Globe, Search, SlidersHorizontal, X } from 'lucide-react'
