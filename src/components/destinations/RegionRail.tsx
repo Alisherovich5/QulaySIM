@@ -26,9 +26,14 @@ const REGION_RAIL = [
 
 export default function RegionRail({
   value,
+  available,
   onChange,
 }: {
   value: string
+  /** Rail keys the catalogue actually has countries for. A region with nothing
+      behind it is not offered: picking it would empty the page, which is what
+      "the countries disappeared" turned out to mean the last time one was. */
+  available: ReadonlySet<string>
   onChange: (key: string) => void
 }) {
   const { t } = useTranslation()
@@ -37,7 +42,7 @@ export default function RegionRail({
 
   return (
     <nav aria-label={t('dx.regionsTitle')}>
-      {REGION_RAIL.map(({ key, icon: Icon }) => (
+      {REGION_RAIL.filter(({ key }) => key === '' || available.has(key)).map(({ key, icon: Icon }) => (
         <button
           key={key || 'all'}
           type="button"

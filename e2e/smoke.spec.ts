@@ -152,7 +152,7 @@ test('the language prefix decides the edition, whatever is stored', async ({ pag
   // The destinations heading, in Russian. Any Russian-only string proves the
   // point; this one is the page's own h1, so it also fails if the heading stops
   // being an h1 — which is what a crawler reads first.
-  await expect(page.getByRole('heading', { level: 1 })).toContainText(/Куда вы едете/i)
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(/Выберите мир/i)
 })
 
 test('the worldwide filter narrows by country', async ({ page }) => {
@@ -210,12 +210,32 @@ test('the region filter never offers a region that empties the page', async ({ p
       ],
     }),
   )
+  // The catalogue, not the /regions list, is what decides the rail — so it is
+  // the catalogue this test has to pin. Without it the page keeps the countries
+  // baked into the prerendered HTML, which span every region.
+  await page.route('**/api/countries*', (route) => route.fulfill({ json: COUNTRIES }))
   await page.goto('/destinations')
-  // The regions are chips now rather than a <select>, but the rule they follow
-  // is the same one: a region with no countries behind it is not offered here.
-  const chips = page.locator('.dst-chips')
-  await expect(chips.getByRole('button', { name: 'Yevropa' })).toHaveCount(1)
-  await expect(chips.getByRole('button', { name: 'Butun dunyo' })).toHaveCount(0)
+  // The regions are a rail in the sidebar now rather than a <select> or chips,
+  // and the rule they follow is the same one — with a wider reach. It is not
+  // the /regions response that decides what is offered but the catalogue: a
+  // rail entry appears only when a country in this fixture belongs to it. Both
+  // countries here are European, so Europe is offered and the other five are
+  // not, and none of them can be picked into an empty page.
+  // On a phone the sidebar is a sheet, so the rail has to be opened before it
+  // can be read. Same rail, same rule, one tap further in.
+  await expect(page.locator('.dx-ticket').first()).toBeVisible()
+  const opener = page.getByRole('button', { name: 'Mintaqalar', exact: true })
+  if (await opener.isVisible()) await opener.click()
+  // `:visible` because the sidebar's own copy of the rail is still in the DOM
+  // behind `display: none` at this width, and an invisible button is one a click
+  // waits on forever.
+  const rail = page.locator('nav[aria-label="Mintaqalar"]:visible')
+  await expect(rail.getByRole('button', { name: 'Yevropa' })).toHaveCount(1)
+  await expect(rail.getByRole('button', { name: 'Butun dunyo' })).toHaveCount(0)
+  await expect(rail.getByRole('button', { name: 'Osiyo' })).toHaveCount(0)
+  // And the one that is offered lands on something.
+  await rail.getByRole('button', { name: 'Yevropa' }).click()
+  await expect(page.locator('.dx-ticket').first()).toBeVisible()
   // Offered instead as a link to the page that actually sells those plans.
   await expect(page.getByRole('link', { name: /Butun dunyo|dunyo bo/i }).first()).toHaveAttribute(
     'href',

@@ -89,6 +89,16 @@ export default function Destinations() {
   /* Region first, then text. The alphabet is built from this set rather than
      from the whole catalogue, so a letter is only ever offered when pressing
      it would land on something. */
+  /* Which rail entries have anything behind them. Computed from the catalogue
+     rather than declared, so a region cannot be offered into an empty page. */
+  const available = useMemo(() => {
+    const have = new Set(all.map((c) => c.region?.slug).filter(Boolean) as string[])
+    const keys = new Set<string>()
+    for (const key of ['europe', 'asia', 'middle-east', 'americas', 'africa', 'oceania'])
+      if (slugsFor(key).some((slug) => have.has(slug))) keys.add(key)
+    return keys
+  }, [all])
+
   const inRegion = useMemo(() => {
     const slugs = slugsFor(region)
     if (!slugs.length) return all
@@ -168,7 +178,7 @@ export default function Destinations() {
           <hr />
 
           <h3 className="dx-regions-title">{t('dx.regionsTitle')}</h3>
-          <RegionRail value={region} onChange={(key) => update('region', key)} />
+          <RegionRail value={region} available={available} onChange={(key) => update('region', key)} />
 
           {/* Decoration, and only that: a world with one light on it. It is not
               the visitor's position and never reads as one — no label, no
@@ -343,7 +353,7 @@ export default function Destinations() {
                 <X size={20} aria-hidden />
               </button>
             </div>
-            <RegionRail value={region} onChange={(key) => update('region', key)} />
+            <RegionRail value={region} available={available} onChange={(key) => update('region', key)} />
           </div>
         </>
       )}
