@@ -34,14 +34,14 @@ export interface BrandMark {
   width?: number
   height?: number
   /**
-   * Print the brand name under the mark.
+   * Print the brand name under the mark. True for all of them.
    *
-   * True for every mark that does not spell the name itself. SAMSUNG, HONOR,
-   * OPPO, vivo, SONY and NOKIA are wordmarks — the artwork is the name, and a
-   * caption under it would say it twice. Apple's apple, Xiaomi's "mi" square,
-   * Huawei's flower, Motorola's M and OnePlus's 1+ are symbols: on a phone tile
-   * they are a shape and a colour, and somebody scanning the grid for Huawei
-   * was being shown a red flower with nothing to read.
+   * It was true only for the marks that are a symbol rather than a word, on the
+   * reasoning that a caption under SAMSUNG says the name twice. That reasoning
+   * is sound about one tile and wrong about a grid: with nine tiles captioned
+   * and six bare, the row reads as two kinds of thing, and the eye scanning for
+   * a name finds it in different places. The caption is small and quiet enough
+   * that the repetition costs nothing; the inconsistency did.
    */
   label?: boolean
 }
@@ -50,20 +50,20 @@ const BASE = 'font-display leading-none'
 
 export const BRAND_MARKS: BrandMark[] = [
   { brand: 'Apple', wordmark: 'Apple', logo: '/brands/apple.svg', width: 44, height: 52, label: true, className: `${BASE} text-[19px] font-700 tracking-[-0.03em] text-[#111111] dark:text-white` },
-  { brand: 'Samsung', wordmark: 'SAMSUNG', logo: '/brands/samsung.svg', width: 153, height: 26, className: `${BASE} text-[17px] font-800 tracking-[0.02em] text-[#1428A0] dark:text-[#7b93ff]` },
+  { brand: 'Samsung', wordmark: 'SAMSUNG', logo: '/brands/samsung.svg', width: 153, height: 26, label: true, className: `${BASE} text-[17px] font-800 tracking-[0.02em] text-[#1428A0] dark:text-[#7b93ff]` },
   { brand: 'Xiaomi', wordmark: 'mi', logo: '/brands/xiaomi.svg', width: 60, height: 60, label: true, className: `${BASE} text-[22px] font-800 lowercase tracking-[-0.02em] text-[#FF6900]` },
   { brand: 'Google', wordmark: 'Google', logo: '/brands/google.svg', width: 52, height: 52, label: true, className: `${BASE} text-[19px] font-700 tracking-[-0.02em] text-[#4285F4]` },
-  { brand: 'Honor', wordmark: 'HONOR', logo: '/brands/honor.svg', width: 125, height: 26, className: `${BASE} text-[17px] font-700 tracking-[0.06em] text-[#111111] dark:text-white` },
-  { brand: 'Infinix', wordmark: 'Infinix', width: 113, height: 28, className: `${BASE} text-[26px] font-800 tracking-[-0.03em] text-[#111111] dark:text-white` },
-  { brand: 'Tecno', wordmark: 'TECNO', width: 126, height: 28, className: `${BASE} text-[26px] font-800 tracking-[0.01em] text-[#0956CE] dark:text-[#6ba6f5]` },
-  { brand: 'Realme', wordmark: 'realme', width: 123, height: 41, className: `${BASE} rounded-[6px] bg-[#FDC512] px-2.5 py-1.5 text-[23px] font-600 lowercase tracking-[-0.02em] text-[#111111]` },
-  { brand: 'OPPO', wordmark: 'OPPO', logo: '/brands/oppo.svg', width: 125, height: 32, className: `${BASE} text-[18px] font-800 tracking-[0.02em] text-[#046A38] dark:text-[#4dbb85]` },
-  { brand: 'Vivo', wordmark: 'vivo', logo: '/brands/vivo.svg', width: 125, height: 34, className: `${BASE} text-[20px] font-700 lowercase tracking-[-0.01em] text-[#415FFF] dark:text-[#8fa3ff]` },
+  { brand: 'Honor', wordmark: 'HONOR', logo: '/brands/honor.svg', width: 125, height: 26, label: true, className: `${BASE} text-[17px] font-700 tracking-[0.06em] text-[#111111] dark:text-white` },
+  { brand: 'Infinix', wordmark: 'Infinix', width: 113, height: 28, label: true, className: `${BASE} text-[26px] font-800 tracking-[-0.03em] text-[#111111] dark:text-white` },
+  { brand: 'Tecno', wordmark: 'TECNO', width: 126, height: 28, label: true, className: `${BASE} text-[26px] font-800 tracking-[0.01em] text-[#0956CE] dark:text-[#6ba6f5]` },
+  { brand: 'Realme', wordmark: 'realme', width: 123, height: 41, label: true, className: `${BASE} rounded-[6px] bg-[#FDC512] px-2.5 py-1.5 text-[23px] font-600 lowercase tracking-[-0.02em] text-[#111111]` },
+  { brand: 'OPPO', wordmark: 'OPPO', logo: '/brands/oppo.svg', width: 125, height: 32, label: true, className: `${BASE} text-[18px] font-800 tracking-[0.02em] text-[#046A38] dark:text-[#4dbb85]` },
+  { brand: 'Vivo', wordmark: 'vivo', logo: '/brands/vivo.svg', width: 125, height: 34, label: true, className: `${BASE} text-[20px] font-700 lowercase tracking-[-0.01em] text-[#415FFF] dark:text-[#8fa3ff]` },
   { brand: 'Huawei', wordmark: 'HUAWEI', logo: '/brands/huawei.svg', width: 74, height: 60, label: true, className: `${BASE} text-[16px] font-800 tracking-[0.05em] text-[#CF0A2C] dark:text-[#ff6b80]` },
   { brand: 'Motorola', wordmark: 'motorola', logo: '/brands/motorola.svg', width: 65, height: 65, label: true, className: `${BASE} text-[17px] font-700 lowercase tracking-[0.01em] text-[#003691] dark:text-[#6fa8e0]` },
   { brand: 'OnePlus', wordmark: 'OnePlus', logo: '/brands/oneplus.svg', width: 58, height: 58, label: true, className: `${BASE} text-[17px] font-700 tracking-[-0.01em] text-[#EB0029] dark:text-[#ff6e80]` },
-  { brand: 'Sony', wordmark: 'SONY', logo: '/brands/sony.svg', width: 130, height: 25, className: `${BASE} text-[18px] font-700 tracking-[0.08em] text-[#111111] dark:text-white` },
-  { brand: 'Nokia', wordmark: 'NOKIA', logo: '/brands/nokia.svg', width: 134, height: 24, className: `${BASE} text-[17px] font-700 tracking-[0.06em] text-[#124191] dark:text-[#7d9be0]` },
+  { brand: 'Sony', wordmark: 'SONY', logo: '/brands/sony.svg', width: 130, height: 25, label: true, className: `${BASE} text-[18px] font-700 tracking-[0.08em] text-[#111111] dark:text-white` },
+  { brand: 'Nokia', wordmark: 'NOKIA', logo: '/brands/nokia.svg', width: 134, height: 24, label: true, className: `${BASE} text-[17px] font-700 tracking-[0.06em] text-[#124191] dark:text-[#7d9be0]` },
 ]
 
 const BY_BRAND = new Map(BRAND_MARKS.map((mark) => [mark.brand, mark]))
