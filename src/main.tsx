@@ -10,7 +10,6 @@ import './design/travel-palette.css'
 import './design/device-check.css'
 import './design/footer.css'
 import './design/destinations.css'
-import './design/destinations-page.css'
 import './i18n'
 import App from './App.tsx'
 

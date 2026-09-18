@@ -1,3 +1,7 @@
+// Imported here rather than in main.tsx: this route is lazy, so its stylesheet
+// rides with its chunk instead of being downloaded by everyone who lands on the
+// home page and never opens the catalogue.
+import '../design/destinations-page.css'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ChevronDown, Globe, Search, SlidersHorizontal, X } from 'lucide-react'
