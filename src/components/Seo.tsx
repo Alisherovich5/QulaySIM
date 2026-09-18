@@ -1,3 +1,4 @@
+import { jsonLdText } from '../lib/structured-data'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -178,7 +179,7 @@ export default function Seo({
           // The blocks on a page are a fixed list per route, never reordered.
           key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(block) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdText(block) }}
         />
       ))}
     </>

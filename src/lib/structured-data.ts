@@ -23,6 +23,31 @@ const LOGO = `${SITE_URL}/qulaysim-logo.svg`
  * and treats them as one entity — which is what produces a knowledge panel for
  * a brand name rather than three unrelated results.
  */
+/**
+ * A JSON-LD block as text that cannot end the script element holding it.
+ *
+ * `JSON.stringify` escapes what JSON needs and nothing else, so a `<` in the
+ * data survives into the output verbatim — and inside
+ * `<script type="application/ld+json">` the sequence `</script>` closes the tag
+ * no matter what the surrounding quotes say. Everything after it is parsed as
+ * markup. The values here are catalogue text: a country name and a description,
+ * written in an admin panel and served by the API.
+ *
+ * `\u003c` is the same character to a JSON parser and inert to an HTML one.
+ * U+2028 and U+2029 go with it — legal in JSON, line terminators in JavaScript,
+ * and this string is read by both.
+ *
+ * The build has escaped this since the prerenderer was written; the runtime did
+ * not, which meant the baked page was safe and the page React drew over it was
+ * not. One function now, used by both.
+ */
+export function jsonLdText(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029')
+}
+
 export function organisationLd(): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',

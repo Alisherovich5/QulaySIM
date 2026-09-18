@@ -186,14 +186,38 @@ export default function GlobeCore({
       htmlLng="lng"
       htmlAltitude={0.07}
       htmlElement={(d: any) => {
+        /* Built with DOM calls rather than an innerHTML template.
+         *
+         * `iso2` is catalogue data and it was being interpolated straight into
+         * a `src="…"` attribute inside a markup string — a value carrying a
+         * quote would have closed the attribute and everything after it would
+         * have been parsed as markup. `setAttribute` cannot do that: the value
+         * is a value, whatever is in it.
+         *
+         * It is also the marker for a country the customer has actually bought,
+         * so it is two letters from our own admin, not user input. That makes
+         * this unlikely rather than impossible, which is not a reason to build
+         * a string. */
         const el = document.createElement('div')
         el.style.pointerEvents = 'none'
-        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;transform:translateY(-50%)">
-          <div style="background:#fff;border:1.5px solid ${palette.visited};border-radius:3px;padding:1px;box-shadow:0 4px 12px rgba(0,0,0,.4)">
-            <img src="${flagUrl(d.iso2, 40)}" style="width:22px;height:14px;border-radius:1px;display:block;object-fit:cover"/>
-          </div>
-          <div style="width:1.5px;height:8px;background:${palette.visited}"></div>
-        </div>`
+        const column = document.createElement('div')
+        column.style.cssText =
+          'display:flex;flex-direction:column;align-items:center;transform:translateY(-50%)'
+
+        const frame = document.createElement('div')
+        frame.style.cssText = `background:#fff;border:1.5px solid ${palette.visited};border-radius:3px;padding:1px;box-shadow:0 4px 12px rgba(0,0,0,.4)`
+
+        const img = document.createElement('img')
+        img.setAttribute('src', flagUrl(d.iso2, 40))
+        img.setAttribute('alt', '')
+        img.style.cssText = 'width:22px;height:14px;border-radius:1px;display:block;object-fit:cover'
+        frame.append(img)
+
+        const stem = document.createElement('div')
+        stem.style.cssText = `width:1.5px;height:8px;background:${palette.visited}`
+
+        column.append(frame, stem)
+        el.append(column)
         return el
       }}
     />

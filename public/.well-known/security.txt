@@ -1,0 +1,10 @@
+# How to report something you have found in QulaySIM.
+#
+# RFC 9116. `Expires` is mandatory and a lapsed file is worse than none — a
+# researcher reading it concludes the address is stale and does not write. It is
+# set a year out; renew it, or delete the file.
+
+Contact: https://t.me/qulaysim_support
+Expires: 2027-09-18T00:00:00.000Z
+Preferred-Languages: uz, ru, en
+Canonical: https://qulaysim.uz/.well-known/security.txt

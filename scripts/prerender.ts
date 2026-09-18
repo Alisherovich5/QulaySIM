@@ -52,6 +52,7 @@ import {
 } from '../src/lib/seo'
 import {
   breadcrumbLd,
+  jsonLdText,
   destinationLd,
   destinationListLd,
   faqLd,
@@ -144,9 +145,9 @@ function escapeAttr(value: string): string {
 }
 
 /** JSON-LD sits in an HTML script element, so it must not be able to close it. */
-function escapeJson(value: unknown): string {
-  return JSON.stringify(value).replace(/</g, '\\u003c')
-}
+/** Re-exported rather than repeated: the build and the runtime escaping the
+ *  same data differently is how one of them ends up wrong. See lib/structured-data. */
+const escapeJson = jsonLdText
 
 interface PageMeta {
   title: string
