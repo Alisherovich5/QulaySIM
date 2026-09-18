@@ -44,26 +44,40 @@ export interface BrandMark {
    * that the repetition costs nothing; the inconsistency did.
    */
   label?: boolean
+  /**
+   * What to do with the logo file in dark mode, measured rather than guessed.
+   *
+   * These are brand SVGs with the brand's own colours baked in, and half of
+   * them are dark marks meant for white paper. On the night tile they vanish:
+   * HONOR and SONY measured 1.00:1 against their own background — literally
+   * invisible — with Apple, Samsung, Motorola and Nokia between 1.41 and 1.68.
+   *
+   * `invert` is for the monochrome black marks, which come back as white.
+   * `lift` keeps the hue and raises the lightness, for the ones whose colour is
+   * the brand and must not be thrown away. Anything above 3:1 unaided is left
+   * alone — Google, realme, Xiaomi and OnePlus need nothing.
+   */
+  dark?: 'invert' | 'lift'
 }
 
 const BASE = 'font-display leading-none'
 
 export const BRAND_MARKS: BrandMark[] = [
-  { brand: 'Apple', wordmark: 'Apple', logo: '/brands/apple.svg', width: 44, height: 52, label: true, className: `${BASE} text-[19px] font-700 tracking-[-0.03em] text-[#111111] dark:text-white` },
-  { brand: 'Samsung', wordmark: 'SAMSUNG', logo: '/brands/samsung.svg', width: 153, height: 26, label: true, className: `${BASE} text-[17px] font-800 tracking-[0.02em] text-[#1428A0] dark:text-[#7b93ff]` },
+  { brand: 'Apple', wordmark: 'Apple', logo: '/brands/apple.svg', width: 44, height: 52, label: true, dark: 'invert', className: `${BASE} text-[19px] font-700 tracking-[-0.03em] text-[#111111] dark:text-white` },
+  { brand: 'Samsung', wordmark: 'SAMSUNG', logo: '/brands/samsung.svg', width: 153, height: 26, label: true, dark: 'lift', className: `${BASE} text-[17px] font-800 tracking-[0.02em] text-[#1428A0] dark:text-[#7b93ff]` },
   { brand: 'Xiaomi', wordmark: 'mi', logo: '/brands/xiaomi.svg', width: 60, height: 60, label: true, className: `${BASE} text-[22px] font-800 lowercase tracking-[-0.02em] text-[#FF6900]` },
   { brand: 'Google', wordmark: 'Google', logo: '/brands/google.svg', width: 52, height: 52, label: true, className: `${BASE} text-[19px] font-700 tracking-[-0.02em] text-[#4285F4]` },
-  { brand: 'Honor', wordmark: 'HONOR', logo: '/brands/honor.svg', width: 125, height: 26, label: true, className: `${BASE} text-[17px] font-700 tracking-[0.06em] text-[#111111] dark:text-white` },
+  { brand: 'Honor', wordmark: 'HONOR', logo: '/brands/honor.svg', width: 125, height: 26, label: true, dark: 'invert', className: `${BASE} text-[17px] font-700 tracking-[0.06em] text-[#111111] dark:text-white` },
   { brand: 'Infinix', wordmark: 'Infinix', width: 113, height: 28, label: true, className: `${BASE} text-[26px] font-800 tracking-[-0.03em] text-[#111111] dark:text-white` },
   { brand: 'Tecno', wordmark: 'TECNO', width: 126, height: 28, label: true, className: `${BASE} text-[26px] font-800 tracking-[0.01em] text-[#0956CE] dark:text-[#6ba6f5]` },
   { brand: 'Realme', wordmark: 'realme', width: 123, height: 41, label: true, className: `${BASE} rounded-[6px] bg-[#FDC512] px-2.5 py-1.5 text-[23px] font-600 lowercase tracking-[-0.02em] text-[#111111]` },
-  { brand: 'OPPO', wordmark: 'OPPO', logo: '/brands/oppo.svg', width: 125, height: 32, label: true, className: `${BASE} text-[18px] font-800 tracking-[0.02em] text-[#046A38] dark:text-[#4dbb85]` },
+  { brand: 'OPPO', wordmark: 'OPPO', logo: '/brands/oppo.svg', width: 125, height: 32, label: true, dark: 'lift', className: `${BASE} text-[18px] font-800 tracking-[0.02em] text-[#046A38] dark:text-[#4dbb85]` },
   { brand: 'Vivo', wordmark: 'vivo', logo: '/brands/vivo.svg', width: 125, height: 34, label: true, className: `${BASE} text-[20px] font-700 lowercase tracking-[-0.01em] text-[#415FFF] dark:text-[#8fa3ff]` },
-  { brand: 'Huawei', wordmark: 'HUAWEI', logo: '/brands/huawei.svg', width: 74, height: 60, label: true, className: `${BASE} text-[16px] font-800 tracking-[0.05em] text-[#CF0A2C] dark:text-[#ff6b80]` },
-  { brand: 'Motorola', wordmark: 'motorola', logo: '/brands/motorola.svg', width: 65, height: 65, label: true, className: `${BASE} text-[17px] font-700 lowercase tracking-[0.01em] text-[#003691] dark:text-[#6fa8e0]` },
+  { brand: 'Huawei', wordmark: 'HUAWEI', logo: '/brands/huawei.svg', width: 74, height: 60, label: true, dark: 'lift', className: `${BASE} text-[16px] font-800 tracking-[0.05em] text-[#CF0A2C] dark:text-[#ff6b80]` },
+  { brand: 'Motorola', wordmark: 'motorola', logo: '/brands/motorola.svg', width: 65, height: 65, label: true, dark: 'lift', className: `${BASE} text-[17px] font-700 lowercase tracking-[0.01em] text-[#003691] dark:text-[#6fa8e0]` },
   { brand: 'OnePlus', wordmark: 'OnePlus', logo: '/brands/oneplus.svg', width: 58, height: 58, label: true, className: `${BASE} text-[17px] font-700 tracking-[-0.01em] text-[#EB0029] dark:text-[#ff6e80]` },
-  { brand: 'Sony', wordmark: 'SONY', logo: '/brands/sony.svg', width: 130, height: 25, label: true, className: `${BASE} text-[18px] font-700 tracking-[0.08em] text-[#111111] dark:text-white` },
-  { brand: 'Nokia', wordmark: 'NOKIA', logo: '/brands/nokia.svg', width: 134, height: 24, label: true, className: `${BASE} text-[17px] font-700 tracking-[0.06em] text-[#124191] dark:text-[#7d9be0]` },
+  { brand: 'Sony', wordmark: 'SONY', logo: '/brands/sony.svg', width: 130, height: 25, label: true, dark: 'invert', className: `${BASE} text-[18px] font-700 tracking-[0.08em] text-[#111111] dark:text-white` },
+  { brand: 'Nokia', wordmark: 'NOKIA', logo: '/brands/nokia.svg', width: 134, height: 24, label: true, dark: 'lift', className: `${BASE} text-[17px] font-700 tracking-[0.06em] text-[#124191] dark:text-[#7d9be0]` },
 ]
 
 const BY_BRAND = new Map(BRAND_MARKS.map((mark) => [mark.brand, mark]))

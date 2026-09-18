@@ -62,6 +62,7 @@ export default function BrandTile({
           loading="lazy"
           decoding="async"
           onError={() => setLogoFailed(true)}
+          data-dark={mark.dark}
           /* Width drives the size and the height follows the file's own aspect:
              every logo here has a viewBox cropped to its artwork, so a set width
              renders the mark at exactly that width.
