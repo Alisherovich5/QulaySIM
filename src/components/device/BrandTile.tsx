@@ -62,11 +62,16 @@ export default function BrandTile({
           loading="lazy"
           decoding="async"
           onError={() => setLogoFailed(true)}
-          /* Width drives the size and the height follows the file's own
-             aspect: every logo here has a viewBox cropped to its artwork, so a
-             set width renders the mark at exactly that width. Capped by the
-             tile on both axes, and scaled down with the tile on small screens. */
-          className="h-auto max-h-full w-full object-contain"
+          /* Width drives the size and the height follows the file's own aspect:
+             every logo here has a viewBox cropped to its artwork, so a set width
+             renders the mark at exactly that width.
+             `min-h-0 flex-1` is what lets it give way. With `h-auto max-h-full`
+             the image measured itself against the whole tile rather than the
+             space left over, so adding a name under the four square marks —
+             Xiaomi, Huawei, Motorola, OnePlus — pushed them past the 72px tile
+             on a phone. Now it takes the room that is left and `object-contain`
+             keeps the artwork's proportions inside it. */
+          className="min-h-0 w-full flex-1 object-contain"
           style={{ maxWidth: mark.width ? `${mark.width}px` : undefined }}
         />
       ) : (
