@@ -579,6 +579,7 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
       return {
         ...base,
         title: s.globalPageTitle,
+        heading: STRINGS[lang].global.title,
         description: s.globalPageDescription,
         jsonLd: [breadcrumbLd([{ name: STRINGS[lang].global.title, path: route }], lang)],
       }
@@ -601,6 +602,7 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
       return {
         ...base,
         title: s.supportTitle,
+        heading: DESIGN_COPY[lang].supportTitle,
         description: s.supportDescription,
         /* The local copy, not the API's. The page prefers FAQs edited in the
            admin and falls back to these; baking the fallback means a crawler
@@ -616,6 +618,7 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
       return {
         ...base,
         title: s.guideWhatTitle,
+        heading: STRINGS[lang].guides.what.title,
         description: s.guideWhatDescription,
         sections: [
           { text: STRINGS[lang].guides.what.lead },
@@ -643,6 +646,7 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
       return {
         ...base,
         title: s.guideInstallTitle,
+        heading: STRINGS[lang].guides.install.title,
         description: s.guideInstallDescription,
         sections: [
           { text: STRINGS[lang].guides.install.lead },
