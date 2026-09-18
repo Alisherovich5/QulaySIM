@@ -59,6 +59,7 @@ const SAME_IS_FINE = [
 const EXTRA_MODULES = [
   { path: 'src/i18n/locales/esim-status.ts', perLanguage: true },
   { path: 'src/i18n/locales/device-check.ts', perLanguage: true },
+  { path: 'src/i18n/locales/destinations-page.ts', perLanguage: true },
 ]
 
 function sliceObjectLiteral(raw, label) {

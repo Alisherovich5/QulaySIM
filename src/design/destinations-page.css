@@ -1,0 +1,702 @@
+/* ------------------------------------------------------------------ */
+/* The destination catalogue, to the approved design                   */
+/* ------------------------------------------------------------------ */
+
+/* Numbers here are read off the 1536x1024 reference and written as the
+ * reference writes them: the sidebar is 310px because the design says 310,
+ * not because a fraction happened to land there. The main column is fluid
+ * between them so the page holds at 1280 and 1920 without a second set.
+ *
+ * A file of its own, loaded after journey.css, for the reason travel-palette
+ * and device-check.css are: journey.css is a plain stylesheet, so
+ * `.site-shell h1 { font-size: 42px }` beats any utility on the element no
+ * matter how specific the utility looks. The numbers that have to be exact
+ * live here, where nothing outranks them.
+ */
+
+.dx {
+  --dx-ink: #061735;
+  --dx-soft: #617797;
+  --dx-line: #dce9ee;
+  --dx-green: var(--color-brand-500);
+  --dx-green-deep: var(--color-brand-600);
+  --dx-side: 310px;
+  --dx-gutter: 42px;
+  --dx-card-h: 140px;
+  --dx-notch: 11px;
+  --dx-notch-y: 64px;
+
+  display: grid;
+  grid-template-columns: var(--dx-side) 1px minmax(0, 1fr);
+  align-items: start;
+  min-height: calc(100vh - var(--header-h, 74px));
+  /* The mint is a wash, not a gradient: two very flat radials the eye reads as
+     paper rather than as a background effect. */
+  background:
+    radial-gradient(880px 520px at 18% 4%, rgb(0 142 124 / 0.05) 0%, transparent 70%),
+    radial-gradient(760px 620px at 96% 34%, rgb(0 142 124 / 0.045) 0%, transparent 72%),
+    #fff;
+}
+
+:root.dark .dx {
+  --dx-ink: #e7f3f4;
+  --dx-soft: #9fb6c4;
+  --dx-line: #1d3b47;
+  background:
+    radial-gradient(880px 520px at 18% 4%, rgb(52 227 176 / 0.05) 0%, transparent 70%),
+    #061a22;
+}
+
+/* ---------- sidebar ---------- */
+
+.dx-side {
+  padding: 34px 24px 40px var(--dx-gutter);
+  position: sticky;
+  top: calc(var(--header-h, 74px) + 8px);
+}
+
+/* `.site-shell p { font-size: 16px }` in journey.css beats a single class on a
+   <p> — the three small tracked labels on this page are all paragraphs, and all
+   three rendered at 16px until these selectors matched it. */
+.dx-eyebrow,
+.site-shell .dx-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--dx-soft);
+}
+
+.dx-side-title,
+.site-shell .dx-side-title {
+  margin-top: 14px;
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--dx-ink);
+  /* Not balanced: balancing splits it "Keyingi / bekat qayer?" where the design
+     fills the first line and drops only the question word. */
+  text-wrap: wrap;
+}
+
+.dx-side-lead,
+.site-shell .dx-side-lead {
+  margin-top: 12px;
+  font-size: 16px;
+  color: var(--dx-soft);
+}
+
+.dx-side hr {
+  margin: 24px 0 18px;
+  border: 0;
+  border-top: 1px solid var(--dx-line);
+}
+
+.dx-regions-title,
+.site-shell .dx-regions-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--dx-ink);
+  margin-bottom: 12px;
+}
+
+.dx-region {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--dx-ink);
+  text-align: left;
+  transition: background-color 170ms ease, color 170ms ease;
+}
+
+.dx-region svg {
+  flex: none;
+  color: currentColor;
+}
+
+.dx-region .dx-region-go {
+  margin-left: auto;
+  opacity: 0;
+}
+
+.dx-region:hover {
+  background: rgb(0 142 124 / 0.07);
+}
+
+.dx-region.is-on {
+  background: var(--dx-green);
+  color: #fff;
+}
+
+.dx-region.is-on .dx-region-go {
+  opacity: 1;
+}
+
+.dx-side-map {
+  margin-top: 40px;
+}
+
+.dx-side-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.dx-side-map .dx-land {
+  fill: none;
+  stroke: rgb(0 142 124 / 0.22);
+  stroke-width: 0.9;
+}
+
+.dx-side-map .dx-dot {
+  fill: var(--dx-green);
+}
+
+.dx-side-caption,
+.site-shell .dx-side-caption {
+  margin-top: 18px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1.9;
+  color: var(--dx-soft);
+}
+
+.dx-rule {
+  align-self: stretch;
+  background: var(--dx-line);
+}
+
+/* ---------- main column ---------- */
+
+.dx-main {
+  padding: 34px var(--dx-gutter) 64px;
+  min-width: 0;
+}
+
+.dx-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.dx-title,
+.site-shell .dx-title {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 5vw, 76px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  color: var(--dx-ink);
+  white-space: nowrap;
+}
+
+.dx-title-globe {
+  flex: none;
+  color: var(--color-brand-200);
+}
+
+.dx-head-aside,
+.site-shell .dx-head-aside {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1.9;
+  color: var(--dx-soft);
+  text-align: right;
+}
+
+.dx-head-aside::before {
+  content: '';
+  width: 1px;
+  align-self: stretch;
+  background: var(--dx-line);
+}
+
+/* ---------- search + sort ---------- */
+
+.dx-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 208px;
+  gap: 26px;
+  margin-top: 30px;
+}
+
+.dx-search {
+  position: relative;
+}
+
+.dx-search svg {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--dx-soft);
+  pointer-events: none;
+}
+
+.dx-search input {
+  width: 100%;
+  height: 54px;
+  padding: 0 18px 0 54px;
+  border: 1px solid var(--dx-line);
+  border-radius: 16px;
+  background: var(--color-surface);
+  font-size: 16px;
+  color: var(--dx-ink);
+}
+
+.dx-search input::placeholder {
+  color: var(--dx-soft);
+}
+
+.dx-sort {
+  position: relative;
+}
+
+.dx-sort select {
+  width: 100%;
+  height: 54px;
+  padding: 0 44px 0 20px;
+  border: 1px solid var(--dx-line);
+  border-radius: 16px;
+  background: var(--color-surface);
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--dx-ink);
+  appearance: none;
+}
+
+.dx-sort > svg {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--dx-soft);
+  pointer-events: none;
+}
+
+/* ---------- alphabet ---------- */
+
+.dx-alphabet {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+  margin-top: 20px;
+}
+
+.dx-letter {
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  height: 34px;
+  padding: 0 6px;
+  border-radius: 9px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--dx-soft);
+  transition: background-color 170ms ease, color 170ms ease;
+}
+
+.dx-letter:hover:not(:disabled) {
+  color: var(--dx-ink);
+}
+
+.dx-letter.is-on {
+  background: var(--color-brand-50);
+  color: var(--dx-green);
+}
+
+.dx-letter:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+/* ---------- letter groups ---------- */
+
+.dx-group {
+  /* The sticky header must not land on top of the heading a letter jumps to. */
+  scroll-margin-top: calc(var(--header-h, 74px) + 24px);
+  margin-top: 34px;
+}
+
+.dx-group-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.dx-group-letter,
+.site-shell .dx-group-letter {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--dx-ink);
+}
+
+.dx-group-head::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--dx-line);
+}
+
+.dx-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 20px;
+  row-gap: 21px;
+}
+
+/* ---------- the ticket ---------- */
+
+/* Two stacked layers, both with the same pair of semicircles punched out of
+ * them: the outer is the outline's colour, the inner is the fill, inset by a
+ * pixel with a hole one pixel wider. What is left between them is a 1px
+ * outline that follows the notch instead of stopping at it — which is what a
+ * white circle laid on top cannot do, because the moment the page behind it
+ * is not white the circle is a different colour from the paper.
+ */
+.dx-ticket {
+  position: relative;
+  display: block;
+  height: var(--dx-card-h);
+  border-radius: 12px;
+  background: var(--dx-line);
+  -webkit-mask:
+    radial-gradient(circle var(--dx-notch) at 0 var(--dx-notch-y), transparent 98%, #000 100%),
+    radial-gradient(circle var(--dx-notch) at 100% var(--dx-notch-y), transparent 98%, #000 100%);
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle var(--dx-notch) at 0 var(--dx-notch-y), transparent 98%, #000 100%),
+    radial-gradient(circle var(--dx-notch) at 100% var(--dx-notch-y), transparent 98%, #000 100%);
+  mask-composite: intersect;
+  transition: background-color 180ms ease;
+}
+
+.dx-ticket::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: 11px;
+  background: var(--color-surface);
+  -webkit-mask:
+    radial-gradient(circle calc(var(--dx-notch) + 1px) at -1px calc(var(--dx-notch-y) - 1px), transparent 98%, #000 100%),
+    radial-gradient(circle calc(var(--dx-notch) + 1px) at calc(100% + 1px) calc(var(--dx-notch-y) - 1px), transparent 98%, #000 100%);
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle calc(var(--dx-notch) + 1px) at -1px calc(var(--dx-notch-y) - 1px), transparent 98%, #000 100%),
+    radial-gradient(circle calc(var(--dx-notch) + 1px) at calc(100% + 1px) calc(var(--dx-notch-y) - 1px), transparent 98%, #000 100%);
+  mask-composite: intersect;
+  transition: background 180ms ease;
+}
+
+.dx-ticket > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dx-ticket-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: var(--dx-notch-y);
+  padding: 0 20px 0 22px;
+}
+
+.dx-flag {
+  flex: none;
+  width: 76px;
+  height: 54px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: rgb(220 233 238 / 0.5);
+}
+
+.dx-flag img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.dx-name {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.22;
+  color: var(--dx-ink);
+  overflow-wrap: anywhere;
+}
+
+.dx-go {
+  flex: none;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 999px;
+  border: 1px solid var(--dx-line);
+  color: var(--dx-ink);
+}
+
+/* The tear line sits at 90px, not immediately under the notches: on the
+   reference the stub below it is the price, and a separator flush with the
+   notch makes the notch read as the fold instead. */
+.dx-ticket-sep {
+  margin: 26px 22px 0;
+  border: 0;
+  border-top: 1px dashed var(--dx-line);
+}
+
+.dx-ticket-foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 12px 22px 0;
+}
+
+.dx-from {
+  font-size: 13px;
+  color: var(--dx-soft);
+}
+
+.dx-price {
+  font-family: var(--font-display);
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--dx-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The lit state. Hover and keyboard focus both, because a card that only
+   answers a mouse is a card half the visitors never see move. */
+.dx-ticket:hover,
+.dx-ticket:focus-visible {
+  background: var(--dx-green-deep);
+}
+
+.dx-ticket:hover::before,
+.dx-ticket:focus-visible::before {
+  background: linear-gradient(158deg, var(--color-brand-500) 0%, var(--color-brand-600) 62%, #00695c 100%);
+}
+
+.dx-ticket:hover .dx-name,
+.dx-ticket:hover .dx-price,
+.dx-ticket:focus-visible .dx-name,
+.dx-ticket:focus-visible .dx-price {
+  color: #fff;
+}
+
+.dx-ticket:hover .dx-from,
+.dx-ticket:focus-visible .dx-from {
+  color: rgb(255 255 255 / 0.78);
+}
+
+.dx-ticket:hover .dx-go,
+.dx-ticket:focus-visible .dx-go {
+  border-color: rgb(255 255 255 / 0.6);
+  color: #fff;
+}
+
+.dx-ticket:hover .dx-ticket-sep,
+.dx-ticket:focus-visible .dx-ticket-sep {
+  border-top-color: rgb(255 255 255 / 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dx-ticket,
+  .dx-ticket::before,
+  .dx-region,
+  .dx-letter {
+    transition: none;
+  }
+}
+
+/* ---------- loading, empty, error ---------- */
+
+.dx-skeleton {
+  background: var(--dx-line);
+}
+
+.dx-skeleton::before {
+  background: color-mix(in oklab, var(--color-surface) 92%, var(--dx-line));
+}
+
+.dx-empty {
+  margin-top: 40px;
+  padding: 40px 0;
+  text-align: center;
+}
+
+.dx-empty p {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--dx-ink);
+}
+
+.dx-empty button {
+  margin-top: 16px;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
+  border: 1px solid var(--dx-line);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dx-green-deep);
+}
+
+/* ---------- tablet ---------- */
+
+@media (max-width: 1279px) {
+  .dx-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- phone / small tablet ---------- */
+
+@media (max-width: 1023px) {
+  .dx {
+    grid-template-columns: minmax(0, 1fr);
+    --dx-gutter: 16px;
+  }
+
+  .dx-side,
+  .dx-rule {
+    display: none;
+  }
+
+  .dx-main {
+    padding: 22px var(--dx-gutter) 48px;
+  }
+
+  .dx-title,
+  .site-shell .dx-title {
+    font-size: 34px;
+    white-space: normal;
+  }
+
+  .dx-head-aside,
+  .dx-title-globe {
+    display: none;
+  }
+
+  /* Search owns its own line — it is the control people actually use — and the
+     sort and the region filter share the one under it. */
+  .dx-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .dx-search {
+    flex: 1 1 100%;
+  }
+
+  /* Shares the second line with the region filter rather than taking one of
+     its own: two full-width controls stacked is three rows of chrome before a
+     single destination. */
+  .dx-sort {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .dx-sort select {
+    height: 48px;
+    padding: 0 38px 0 14px;
+    font-size: 14.5px;
+  }
+
+  .dx-sort > svg {
+    right: 14px;
+  }
+
+  .dx-alphabet {
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+
+  .dx-alphabet::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dx-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dx-foot {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 18px var(--dx-gutter);
+  }
+
+  .dx-foot-right {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .dx-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* The region filter, as a sheet, where the sidebar cannot go. */
+.dx-region-open {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .dx-region-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1px solid var(--dx-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--dx-ink);
+  }
+
+  .dx-sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 60;
+    max-height: 76vh;
+    overflow-y: auto;
+    padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+    border-radius: 20px 20px 0 0;
+    background: var(--color-surface);
+    box-shadow: 0 -18px 50px -20px rgb(6 23 53 / 0.35);
+  }
+
+  .dx-sheet-back {
+    position: fixed;
+    inset: 0;
+    z-index: 59;
+    background: rgb(6 23 53 / 0.38);
+  }
+}
