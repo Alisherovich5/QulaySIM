@@ -29,9 +29,25 @@
  * cap stops an ultrawide monitor from turning the hero into a wall of photo,
  * and at 1440 and below the copy is still taller than the floor, so nothing
  * moves where most people read the page. */
+/* And it has to fill the screen, which the width alone does not make it do.
+ *
+ * `38.6vw` sets the crop, not the presence: on a 1512x950 laptop it resolves to
+ * 584px, so the hero stopped at 61% of the window and the next section was
+ * already showing under it. A hero that ends two thirds of the way down reads
+ * as a banner rather than the top of the page.
+ *
+ * So the floor is whichever is taller — the crop-derived height, or the screen
+ * below the header. `100svh` rather than `100vh`: on a phone `vh` counts the
+ * browser's own bars, which is how a "full screen" hero ends up taller than the
+ * screen and pushes its own call to action out of sight. `--header-h` is
+ * published by the navbar, measured rather than assumed; the fallback is only
+ * for the first frame before that effect runs.
+ *
+ * Desktop only. On a phone a screen-tall hero is one screen of picture before
+ * anything can be bought. */
 @media (min-width: 1024px) {
   .hero-photo {
-    min-height: min(38.6vw, 760px);
+    min-height: max(min(38.6vw, 760px), calc(100svh - var(--header-h, 68px)));
     /* The copy has to grow with the band, or the height the band gains becomes
        a hole under the quick links — the same "the bottom is left open" the
        asymmetric padding was written to close. The artwork is absolutely
