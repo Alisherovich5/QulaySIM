@@ -87,10 +87,17 @@
 .hero-photo h1 {
   font-size: clamp(1.25rem, 0.82rem + 1.9vw, 2.375rem);
   line-height: 1.2;
-  font-weight: 500;
-  /* Not the display tracking journey.css hands down: at 38px and 500 this is
-     body-weight text, and -0.045em closes it up until the words touch. */
-  letter-spacing: 0.004em;
+  /* 700, not 500.
+   *
+   * 500 was set against Golos Text, which carries a light weight at 38px. The
+   * site went back to Manrope, whose 500 at that size reads as thin rather than
+   * quiet — the owner's word for it was ugly. 700 gives the line enough colour
+   * to be a headline while the payoff below, at 1.7x and 800, still leads.
+   * Measured: the block stays 232px, so the search box does not move. */
+  font-weight: 700;
+  /* Tighter than body tracking now that the weight carries it, looser than the
+     -0.045em journey.css hands down, which at this size closes the words up. */
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
