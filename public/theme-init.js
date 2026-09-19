@@ -8,6 +8,25 @@
  * still runs before paint, which is the whole point of it.
  */
 (function () {
+  /* Says "a browser is running this", before anything paints.
+   *
+   * Every prerendered page carries a <div id="baked"> inside #root: the page's
+   * text, flat, for the crawlers that do not run JavaScript. React replaces it
+   * when it mounts — but on a slow connection that is several seconds later,
+   * and until then the visitor is looking at six thousand pixels of raw prices
+   * and country names. Measured on a throttled connection: visible from 1.5s
+   * to 5s.
+   *
+   * So the CSS hides it behind this class, which only a browser ever gets. A
+   * crawler that does not run scripts never adds it and reads the text as
+   * before; a crawler that does run them renders the real page anyway. Not a
+   * plain `#baked { display: none }`, because text hidden from everybody while
+   * being served to search engines is the definition of cloaking.
+   *
+   * Fails in the safe direction: if this file does not load, the class is
+   * never added and the baked text shows, which is what happens today. */
+  document.documentElement.classList.add('js')
+
   var dark = false
   try {
     var t = localStorage.getItem('fastsim_theme')

@@ -207,6 +207,22 @@
 .elev-1 { box-shadow: var(--fs-e1); }
 .elev-2 { box-shadow: var(--fs-e2); }
 
+/* The crawler's copy of the page, hidden from anything that can render the
+   real one.
+ *
+ * scripts/prerender.ts writes a flat <div id="baked"> into #root so a crawler
+ * that does not run JavaScript still gets the page's text. React throws it away
+ * on mount, but mount is seconds away on a slow connection, and until then it
+ * is what the visitor sees.
+ *
+ * `html.js` is added by /theme-init.js, a blocking script in <head>, so this
+ * has matched before the body is parsed and the block never paints. Without
+ * JavaScript the class never arrives and the text stays visible, which is the
+ * whole reason it is in the HTML. */
+html.js #baked {
+  display: none;
+}
+
 /* One focus indicator for every interactive element on the account page.
    `outline` rather than `ring` so it is never clipped by an ancestor's
    overflow and never shifts layout. */
