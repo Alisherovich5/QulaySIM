@@ -44,13 +44,20 @@
 /* Dark theme. The design is a light-mode design and the site has a working
    dark mode; leaving the tokens alone would have printed #080d24 text on a
    near-black page. Same hues, moved to the dark surface. */
+/* Dark takes the site's own tokens rather than a second set of near-blacks.
+ *
+ * The hand-picked values here were #0b1418 for the panel and #0f1a20 for the
+ * plans tray, against a page painted #04161d — three dark greys within a few
+ * points of each other, which is what the owner saw as colours that do not
+ * match. One palette now: the section is the site's surface, the tray its
+ * second surface, and the hairlines its line colour. */
 :root.dark .rp {
-  --rp-ink: #eef2f6;
-  --rp-muted: #98a1ad;
-  --rp-mint: #0e2f27;
-  --rp-line: #24303a;
-  --rp-plains: #0f1a20;
-  --rp-surface: #0b1418;
+  --rp-ink: var(--color-ink);
+  --rp-muted: var(--color-slate-soft);
+  --rp-mint: rgb(0 143 124 / 0.16);
+  --rp-line: var(--color-line);
+  --rp-plains: var(--color-surface-2);
+  --rp-surface: var(--color-surface);
   --rp-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -16px rgb(0 0 0 / 0.6);
 }
 

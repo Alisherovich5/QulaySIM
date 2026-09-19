@@ -56,15 +56,19 @@ export default function Home() {
       {/* HowItWorks carries its own border-y, so it supplies the divider the
           destinations grid needs below it — no wrapper here. */}
       <HowItWorks />
-      <div className="border-t border-line/70">
+      <div className="border-t border-line/70 pb-14 sm:pb-20">
         <Suspense fallback={<Placeholder height={760} />}>
           <RouteSection />
         </Suspense>
       </div>
       <div className="border-t border-line/70"><Testimonials items={content?.testimonials} /></div>
-      <div className="border-t border-line/70">
-        <Suspense fallback={<Placeholder height={900} />}>
-          <SupportBody />
+      {/* Padding on the wrapper, not inside the block: /support supplies its own
+          page frame and this is the only place that needs air above and below
+          it. Without it the plan cards above sat two pixels off the help
+          cards. */}
+      <div className="border-t border-line/70 pb-16 pt-10 sm:pb-24 sm:pt-14">
+        <Suspense fallback={<Placeholder height={640} />}>
+          <SupportBody hero={false} />
         </Suspense>
       </div>
     </div>

@@ -75,7 +75,7 @@ export default function Navbar() {
       <header
         ref={headerRef}
         data-detached={detached ? 'true' : 'false'}
-        className="site-header sticky inset-x-0 top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-md"
+        className="site-header sticky inset-x-0 top-0 z-50 border-b border-line bg-surface"
       >
       {/* The promo strip is off the header, by the owner's instruction.
 
@@ -88,7 +88,7 @@ export default function Navbar() {
 
           The header also loses ~44px of height on every screen, which the
           --header-h publisher below picks up on its own. */}
-      <div className="container-page flex h-14 items-center justify-between max-[359px]:px-3 sm:h-16">
+      <div className="nav-bar container-page flex items-center justify-between max-[359px]:px-3">
         <div className="shrink-0">
           <Logo />
         </div>

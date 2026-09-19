@@ -92,7 +92,7 @@ export default function LanguageSwitcher({
           className={
             navigation
               ? 'navigation-language__popover'
-              : 'absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl bg-surface p-1 shadow-xl shadow-brand-900/10 ring-1 ring-line'
+              : 'lang-pop absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl bg-surface p-1 shadow-xl shadow-brand-900/10 ring-1 ring-line'
           }
         >
           <div className={navigation ? 'navigation-language__choices' : ''}>
