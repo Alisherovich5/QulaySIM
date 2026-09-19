@@ -78,7 +78,10 @@
 .rp .rp-title {
   margin: 0;
   font-size: clamp(30px, 4.3vw, 48px);
-  font-weight: 800;
+  /* 900 with the rest of the shop's headings. The page brief asked for 750-800
+     against the old family, whose axis ended at 800; the family changed and
+     the owner asked for heavier, so this moved with everything else. */
+  font-weight: 900;
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--rp-ink);
