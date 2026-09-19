@@ -168,6 +168,7 @@ const uz: Translation = {
     ],
     faqTitle: 'Tez-tez beriladigan savollar',
     faqSubtitle: 'Ulanishdan oldin bilishingiz kerak bo‘lgan hamma narsa.',
+    faqHelpTitle: 'Javobingizni topmadingizmi?',
     globeNoPlans: 'Bu davlat uchun hozircha tarif yo‘q',
     globeAria: 'Interaktiv globus — davlatni tanlang',
     globeHint: 'Davlat ustiga bosing',

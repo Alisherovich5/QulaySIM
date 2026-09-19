@@ -11,6 +11,9 @@ import './design/device-check.css'
 import './design/footer.css'
 import './design/destinations.css'
 import './design/how-steps.css'
+// After journey.css, which is the only way the landing FAQ's own h2 and h3
+// sizes outrank the shell's.
+import './design/home-faq.css'
 import './i18n'
 import App from './App.tsx'
 

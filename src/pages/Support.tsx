@@ -13,6 +13,7 @@ import FAQAccordion, { type FaqEntry } from '../components/support/FAQAccordion'
 import { api } from '../lib/api'
 import { faqLd } from '../lib/structured-data'
 import type { Faq } from '../lib/types'
+import { CATEGORY_LABELS, categoryRank } from '../lib/faq-categories'
 
 /** Where the operator answers. Confirmed against the address the page has
  *  always linked to rather than invented for this design. */
@@ -31,20 +32,6 @@ function fold(value: string): string {
     .toLocaleLowerCase()
     .replace(/[‘’ʻʼ`´']/g, "'")
     .trim()
-}
-
-/** The labels the design uses, for the category keys the API sends. A key with
- *  no label here is shown under its own name rather than hidden. */
-/* The order the design lists them in. A key that is not here sorts after the
-   ones that are, so a category the operator adds appears rather than vanishing. */
-const CATEGORY_ORDER = ['general', 'setup', 'billing', 'data', 'device']
-
-const CATEGORY_LABELS: Record<string, string> = {
-  general: 'support.catGeneral',
-  setup: 'support.catSetup',
-  billing: 'support.catBilling',
-  device: 'support.catDevice',
-  data: 'support.catData',
 }
 
 export default function Support() {
@@ -90,17 +77,13 @@ export default function Support() {
   const categories = useMemo(() => {
     const counts = new Map<string, number>()
     for (const faq of faqs) counts.set(faq.category, (counts.get(faq.category) ?? 0) + 1)
-    const rank = (key: string) => {
-      const index = CATEGORY_ORDER.indexOf(key)
-      return index === -1 ? CATEGORY_ORDER.length : index
-    }
     return [...counts.entries()]
       .map(([key, count]) => ({
         key,
         count,
         label: CATEGORY_LABELS[key] ? t(CATEGORY_LABELS[key]) : key,
       }))
-      .sort((a, b) => rank(a.key) - rank(b.key))
+      .sort((a, b) => categoryRank(a.key) - categoryRank(b.key))
   }, [faqs, t])
 
   /* Search wins over the category, deliberately: a query is a question about
