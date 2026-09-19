@@ -75,8 +75,13 @@ export default function HeroSection() {
             quietly crops it. Measured: 672px of column in a 390px screen
             before, 350px after. */}
         <div className="min-w-0 max-w-2xl">
+          {/* Size, weight, leading and wrap all live in photo-media.css: the
+              headline is set in two tiers and the `span` below is promoted to a
+              block, which is more than a utility per breakpoint can say.
+              Leaving the old utilities here would only describe a headline that
+              is no longer drawn. */}
           <h1
-            className="max-w-full text-balance font-display text-[1.75rem] font-700 leading-[1.14] text-ink sm:max-w-2xl sm:text-4xl lg:text-[3.25rem] lg:leading-[1.08] rise"
+            className="max-w-full font-display text-ink sm:max-w-2xl rise"
             style={{ animationDelay: '80ms' }}
           >
             {t('home.title1')}{' '}

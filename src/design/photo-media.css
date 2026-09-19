@@ -66,18 +66,40 @@
   background-color: #061c27;
 }
 
-/* The headline's own size, back.
+/* The hero headline, in two tiers.
  *
- * journey.css sets `.site-shell h1 { font-size: 42px }`, which beats every
- * Tailwind size utility on every h1 in the app — the hero's
- * `lg:text-[3.25rem]` has never taken effect, so the headline has been drawn
- * at 42px where the approved design draws it at 52px. Fixed here for the hero
- * only, in the same unlayered cascade journey.css is in. The same override is
+ * The sentence is a setup and a payoff — the problem the traveller has, then
+ * the name of the thing that solves it. Set at one size and one weight the two
+ * halves read as equally important and the eye has nowhere to land, which is
+ * what four uniform 52px lines were doing. So the setup drops to 38px at 500,
+ * where it reads as a lead-in, and the payoff is promoted to its own block at
+ * 1.7x and 800. The headline ends up 232px tall against the flat version's
+ * 229px, so the search box below it does not move.
+ *
+ * The type is set here rather than on the element because journey.css sets
+ * `.site-shell h1 { 42px / 800 / -0.045em }`, which beats every Tailwind size,
+ * weight and tracking utility on every h1 in the app. Only plain CSS loaded
+ * after it in the same unlayered cascade wins, so all three properties have to
+ * be named here rather than inherited or set as utilities. (That override is
  * still flattening the headings on the other pages; that is a larger change
- * than this one and is not smuggled in with it. */
+ * than this one and is not smuggled in with it.) */
 .hero-photo h1 {
-  font-size: clamp(1.75rem, 1.05rem + 2.6vw, 3.25rem);
-  line-height: 1.1;
+  font-size: clamp(1.25rem, 0.82rem + 1.9vw, 2.375rem);
+  line-height: 1.2;
+  font-weight: 500;
+  /* Not the display tracking journey.css hands down: at 38px and 500 this is
+     body-weight text, and -0.045em closes it up until the words touch. */
+  letter-spacing: 0.004em;
+  text-wrap: balance;
+}
+
+.hero-photo h1 > span {
+  display: block;
+  margin-top: 0.22em;
+  font-size: 1.7em;
+  line-height: 0.98;
+  font-weight: 800;
+  letter-spacing: -0.04em;
 }
 
 .hero-art {
