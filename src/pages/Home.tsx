@@ -4,11 +4,10 @@ import HeroSection from '../components/home/HeroSection'
 import DestinationsExplorer from '../components/home/DestinationsExplorer'
 import HowItWorks from '../components/home/HowItWorks'
 import Testimonials from '../components/home/Testimonials'
-import HomeFaq from '../components/home/HomeFaq'
 import Seo from '../components/Seo'
 import { useLandingContent } from '../lib/useLandingContent'
 import { HOME_GEO } from '../lib/geo'
-import { faqLd, organisationLd, webSiteLd } from '../lib/structured-data'
+import { organisationLd, webSiteLd } from '../lib/structured-data'
 import type { SeoLang } from '../lib/seo'
 
 /**
@@ -19,13 +18,6 @@ import type { SeoLang } from '../lib/seo'
 export default function Home() {
   const content = useLandingContent()
   const { t, i18n } = useTranslation()
-
-  // The home page's own FAQ block is real, visible text, so it is allowed to be
-  // declared as structured data — and it is the cheapest rich result on the
-  // site to win. Falls away silently when the CMS has not supplied any.
-  const faq = faqLd(
-    (content?.faqs ?? []).map((f) => ({ question: f.question, answer: f.answer })),
-  )
 
   return (
     <div>
@@ -39,7 +31,6 @@ export default function Home() {
         jsonLd={[
           organisationLd(),
           webSiteLd((i18n.resolvedLanguage ?? 'uz') as SeoLang),
-          ...(faq ? [faq] : []),
         ]}
       />
       <HeroSection />
@@ -49,7 +40,6 @@ export default function Home() {
       <HowItWorks />
       <div className="border-t border-line/70"><GlobalTeaser variant="section" /></div>
       <div className="border-t border-line/70"><Testimonials items={content?.testimonials} /></div>
-      <div className="border-t border-line/70"><HomeFaq faqs={content?.faqs} /></div>
     </div>
   )
 }

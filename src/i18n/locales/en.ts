@@ -164,8 +164,6 @@ const en = {
         rating: 5,
       },
     ],
-    faqTitle: 'Frequently asked questions',
-    faqSubtitle: 'Everything you need to know before you connect.',
     globeNoPlans: 'No plans for this country yet',
     globeAria: 'Interactive globe — pick a country',
     globeHint: 'Tap a country',
