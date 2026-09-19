@@ -166,7 +166,6 @@ const en = {
     ],
     faqTitle: 'Frequently asked questions',
     faqSubtitle: 'Everything you need to know before you connect.',
-    faqHelpTitle: 'Didn’t find your answer?',
     globeNoPlans: 'No plans for this country yet',
     globeAria: 'Interactive globe — pick a country',
     globeHint: 'Tap a country',

@@ -9,13 +9,18 @@ export interface FaqEntry {
 }
 
 /**
- * The answers, one open at a time.
+ * The answers, one open at a time. Used by the support page and by the landing
+ * page, which the owner asked to be the same thing rather than two.
  *
  * A native <button> for each question rather than a div with a click handler:
  * that is what gives it Enter, Space, a focus ring and a role without writing
- * any of them. `aria-expanded` and `aria-controls` tie it to its answer, and
- * the answer is removed from the DOM when closed rather than hidden, so a
- * screen reader does not read five answers to a question nobody asked.
+ * any of them. `aria-expanded` and `aria-controls` tie it to its answer.
+ *
+ * The answer stays mounted rather than being removed when the row closes,
+ * because the row animates to its own height and a height needs something to
+ * animate from. `inert` does the job the unmounting used to: the closed answer
+ * is out of the tab order and out of the accessibility tree, so a screen reader
+ * is not read five answers to a question nobody asked.
  */
 export default function FAQAccordion({
   faqs,
@@ -46,11 +51,11 @@ export default function FAQAccordion({
                 <ChevronDown size={20} aria-hidden />
               </button>
             </h3>
-            {open && (
-              <div className="sup-acc-a" id={panelId}>
-                {faq.answer}
+            <div className="sup-acc-a" id={panelId} inert={!open}>
+              <div>
+                <p>{faq.answer}</p>
               </div>
-            )}
+            </div>
           </div>
         )
       })}

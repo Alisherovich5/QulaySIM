@@ -1,0 +1,286 @@
+/* The FAQ, shared by the support page and the landing page.
+ *
+ * It was drawn twice: once here for /support and once again for the landing
+ * page, in a file of its own, with the values copied across. The owner asked
+ * for the two to be identical, and two files that are identical today are two
+ * files that disagree next month — so there is one set of rules and one set of
+ * components, and both pages mount them.
+ *
+ * Loaded from main.tsx rather than from a page, because the landing page needs
+ * it on first paint. The support page's own chunk still loads after this, so
+ * anything genuinely specific to that page can still outrank it.
+ *
+ * The `--sup-*` tokens are declared for both hosts below. Colours are the ones
+ * sampled off the approved design: #011739 heading, #485368 body, #7B8AA2
+ * label, #E2EDF1 hairline, #D8F5EF the selected topic.
+ */
+
+.sup,
+.home-faq {
+  --sup-ink: #011739;
+  --sup-soft: #485368;
+  --sup-label: #7b8aa2;
+  --sup-line: #e2edf1;
+  --sup-green: #008f7c;
+  --sup-green-dark: #017567;
+}
+
+:root.dark .sup,
+:root.dark .home-faq {
+  --sup-ink: var(--color-ink);
+  --sup-soft: var(--color-slate-soft);
+  --sup-label: var(--color-slate-soft);
+  --sup-line: var(--color-line);
+}
+
+/* The landing page's own chrome around the shared block. The support page has
+   its own page frame; here the section supplies the width and the air. */
+.home-faq {
+  background: var(--color-surface);
+  padding-block: 64px;
+}
+
+@media (max-width: 767px) {
+  .home-faq {
+    padding-block: 48px;
+  }
+}
+
+/* `min-width: 0` on the children: a grid item defaults to `auto`, which refuses
+   to shrink below its content — and the category row is a flex strip wider than
+   a phone, so the column grew to 478px inside a 390px screen and took the page
+   with it. Overflow-x on the strip cannot help until the column can shrink. */
+.sup-faq > * {
+  min-width: 0;
+}
+
+.sup-faq {
+  display: grid;
+  gap: 24px;
+}
+
+/* The rule above the block, on the support page only: there it follows the
+   three action cards and needs separating from them. On the landing page the
+   section supplies its own border and background. */
+.sup .sup-faq {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--sup-line);
+}
+
+@media (min-width: 1024px) {
+  .sup-faq {
+    grid-template-columns: 348px minmax(0, 1fr);
+    gap: 36px;
+  }
+}
+
+.sup-faq-title,
+.site-shell .sup-faq-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--sup-ink);
+}
+
+@media (min-width: 1024px) {
+  .sup-faq-title,
+  .site-shell .sup-faq-title {
+    font-size: 32px;
+    /* Wide enough for "Ko'p so'raladigan" on the first line, which is where the
+       design breaks it; 11ch put "so'raladigan" on a line of its own. */
+    max-width: 15ch;
+  }
+}
+
+.sup-faq-note {
+  margin-top: 10px;
+  font-size: 15px;
+  color: var(--sup-soft);
+}
+
+.sup-cats {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.sup-cats::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .sup-cats {
+    flex-direction: column;
+    overflow: visible;
+  }
+}
+
+.sup-cat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  flex-shrink: 0;
+  border: 1px solid var(--sup-line);
+  border-radius: 12px;
+  background: var(--color-surface);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sup-ink);
+  white-space: nowrap;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+@media (min-width: 1024px) {
+  .sup-cat {
+    height: 42px;
+  }
+}
+
+.sup-cat:hover {
+  border-color: #b9ddd3;
+}
+
+.sup-cat.is-on {
+  background: #d8f5ef;
+  border-color: #b9e6dc;
+}
+
+.sup-cat svg {
+  flex-shrink: 0;
+  color: var(--sup-label);
+}
+
+/* The accordion is one panel with hairlines between its rows, not a stack of
+   separate cards — that is what the design draws and it is also what stops the
+   list reading as five unrelated things. */
+.sup-acc {
+  border: 1px solid var(--sup-line);
+  border-radius: 16px;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.sup-acc-row + .sup-acc-row {
+  border-top: 1px solid var(--sup-line);
+}
+
+/* The question is a heading whose only child is the button — the heading gives
+   the list its outline, the button gives it the keyboard. */
+.sup-acc-row h3,
+.site-shell .sup-acc-row h3 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.sup-acc-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-height: 52px;
+  padding: 16px 22px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--sup-ink);
+}
+
+.sup-acc-q:hover {
+  color: var(--sup-green-dark);
+}
+
+.sup-acc-q svg {
+  flex-shrink: 0;
+  color: var(--sup-label);
+  transition: transform 0.2s ease;
+}
+
+.sup-acc-row.is-open .sup-acc-q svg {
+  transform: rotate(180deg);
+}
+
+/* The padding sits on the paragraph, not on this box. This box is the animating
+   grid, and a collapsed `0fr` track with 18px of padding is still 18px tall —
+   the row would never close all the way. */
+.sup-acc-a p {
+  padding: 0 22px 18px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--sup-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sup-acc-q svg {
+    transition: none;
+  }
+}
+/* The selected topic, dark. Lives with the rest of the block rather than in the
+   support page's dark section, because the landing page needs it too. */
+:root.dark .sup-cat.is-on {
+  background: rgb(0 143 124 / 0.16);
+  border-color: rgb(0 143 124 / 0.34);
+}
+
+/* The answer opens to its own height.
+ *
+ * A grid track interpolates from `0fr` to `1fr`, which is the one way to
+ * animate to a height nobody measured: `max-height` guesses a number that
+ * either cuts the Russian copy off or makes the close look like it stalls.
+ * The answer stays mounted so it has something to animate from, and carries
+ * `inert` while shut, so it is neither tabbable nor read aloud. */
+.sup-acc-a {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sup-acc-row.is-open .sup-acc-a {
+  grid-template-rows: 1fr;
+}
+
+.sup-acc-a > div {
+  overflow: hidden;
+}
+
+.sup-acc-a p {
+  margin: 0;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.sup-acc-row.is-open .sup-acc-a p {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.08s;
+}
+
+/* Inside the panel's rounded corners, not around the row: the panel clips at
+   its own radius, and the 2px offset `.focus-ring` uses left a focused question
+   marked by two horizontal lines with its sides cut away. */
+.sup-acc-q:focus-visible {
+  outline-offset: -3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sup-acc-a,
+  .sup-acc-a p {
+    transition: none;
+  }
+}
