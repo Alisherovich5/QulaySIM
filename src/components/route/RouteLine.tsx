@@ -72,7 +72,7 @@ export default function RouteLine({
   const legs = draw
     ? points
         .slice(0, -1)
-        .map((x, index) => ({ x, next: xs[index + 1] }))
+        .map((x, index) => ({ x, next: points[index + 1] }))
         // Two chips stacked in the same column of the mobile grid share an x.
         // An arc between them has nowhere to go and draws a spike instead.
         .filter(({ x, next }) => Math.abs(next - x) > 8)
