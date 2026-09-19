@@ -38,6 +38,7 @@ import en from '../src/i18n/locales/en'
 import ru from '../src/i18n/locales/ru'
 import uz from '../src/i18n/locales/uz'
 import { DEVICE_CHECK_COPY } from '../src/i18n/locales/device-check'
+import { ROUTE_PAGE_COPY } from '../src/i18n/locales/route-page'
 import {
   absoluteUrl,
   alternatesFor,
@@ -128,6 +129,10 @@ const STATIC_ROUTES = [
   '/global',
   '/device-check',
   '/data-calculator',
+  // Prerendered like every other static route, and for the same two reasons:
+  // a crawler that arrives before the JavaScript does still gets a title and a
+  // description, and the head does not have to be written twice.
+  '/marshrut',
   '/support',
   '/esim-nima',
   '/esim-ornatish',
@@ -591,6 +596,14 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
         heading: DEVICE_CHECK_COPY[lang].dc.title,
         description: s.deviceDescription,
         jsonLd: [breadcrumbLd([{ name: STRINGS[lang].nav.deviceCheck, path: route }], lang)],
+      }
+    case '/marshrut':
+      return {
+        ...base,
+        title: ROUTE_PAGE_COPY[lang]['rp.seoTitle'],
+        heading: ROUTE_PAGE_COPY[lang]['rp.titleEmpty'],
+        description: ROUTE_PAGE_COPY[lang]['rp.seoDesc'],
+        jsonLd: [breadcrumbLd([{ name: ROUTE_PAGE_COPY[lang]['rp.seoTitle'], path: route }], lang)],
       }
     case '/data-calculator':
       return {
