@@ -574,8 +574,6 @@ const en = {
     eyebrow: 'Help centre',
     heroTitle: 'A simple answer to every question.',
     heroLead: 'From choosing an eSIM to getting online.',
-    searchLabel: 'Search the questions',
-    searchPlaceholder: 'Type your question...',
     noResults: 'Nothing matched your question.',
     writeTelegram: 'Message us on Telegram',
     deviceTitle: 'Check your device',

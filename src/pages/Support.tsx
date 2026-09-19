@@ -1,5 +1,5 @@
 import './support.css'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ArrowRight, BookOpen, Send, Smartphone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -8,7 +8,6 @@ import Seo from '../components/Seo'
 import SupportActionCard from '../components/support/SupportActionCard'
 import SupportCategories from '../components/support/SupportCategories'
 import SupportIllustration from '../components/support/SupportIllustration'
-import SupportSearch from '../components/support/SupportSearch'
 import FAQAccordion, { type FaqEntry } from '../components/support/FAQAccordion'
 import { api } from '../lib/api'
 import { faqLd } from '../lib/structured-data'
@@ -20,27 +19,11 @@ import { CATEGORY_LABELS, categoryRank } from '../lib/faq-categories'
 const TELEGRAM = 'https://t.me/qulaysim_support'
 const TELEGRAM_HANDLE = '@qulaysim_support'
 
-/**
- * Folded for searching: case, and the three apostrophes Uzbek is written with.
- *
- * "To'lov", "To‘lov" and "To’lov" are the same word to a reader and three
- * different strings to `includes`. A visitor typing the straight quote their
- * keyboard produces must still find an answer written with the curly one.
- */
-function fold(value: string): string {
-  return value
-    .toLocaleLowerCase()
-    .replace(/[‘’ʻʼ`´']/g, "'")
-    .trim()
-}
-
 export default function Support() {
   const { t, i18n } = useTranslation()
   const [remote, setRemote] = useState<Faq[] | null>(null)
-  const [query, setQuery] = useState('')
   const [category, setCategory] = useState<string | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
-  const answersRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     let active = true
@@ -86,30 +69,19 @@ export default function Support() {
       .sort((a, b) => categoryRank(a.key) - categoryRank(b.key))
   }, [faqs, t])
 
-  /* Search wins over the category, deliberately: a query is a question about
-     everything the page knows, and answering it inside one tab is how somebody
-     concludes the site has no answer. */
-  const shown = useMemo(() => {
-    const needle = fold(query)
-    if (needle) {
-      return faqs.filter(
-        (f) => fold(f.question).includes(needle) || fold(f.answer).includes(needle),
-      )
-    }
-    return category ? faqs.filter((f) => f.category === category) : faqs
-  }, [faqs, query, category])
+  /* The category buttons are the only filter now: the question box above them
+     was removed at the owner's instruction. Twenty-odd answers under six
+     labelled categories is a list somebody reads rather than searches, and the
+     box asked a visitor to guess the wording of an answer they had not seen. */
+  const shown = useMemo(
+    () => (category ? faqs.filter((f) => f.category === category) : faqs),
+    [faqs, category],
+  )
 
   /* The first answer is open on arrival, as the design shows it, and stays with
      whatever the list currently is — an id that has been filtered away would
      leave the panel closed with nothing explaining why. */
   const activeId = openId && shown.some((f) => f.id === openId) ? openId : (shown[0]?.id ?? null)
-
-  const scrollToAnswers = () => {
-    const el = answersRef.current
-    if (!el) return
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    el.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' })
-  }
 
   return (
     <div className="sup">
@@ -127,17 +99,6 @@ export default function Support() {
           <h1 className="sup-title">{t('support.heroTitle')}</h1>
           <p className="sup-lead">{t('support.heroLead')}</p>
 
-          <SupportSearch value={query} onChange={setQuery} onSubmit={scrollToAnswers} />
-
-          {query && shown.length === 0 && (
-            <p className="sup-empty" role="status">
-              {t('support.noResults')}
-              <br />
-              <a href={TELEGRAM} target="_blank" rel="noreferrer">
-                {t('support.writeTelegram')}
-              </a>
-            </p>
-          )}
         </div>
 
         <SupportIllustration />
@@ -202,7 +163,7 @@ export default function Support() {
           />
         </div>
 
-        <div ref={answersRef}>
+        <div>
           {shown.length ? (
             <FAQAccordion faqs={shown} openId={activeId} onToggle={setOpenId} />
           ) : (

@@ -573,8 +573,6 @@ const uz: Translation = {
     eyebrow: 'Yordam markazi',
     heroTitle: 'Har savolga qulay yechim.',
     heroLead: 'eSIM tanlashdan ulanishgacha yordam beramiz.',
-    searchLabel: 'Savol bo‘yicha qidirish',
-    searchPlaceholder: 'Savolingizni yozing...',
     noResults: 'Savolingizga mos javob topilmadi.',
     writeTelegram: 'Telegram orqali bizga yozing',
     deviceTitle: 'Qurilmani tekshirish',

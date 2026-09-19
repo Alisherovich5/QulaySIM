@@ -570,8 +570,6 @@ const ru: Translation = {
     eyebrow: 'Центр помощи',
     heroTitle: 'Удобный ответ на любой вопрос.',
     heroLead: 'Поможем от выбора eSIM до подключения.',
-    searchLabel: 'Поиск по вопросам',
-    searchPlaceholder: 'Напишите свой вопрос...',
     noResults: 'По вашему вопросу ничего не нашлось.',
     writeTelegram: 'Напишите нам в Telegram',
     deviceTitle: 'Проверка устройства',
