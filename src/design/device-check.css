@@ -73,7 +73,7 @@
        as two separate sentences. */
     font-size: 70px;
     line-height: 64px;
-    /* Measured, not chosen: at this size the display face sets "Telefoningiz eSIM'ga"
+    /* Measured, not chosen: at this size Manrope sets "Telefoningiz eSIM'ga"
        707px wide with the tracking the rest of the site uses, and the design
        has that line at 636px. -0.055em renders it 635px, which is what puts
        the break after "eSIM'ga" rather than after the first word. */

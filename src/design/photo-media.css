@@ -73,7 +73,7 @@
  * halves read as equally important and the eye has nowhere to land, which is
  * what four uniform 52px lines were doing. So the setup drops to 38px at 500,
  * where it reads as a lead-in, and the payoff is promoted to its own block at
- * 1.7x and 900 — the top of Golos Text's axis, where journey.css puts every
+ * 1.7x and 800, the top of Manrope's axis and where journey.css puts every
  * other heading on the site, so the loudest line on the landing page is not
  * lighter than a section title further down it.
  *
@@ -99,7 +99,7 @@
   margin-top: 0.22em;
   font-size: 1.7em;
   line-height: 0.98;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.04em;
 }
 
