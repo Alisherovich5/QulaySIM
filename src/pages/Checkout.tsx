@@ -12,10 +12,15 @@ import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
 import { promoRejection } from '../lib/promoRejection'
 import { checkoutKey } from '../lib/checkout-key'
-import { isOrderSettled } from '../lib/order-status'
+import { isOrderSettled, orderHasSettled } from '../lib/order-status'
 import Flag from '../components/Flag'
 import { Button, Card } from '../components/ui'
 import type { Quote } from '../lib/types'
+
+/** How often the open payment window is checked against our own records. */
+const WATCH_EVERY_MS = 4000
+/** And for how long: longer than a card payment, short of watching forever. */
+const WATCH_FOR_MS = 5 * 60 * 1000
 
 export default function Checkout() {
   const c = useDesignCopy()
@@ -51,6 +56,42 @@ export default function Checkout() {
       onScreen.current = false
     }
   }, [])
+
+  /**
+   * Move to the eSIMs by itself, the moment the money lands.
+   *
+   * The shop floor's words, 2026-09-19: "to'lov qildi, kutib turish kerak
+   * o'zi... yana o'chirib tashlab qaytadan kirishingiz kerak bo'ladi-da". The
+   * screen already went to the account — but only if the customer closed the
+   * payment window themselves, and only if the provider's callback beat a
+   * four-and-a-half second clock. Anybody who paid and then simply waited, as
+   * people do, waited forever.
+   *
+   * So the wait is watched rather than assumed. The provider's frame is
+   * another origin and cannot be asked; our own API can, and an order in the
+   * customer's history is the confirmation. Every four seconds for five
+   * minutes, which is far longer than a card payment takes and still only a
+   * few dozen cheap requests for one person who is actively buying.
+   */
+  useEffect(() => {
+    if (payUrl === null || orderId === null) return
+    let stopped = false
+    const deadline = Date.now() + WATCH_FOR_MS
+    const tick = async () => {
+      if (stopped || Date.now() > deadline) return
+      if (!(await orderHasSettled(orderId))) return
+      if (stopped) return
+      stopped = true
+      clear()
+      setPayUrl(null)
+      if (onScreen.current) navigate('/account?tab=esims')
+    }
+    const timer = window.setInterval(tick, WATCH_EVERY_MS)
+    return () => {
+      stopped = true
+      window.clearInterval(timer)
+    }
+  }, [payUrl, orderId, clear, navigate])
 
   /**
    * Ask the API to place the order and hand back a payment URL.

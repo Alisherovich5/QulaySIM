@@ -122,3 +122,28 @@ describe('confirming that an order was actually paid', () => {
     await expect(settled).resolves.toBe(true)
   })
 })
+
+describe('has the money landed yet', () => {
+  it('says yes once the order is in the customer history', async () => {
+    const { orderHasSettled } = await import('./order-status')
+    const spy = vi.spyOn(api, 'get').mockResolvedValue({ data: [{ id: 7 }, { id: 9 }] })
+    await expect(orderHasSettled(9)).resolves.toBe(true)
+    spy.mockRestore()
+  })
+
+  it('says no while it is not there, without claiming it failed', async () => {
+    const { orderHasSettled } = await import('./order-status')
+    const spy = vi.spyOn(api, 'get').mockResolvedValue({ data: [{ id: 7 }] })
+    await expect(orderHasSettled(9)).resolves.toBe(false)
+    spy.mockRestore()
+  })
+
+  it('treats a lost request as "not yet", never as "not paid"', async () => {
+    // The caller polls. Turning a dropped request into a verdict would tell a
+    // customer who has paid that they have not.
+    const { orderHasSettled } = await import('./order-status')
+    const spy = vi.spyOn(api, 'get').mockRejectedValue(new Error('offline'))
+    await expect(orderHasSettled(9)).resolves.toBe(false)
+    spy.mockRestore()
+  })
+})

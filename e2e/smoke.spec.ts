@@ -524,3 +524,64 @@ test('minus removes the last one instead of refusing', async ({ page }) => {
   await minus.click()
   await expect(minus).toHaveCount(0)
 })
+
+test('a paid order moves to the eSIMs without the customer closing anything', async ({ page }) => {
+  // "To'lov qildi, kutib turish kerak o'zi... yana o'chirib tashlab qaytadan
+  // kirishingiz kerak bo'ladi-da" — 2026-09-19. The screen already went to the
+  // account, but only for somebody who closed the payment window themselves
+  // and only if the provider's callback beat a 4.5 s clock. This is the other
+  // customer: the one who pays and then waits.
+  await page.route('**/api/countries/*', (route) =>
+    route.fulfill({
+      json: {
+        id: 1, name: 'Vietnam', slug: 'vietnam', iso2: 'VN', is_popular: true,
+        region: null, starting_price: 5,
+        plans: [
+          {
+            id: 11, scope: 'country', title: 'Vietnam 3 GB', data_amount_mb: 3072,
+            is_unlimited: false, data_label: '3 GB', validity_days: 15, price_usd: 5,
+            price_note: '', network_type: '5G', supports_hotspot: true, is_popular: true,
+          },
+        ],
+      },
+    }),
+  )
+  // A signed-in customer, faked at the two doors the app actually checks: the
+  // session cookie it looks for before spending a round trip, and the refresh
+  // that turns it into an access token. Without this the checkout button reads
+  // "sign in to pay" and the payment path is never reached — which is how this
+  // test would have passed while testing nothing.
+  await page.context().addCookies([
+    { name: 'qs_session', value: 'e2e', domain: '127.0.0.1', path: '/' },
+  ])
+  await page.route('**/api/auth/refresh', (route) =>
+    route.fulfill({ json: { access_token: 'e2e-token' } }),
+  )
+  await page.route('**/api/auth/me', (route) =>
+    route.fulfill({ json: { id: 1, email: 'test@qulaysim.uz', full_name: 'Test' } }),
+  )
+  await page.route('**/api/checkout', (route) =>
+    route.fulfill({ json: { order_id: 4242, payment_url: 'about:blank' } }),
+  )
+  // The money lands a few seconds after the window opens, which is what a card
+  // payment actually looks like.
+  const opened = Date.now()
+  await page.route('**/api/account/orders', (route) =>
+    route.fulfill({ json: Date.now() - opened > 5000 ? [{ id: 4242 }] : [] }),
+  )
+
+  await page.goto('/destinations/vietnam')
+  await page.getByRole('button', { name: 'Tarifni tanlash' }).first().click()
+  await page.locator('.cart-bar__go').click()
+  await expect(page).toHaveURL(/checkout/)
+
+  // Exactly the pay button, never the "sign in to pay" one it turns into for a
+  // signed-out visitor — matching loosely is how a test like this quietly
+  // stops testing anything.
+  const pay = page.getByRole('button', { name: 'Karta bilan to\u2018lash' })
+  await expect(pay).toBeVisible()
+  await pay.click()
+
+  // Nothing is closed, nothing is tapped: the page moves on its own.
+  await expect(page).toHaveURL(/\/account/, { timeout: 30000 })
+})
