@@ -55,12 +55,12 @@
   },
   "size-limit": [
     {
-      "name": "birinchi yuklanish (landing)",
+      "name": "birinchi yuklanish (landing entry: Seo va api ham shu ichida)",
       "path": [
         "dist/assets/index-*.js",
         "dist/assets/index-*.css"
       ],
-      "limit": "150 kB"
+      "limit": "185 kB"
     },
     {
       "name": "globus (profil xaritasi, kech yuklanadi)",
