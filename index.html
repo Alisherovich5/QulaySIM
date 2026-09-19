@@ -39,7 +39,13 @@
     <link rel="preload" href="/fonts/golos-latin.woff2" as="font" type="font/woff2" crossorigin />
     <!-- Blocking on purpose: it must run before paint. Kept in its own file
          because the site's CSP (script-src 'self') blocks inline scripts. -->
-    <script src="/theme-init.js"></script>
+    <!-- `?v=2` is here to step around one stale copy, not as a versioning
+         scheme: the CDN had already cached this path with its own default TTL
+         and would have kept serving the old file for hours after the deploy
+         that fixed it. The `no-cache` header nginx now sends for this exact
+         path is what stops it happening again, so this number does not need
+         touching on the next change. -->
+    <script src="/theme-init.js?v=2"></script>
   </head>
   <body>
     <div id="root"></div>
