@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, ArrowUpRight, Signal, Wifi } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChartNoAxesColumn, Globe, Link2 } from 'lucide-react'
 import { charmUzs } from '../../lib/charm'
+import { groupUzs } from '../../lib/format'
 import { useCurrency } from '../../context/CurrencyContext'
 import type { Plan } from '../../lib/types'
 
@@ -31,9 +32,7 @@ export default function RoutePlanCard({ plan, featured, onChoose }: Props) {
   const amount =
     currency === 'USD'
       ? formatUsd(plan.price_usd)
-      : new Intl.NumberFormat('uz-UZ', { maximumFractionDigits: 0 }).format(
-          charmUzs(plan.price_usd * usdToUzs),
-        )
+      : groupUzs(charmUzs(plan.price_usd * usdToUzs))
   const unit = currency === 'USD' ? '' : t('common.som')
 
   const coverage = plan.coverage?.length ?? 0
@@ -50,8 +49,13 @@ export default function RoutePlanCard({ plan, featured, onChoose }: Props) {
         </svg>
       )}
 
+      {/* A pill rather than a line of text: in the design the shape is what
+          separates the plan's name from the price under it, and on the green
+          card it is the only thing that keeps the name off the gradient. */}
       <h3 className="rp-card-title">
-        {plan.data_label} · {t('rp.days', { count: plan.validity_days })}
+        <span className="rp-pill">
+          {plan.data_label} · {t('rp.days', { count: plan.validity_days })}
+        </span>
       </h3>
 
       <p className="rp-price">{amount}</p>
@@ -63,15 +67,16 @@ export default function RoutePlanCard({ plan, featured, onChoose }: Props) {
         {coverage > 0 && (
           <li className="rp-feature">
             <span className="rp-feature-icon">
-              <ArrowUpRight size={18} aria-hidden="true" />
+              <Globe size={18} aria-hidden="true" />
             </span>
             {t('rp.countries', { count: coverage })}
+            <ArrowUpRight size={14} aria-hidden="true" className="rp-feature-out" />
           </li>
         )}
         {plan.network_type && (
           <li className="rp-feature">
             <span className="rp-feature-icon">
-              <Signal size={18} aria-hidden="true" />
+              <ChartNoAxesColumn size={18} aria-hidden="true" />
             </span>
             {plan.network_type}
           </li>
@@ -79,7 +84,7 @@ export default function RoutePlanCard({ plan, featured, onChoose }: Props) {
         {plan.supports_hotspot && (
           <li className="rp-feature">
             <span className="rp-feature-icon">
-              <Wifi size={18} aria-hidden="true" />
+              <Link2 size={18} aria-hidden="true" />
             </span>
             {t('rp.hotspot')}
           </li>

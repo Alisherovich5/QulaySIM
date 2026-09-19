@@ -102,3 +102,21 @@ export const usedTile = (mb: number) => {
   if (safe < 1024) return { value: safe, suffix: ' MB', decimals: 0 }
   return { value: safe / 1024, suffix: ' GB', decimals: 1 }
 }
+
+/**
+ * A som amount, grouped the way som is written.
+ *
+ * `Intl.NumberFormat('uz-UZ')` groups with a comma in every browser shipping
+ * current ICU — "200,999" — which is how English writes money and not how the
+ * price on a Tashkent shelf is written. The design says "200 999" and so does
+ * everyone here. A non-breaking space, so a price can never be broken across
+ * two lines at the thousands mark.
+ *
+ * One function rather than the `.replace(/,/g, ' ')` that had already appeared
+ * by hand in the referral panel: the next place that formats som gets it right
+ * by importing this instead of by remembering.
+ */
+export const groupUzs = (value: number) =>
+  new Intl.NumberFormat('uz-UZ', { maximumFractionDigits: 0 })
+    .format(value)
+    .replace(/[,  \s]/g, ' ')

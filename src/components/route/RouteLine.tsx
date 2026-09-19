@@ -28,6 +28,7 @@ export default function RouteLine({
   const ref = useRef<HTMLDivElement>(null)
   const [box, setBox] = useState({ w: 0, h: 0 })
   const [xs, setXs] = useState<number[]>([])
+  const [inviteX, setInviteX] = useState<number | null>(null)
 
   useEffect(() => {
     const node = ref.current
@@ -37,11 +38,17 @@ export default function RouteLine({
     const measure = () => {
       setBox({ w: node.clientWidth, h: node.clientHeight })
       const origin = node.getBoundingClientRect().left
-      const centres = [...chips.querySelectorAll('.rp-chip')].map((chip) => {
-        const rect = chip.getBoundingClientRect()
+      const centre = (el: Element) => {
+        const rect = el.getBoundingClientRect()
         return rect.left - origin + rect.width / 2
-      })
-      setXs(centres)
+      }
+      setXs([...chips.querySelectorAll('.rp-chip')].map(centre))
+      // The invitation is the next stop the route could have, so the line
+      // carries on to it and stops at a smaller, solid dot. In the design that
+      // trailing dot is what makes "add a country" read as part of the journey
+      // rather than as a button parked beside it.
+      const invite = chips.querySelector('.rp-add')
+      setInviteX(invite ? centre(invite) : null)
     }
 
     measure()
@@ -60,8 +67,10 @@ export default function RouteLine({
 
   // Each leg is its own arc, so the line reads as hops between places rather
   // than as one long curve that happens to pass near them.
+  const points = draw && inviteX != null ? [...xs, inviteX] : xs
+
   const legs = draw
-    ? xs
+    ? points
         .slice(0, -1)
         .map((x, index) => ({ x, next: xs[index + 1] }))
         // Two chips stacked in the same column of the mobile grid share an x.
@@ -83,9 +92,16 @@ export default function RouteLine({
           {legs.map((d, index) => (
             <path key={index} d={d} />
           ))}
+          {/* A ring rather than a disc: on the design the stops are hollow and
+              the trailing invitation is solid, which is how the eye tells
+              "chosen" from "could be chosen" without reading anything. */}
           {[...new Set(xs)].map((x, index) => (
-            <circle key={index} cx={x} cy={baseline} r={3.5} />
+            <g key={index}>
+              <circle className="rp-stop-ring" cx={x} cy={baseline} r={5} />
+              <circle cx={x} cy={baseline} r={2} />
+            </g>
           ))}
+          {inviteX != null && <circle cx={inviteX} cy={baseline} r={3} />}
         </svg>
       )}
     </div>

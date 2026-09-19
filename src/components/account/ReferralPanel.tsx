@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Check, Copy, Send, TrendingUp, Users, Wallet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { groupUzs } from '../../lib/format'
 import { api } from '../../lib/api'
 import type {
   ReferralEntry,
@@ -395,5 +396,5 @@ function rateText(
 /** 12000 -> "12 000". Bo'shliq bilan, chunki so'm summalari uzun bo'ladi va
  *  ajratmasdan o'qib bo'lmaydi. */
 function formatSom(value: number): string {
-  return new Intl.NumberFormat('uz-UZ').format(value).replace(/,/g, ' ')
+  return groupUzs(value)
 }

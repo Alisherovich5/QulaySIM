@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 
 import { api } from '../lib/api'
 import { charmUzs } from '../lib/charm'
+import { groupUzs } from '../lib/format'
 
 export type Currency = 'USD' | 'UZS'
 
@@ -83,9 +84,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
       // The unit is translated: the Russian edition says "сум", not "so‘m".
       // It used to be written into the template here, so every price on the
       // ru and en sites carried an Uzbek word.
-      return `${new Intl.NumberFormat('uz-UZ', {
-        maximumFractionDigits: 0,
-      }).format(charmUzs(usd * usdToUzs))} ${t('common.som')}`
+      return `${groupUzs(charmUzs(usd * usdToUzs))} ${t('common.som')}`
     },
     [usdToUzs, t],
   )

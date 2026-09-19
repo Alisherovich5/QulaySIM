@@ -62,7 +62,9 @@ export default function DestinationSelector({ stops, covered, onRemove, onAdd }:
           </p>
         ) : covered ? (
           <p className="rp-badge">
-            <Check size={16} aria-hidden="true" />
+            <span className="rp-badge-tick" aria-hidden="true">
+              <Check size={12} strokeWidth={3} />
+            </span>
             {t('rp.covered', { count: stops.length })}
           </p>
         ) : (

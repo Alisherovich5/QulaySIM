@@ -142,6 +142,12 @@
   fill: var(--rp-green);
 }
 
+.rp-route circle.rp-stop-ring {
+  fill: var(--rp-surface);
+  stroke: var(--rp-green);
+  stroke-width: 2;
+}
+
 .rp-chips {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -253,6 +259,16 @@
 .rp .rp-badge svg {
   flex: none;
 }
+.rp-badge-tick {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--rp-green);
+  color: #fff;
+}
 .rp .rp-badge[data-tone='empty'] {
   background: transparent;
   border: 1px dashed var(--rp-line);
@@ -312,6 +328,7 @@
 /* A grid, not a stack: the price row, the divider, the feature list and the
    button line up across all three cards whatever the titles do. */
 .rp-card {
+  text-align: center;
   display: grid;
   grid-template-rows: auto auto auto 1fr auto;
   min-width: 0;
@@ -350,12 +367,30 @@
 }
 
 .rp-card-title {
+  margin: 0;
   font-size: 15px;
   font-weight: 700;
   color: inherit;
 }
-.rp-card:not([data-featured='true']) .rp-card-title {
-  color: var(--rp-ink);
+
+/* The plan's name, set in a pill. On the white cards it is mint on white; on
+   the green one a lighter wash of the card's own colour, because a mint pill
+   on a green gradient reads as a mistake. */
+.rp .rp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--rp-mint);
+  color: var(--rp-green);
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.rp .rp-card[data-featured='true'] .rp-pill {
+  background: rgb(255 255 255 / 0.16);
+  color: #fff;
 }
 
 .rp .rp-price {
@@ -371,7 +406,7 @@
 }
 
 .rp .rp-unit {
-  margin-top: 6px;
+  margin-top: 4px;
   font-size: 14px;
   font-weight: 600;
   color: var(--rp-muted);
@@ -395,6 +430,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  text-align: left;
 }
 
 .rp-feature {
@@ -420,6 +456,11 @@
 }
 .rp-card[data-featured='true'] .rp-feature-icon {
   color: #fff;
+}
+
+.rp-feature-out {
+  flex: none;
+  opacity: 0.55;
 }
 
 .rp-cta {
