@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { bootIf } from '../lib/boot'
 import { useCatalogue } from '../lib/useCatalogue'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
@@ -26,7 +26,6 @@ export default function CountryDetail() {
   const [added, setAdded] = useState<number | null>(null)
   const { add } = useCart()
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
 
   /**
    * Seeded from the data the build baked into this page, so the prices are on
@@ -59,10 +58,11 @@ export default function CountryDetail() {
     if (!country) return
     add(plan, country.name, country.iso2)
     setAdded(plan.id)
-    // Straight to checkout rather than leaving the customer on the plan list
-    // wondering what happened. The brief flash of the "added" state is kept so
-    // the tap is acknowledged before the page changes.
-    setTimeout(() => navigate('/checkout'), 350)
+    // No jump to checkout. It used to navigate 350 ms later, which answered
+    // the tap with a page nobody asked for: somebody comparing a 5 GB against
+    // a 10 GB was thrown into a payment form for the first one they touched.
+    // CartBar now offers the two real answers — go to the cart, or keep
+    // choosing — from the bottom of the screen, where the thumb already is.
   }
 
   if (loading) {

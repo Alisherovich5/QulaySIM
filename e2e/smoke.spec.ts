@@ -448,3 +448,79 @@ test('the route planner sells only the plans that cover the whole trip', async (
   await page.keyboard.press('Escape')
   await expect(page.getByRole('dialog')).toHaveCount(0)
 })
+
+test('choosing a plan offers the two answers instead of deciding for you', async ({ page }) => {
+  // Feedback from the shop floor, 2026-09-19: tapping a tariff used to throw
+  // the customer into checkout 350 ms later, so comparing a 5 GB against a
+  // 10 GB was impossible — the first tap ended the comparison. And before
+  // that, the only way forward sat at the bottom of a twenty-row list.
+  await page.route('**/api/countries/*', (route) =>
+    route.fulfill({
+      json: {
+        id: 1, name: 'Vietnam', slug: 'vietnam', iso2: 'VN', is_popular: true,
+        region: null, starting_price: 2.2,
+        plans: [
+          {
+            id: 11, scope: 'country', title: 'Vietnam 3 GB', data_amount_mb: 3072,
+            is_unlimited: false, data_label: '3 GB', validity_days: 15, price_usd: 5,
+            price_note: '', network_type: '5G', supports_hotspot: true, is_popular: true,
+          },
+          {
+            id: 12, scope: 'country', title: 'Vietnam 5 GB', data_amount_mb: 5120,
+            is_unlimited: false, data_label: '5 GB', validity_days: 30, price_usd: 9,
+            price_note: '', network_type: '5G', supports_hotspot: true, is_popular: false,
+          },
+        ],
+      },
+    }),
+  )
+  await page.goto('/destinations/vietnam')
+  await page.getByRole('button', { name: 'Tarifni tanlash' }).first().click()
+
+  // The page it was on is the page it stays on.
+  await expect(page.locator('.cart-bar')).toBeVisible()
+  await expect(page).not.toHaveURL(/checkout/)
+
+  // "Keep choosing" puts the list back, with the comparison still on screen —
+  // which is the whole point: the 5 GB the customer was weighing up is still
+  // one tap away.
+  await page.locator('.cart-bar__more').click()
+  await expect(page.locator('.cart-bar')).toHaveCount(0)
+  await expect(page.getByText('Vietnam 5 GB', { exact: false }).first()).toBeVisible()
+
+  // And the other answer still works: pick the one they were comparing, then go.
+  await page.getByText('Vietnam 5 GB', { exact: false }).first().click()
+  await page.getByRole('button', { name: 'Tarifni tanlash' }).first().click()
+  await page.locator('.cart-bar__go').click()
+  await expect(page).toHaveURL(/checkout/)
+})
+
+test('minus removes the last one instead of refusing', async ({ page }) => {
+  // Pressing minus until it is gone is what people do; it used to stop at one
+  // and send them hunting for a bin icon, which is a second control for the
+  // same intention.
+  await page.route('**/api/countries/*', (route) =>
+    route.fulfill({
+      json: {
+        id: 1, name: 'Vietnam', slug: 'vietnam', iso2: 'VN', is_popular: true,
+        region: null, starting_price: 5,
+        plans: [
+          {
+            id: 11, scope: 'country', title: 'Vietnam 3 GB', data_amount_mb: 3072,
+            is_unlimited: false, data_label: '3 GB', validity_days: 15, price_usd: 5,
+            price_note: '', network_type: '5G', supports_hotspot: true, is_popular: true,
+          },
+        ],
+      },
+    }),
+  )
+  await page.goto('/destinations/vietnam')
+  await page.getByRole('button', { name: 'Tarifni tanlash' }).first().click()
+  await page.locator('.cart-bar__go').click()
+  await expect(page).toHaveURL(/checkout/)
+
+  const minus = page.locator('.lucide-minus')
+  await expect(minus).toHaveCount(1)
+  await minus.click()
+  await expect(minus).toHaveCount(0)
+})

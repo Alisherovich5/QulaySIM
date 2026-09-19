@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import MobileNav from './MobileNav'
+import CartBar from './cart/CartBar'
 
 export default function Layout() {
   const { pathname } = useLocation()
@@ -25,6 +26,8 @@ export default function Layout() {
       </main>
       <Footer />
       <MobileNav />
+      {/* Answers "that went in the cart, now what?" where the choosing happens. */}
+      <CartBar />
     </div>
   )
 }

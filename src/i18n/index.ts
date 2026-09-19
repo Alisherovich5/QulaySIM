@@ -5,6 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import { setApiLanguage } from '../lib/api'
 import { DEFAULT_LANG, langFromPath } from '../lib/seo'
 import en from './locales/en'
+import { CART_BAR_COPY } from './locales/cart-bar'
 import { DESTINATIONS_PAGE_COPY } from './locales/destinations-page'
 import { DEVICE_CHECK_COPY } from './locales/device-check'
 import { ESIM_STATUS_COPY } from './locales/esim-status'
@@ -37,9 +38,9 @@ i18n
     resources: {
       // eSIM holati matnlari alohida modulda -- sababi o'sha faylning
       // boshida yozilgan.
-      en: { translation: { ...en, ...ESIM_STATUS_COPY.en, ...DEVICE_CHECK_COPY.en, ...DESTINATIONS_PAGE_COPY.en } },
-      ru: { translation: { ...ru, ...ESIM_STATUS_COPY.ru, ...DEVICE_CHECK_COPY.ru, ...DESTINATIONS_PAGE_COPY.ru } },
-      uz: { translation: { ...uz, ...ESIM_STATUS_COPY.uz, ...DEVICE_CHECK_COPY.uz, ...DESTINATIONS_PAGE_COPY.uz } },
+      en: { translation: { ...en, ...ESIM_STATUS_COPY.en, ...DEVICE_CHECK_COPY.en, ...DESTINATIONS_PAGE_COPY.en, ...CART_BAR_COPY.en } },
+      ru: { translation: { ...ru, ...ESIM_STATUS_COPY.ru, ...DEVICE_CHECK_COPY.ru, ...DESTINATIONS_PAGE_COPY.ru, ...CART_BAR_COPY.ru } },
+      uz: { translation: { ...uz, ...ESIM_STATUS_COPY.uz, ...DEVICE_CHECK_COPY.uz, ...DESTINATIONS_PAGE_COPY.uz, ...CART_BAR_COPY.uz } },
     },
     // Uzbek, because the unprefixed URLs are the Uzbek edition and the audience
     // is in Uzbekistan. It used to be English, which meant a missing key showed

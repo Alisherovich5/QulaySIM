@@ -266,8 +266,17 @@ export default function Checkout() {
                 <div className="flex items-center gap-1 rounded-lg ring-1 ring-line">
                   <button
                     type="button"
-                    aria-label={c.data + ' −1'}
-                    onClick={() => setQuantity(item.plan.id, item.quantity - 1)}
+                    aria-label={item.quantity <= 1 ? t('checkout.remove') : c.data + ' −1'}
+                    /* At one, minus removes the line rather than doing
+                       nothing. It used to stop at one and the customer had to
+                       find the bin icon, which is a second control for the
+                       same intention — pressing minus until it is gone is what
+                       people do. */
+                    onClick={() =>
+                      item.quantity <= 1
+                        ? remove(item.plan.id)
+                        : setQuantity(item.plan.id, item.quantity - 1)
+                    }
                     className="grid h-8 w-8 place-items-center text-slate-soft hover:text-brand-600"
                   >
                     <Minus size={14} />
