@@ -103,7 +103,10 @@
   margin: 0;
   font-family: var(--font-display);
   font-size: 28px;
-  font-weight: 800;
+  /* 900, with every other heading in the shell: journey.css moved h1 and h2 to
+     the top of Golos Text's axis, and a section title that stops at 800 reads
+     as a different type system bolted on. */
+  font-weight: 900;
   line-height: 1.12;
   letter-spacing: -0.025em;
   color: var(--hf-ink);

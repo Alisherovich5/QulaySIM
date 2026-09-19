@@ -73,11 +73,12 @@
  * halves read as equally important and the eye has nowhere to land, which is
  * what four uniform 52px lines were doing. So the setup drops to 38px at 500,
  * where it reads as a lead-in, and the payoff is promoted to its own block at
- * 1.7x and 800. The headline ends up 232px tall against the flat version's
- * 229px, so the search box below it does not move.
+ * 1.7x and 900 — the top of Golos Text's axis, where journey.css puts every
+ * other heading on the site, so the loudest line on the landing page is not
+ * lighter than a section title further down it.
  *
  * The type is set here rather than on the element because journey.css sets
- * `.site-shell h1 { 42px / 800 / -0.045em }`, which beats every Tailwind size,
+ * `.site-shell h1 { 42px / 900 / -0.045em }`, which beats every Tailwind size,
  * weight and tracking utility on every h1 in the app. Only plain CSS loaded
  * after it in the same unlayered cascade wins, so all three properties have to
  * be named here rather than inherited or set as utilities. (That override is
@@ -98,7 +99,7 @@
   margin-top: 0.22em;
   font-size: 1.7em;
   line-height: 0.98;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.04em;
 }
 
