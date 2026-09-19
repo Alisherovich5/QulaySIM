@@ -383,3 +383,68 @@ test('Uzbek can be selected on an unprefixed page with another stored language',
   await expect(page).toHaveURL(/\/destinations\/turkey$/)
   await expect(page.getByRole('button', { name: 'Tarifni tanlash', exact: true })).toBeVisible()
 })
+
+test('the route planner sells only the plans that cover the whole trip', async ({ page }) => {
+  // The rule this page turns on, end to end: coverage removes a plan rather
+  // than ranking it lower. The cheap bundle here misses France on purpose —
+  // that is exactly how a customer ends up in Paris with no data.
+  await page.route('**/api/countries*', (route) =>
+    route.fulfill({
+      json: [
+        { id: 1, name: 'Turkiya', slug: 'turkiya', iso2: 'TR', is_popular: true, region: null, starting_price: 1 },
+        { id: 2, name: 'Italiya', slug: 'italiya', iso2: 'IT', is_popular: true, region: null, starting_price: 1 },
+        { id: 3, name: 'Fransiya', slug: 'fransiya', iso2: 'FR', is_popular: true, region: null, starting_price: 1 },
+        { id: 4, name: 'Yaponiya', slug: 'yaponiya', iso2: 'JP', is_popular: false, region: null, starting_price: 1 },
+      ],
+    }),
+  )
+  await page.route('**/api/regions/global*', (route) =>
+    route.fulfill({
+      json: {
+        id: 8,
+        name: 'Global',
+        slug: 'global',
+        country_count: 0,
+        starting_price: 5,
+        plans: [
+          {
+            id: 1, scope: 'global', title: 'Global 3 GB', data_amount_mb: 3072, is_unlimited: false,
+            data_label: '3 GB', validity_days: 7, price_usd: 18, price_note: '', network_type: '5G',
+            supports_hotspot: true, is_popular: false, coverage: ['TR', 'IT', 'FR', 'JP'],
+          },
+          {
+            id: 2, scope: 'global', title: 'Yevropa 1 GB', data_amount_mb: 1024, is_unlimited: false,
+            data_label: '1 GB', validity_days: 7, price_usd: 9, price_note: '', network_type: '4G',
+            supports_hotspot: true, is_popular: false, coverage: ['TR', 'IT'],
+          },
+        ],
+      },
+    }),
+  )
+
+  await page.goto('/marshrut')
+  // Turkey, Italy, France are on the itinerary to begin with, so the bundle
+  // that stops at Italy must not be on the page at all.
+  await expect(page.locator('.rp-card')).toHaveCount(1)
+  await expect(page.locator('.rp-card')).toContainText('3 GB')
+  await expect(page.locator('.rp-badge')).toContainText('3 ta davlat')
+
+  // Drop France and the cheaper, narrower bundle becomes honest to sell.
+  await page.getByRole('button', { name: 'Fransiyani olib tashlash' }).click()
+  await expect(page.locator('.rp-card')).toHaveCount(2)
+
+  // A country already chosen cannot be chosen twice.
+  await page.getByRole('button', { name: /Davlat qo.shish/ }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('button', { name: /Turkiya/ })).toBeDisabled()
+  await dialog.getByRole('button', { name: /Yaponiya/ }).click()
+  await expect(page.locator('.rp-chip')).toHaveCount(3)
+  // Japan is outside the narrow bundle, so it leaves again.
+  await expect(page.locator('.rp-card')).toHaveCount(1)
+
+  // Escape closes the dialog rather than trapping the visitor in it.
+  await page.getByRole('button', { name: /Davlat qo.shish/ }).click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+})

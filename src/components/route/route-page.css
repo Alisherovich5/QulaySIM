@@ -1,0 +1,825 @@
+/**
+ * The route planner's own stylesheet.
+ *
+ * Tokens are declared on `.rp` rather than on `:root`, so the page can hold the
+ * exact palette it was designed in without repainting the rest of the shop. The
+ * site's own brand green (#007365) and this design's (#007354) are seventeen
+ * thousandths apart; a global override would have moved every button on every
+ * page to settle a difference nobody can see.
+ *
+ * Every rule that could collide with the global type scale is written as a
+ * class on the element itself. `journey.css` sets `.site-shell h1 { … }`
+ * unlayered, which outranks a utility class — a heading styled with Tailwind
+ * alone would silently come out at the global size.
+ */
+
+/* Why so many selectors start with `.rp`
+ *
+ * `journey.css` styles the shop's type off the shell — `.site-shell h1`,
+ * `.site-shell p` — unlayered, at specificity (0,1,1). A rule written as a
+ * bare class on the same element is (0,1,0) and loses however late it loads:
+ * the price came out at 16px and the headline at 42px, silently, on a page
+ * that had asked for 58 and 48. The extra class buys the one point of
+ * specificity that settles it. Measured in a browser, not reasoned about.
+ */
+
+.rp {
+  --rp-ink: #080d24;
+  --rp-muted: #858993;
+  --rp-green: #007354;
+  --rp-green-2: #006447;
+  --rp-mint: #eaf6f1;
+  --rp-line: #e7e9eb;
+  --rp-plains: #f5f6f5;
+  --rp-surface: #ffffff;
+  --rp-card-radius: 22px;
+  --rp-btn-radius: 15px;
+  /* One shadow, reused. The brief asks for "very light", and three different
+     light shadows read as a mistake rather than a hierarchy. */
+  --rp-shadow: 0 1px 2px rgb(8 13 36 / 0.04), 0 8px 24px -16px rgb(8 13 36 / 0.18);
+  background: var(--rp-surface);
+  color: var(--rp-ink);
+}
+
+/* Dark theme. The design is a light-mode design and the site has a working
+   dark mode; leaving the tokens alone would have printed #080d24 text on a
+   near-black page. Same hues, moved to the dark surface. */
+:root.dark .rp {
+  --rp-ink: #eef2f6;
+  --rp-muted: #98a1ad;
+  --rp-mint: #0e2f27;
+  --rp-line: #24303a;
+  --rp-plains: #0f1a20;
+  --rp-surface: #0b1418;
+  --rp-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -16px rgb(0 0 0 / 0.6);
+}
+
+.rp-wrap {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1200px;
+  padding-inline: 16px;
+}
+@media (min-width: 768px) {
+  .rp-wrap {
+    padding-inline: 24px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Hero                                                                */
+/* ------------------------------------------------------------------ */
+
+.rp-hero {
+  padding-block: clamp(24px, 5vw, 56px) clamp(20px, 3vw, 28px);
+  text-align: center;
+}
+
+.rp .rp-title {
+  margin: 0;
+  font-size: clamp(30px, 4.3vw, 48px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--rp-ink);
+  text-wrap: balance;
+}
+
+/* Two lines on a phone, one sentence on a desktop. A <br> in the markup would
+   force the break at every width; a block-level span breaks only here. */
+.rp-title-b {
+  display: block;
+}
+@media (min-width: 768px) {
+  .rp-title-b {
+    display: inline;
+  }
+}
+
+.rp .rp-sub {
+  margin: 10px 0 0;
+  font-size: clamp(17px, 2.4vw, 30px);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--rp-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* The itinerary: chips under a decorative route line                  */
+/* ------------------------------------------------------------------ */
+
+.rp-stops {
+  position: relative;
+  padding-top: 56px;
+}
+@media (min-width: 768px) {
+  .rp-stops {
+    padding-top: 68px;
+  }
+}
+
+/* Decoration only, and it says so twice: no pointer events, and aria-hidden in
+   the markup. It sits above the chips and must never eat a tap meant for one. */
+.rp-route {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 72px;
+  width: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.rp-route path {
+  fill: none;
+  stroke: var(--rp-green);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 6;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+
+.rp-route circle {
+  fill: var(--rp-green);
+}
+
+.rp-chips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  .rp-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+}
+
+.rp-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  min-width: 0;
+  padding: 8px 8px 8px 12px;
+  border: 1px solid var(--rp-line);
+  border-radius: 999px;
+  background: var(--rp-surface);
+  box-shadow: var(--rp-shadow);
+}
+
+.rp-chip-flag {
+  width: 26px;
+  height: 18px;
+  flex: none;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.rp-chip-name {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--rp-ink);
+}
+
+/* 32px drawn, 44px tapped: the visual size the design asks for, the hit area
+   the hand needs. */
+.rp-chip-x {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 999px;
+  color: var(--rp-muted);
+  position: relative;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.rp-chip-x::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+}
+.rp-chip-x:hover {
+  background: var(--rp-mint);
+  color: var(--rp-green);
+}
+
+.rp-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 8px 16px;
+  border: 1.5px dashed var(--rp-green);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rp-green);
+  font-size: 15px;
+  font-weight: 700;
+  transition: background-color 0.15s ease;
+}
+.rp-add:hover {
+  background: var(--rp-mint);
+}
+
+.rp-badge-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.rp .rp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--rp-mint);
+  color: var(--rp-green);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+}
+.rp .rp-badge svg {
+  flex: none;
+}
+.rp .rp-badge[data-tone='empty'] {
+  background: transparent;
+  border: 1px dashed var(--rp-line);
+  color: var(--rp-muted);
+}
+.rp .rp-badge[data-tone='miss'] {
+  background: #fdf3f3;
+  color: #a4302f;
+}
+:root.dark .rp .rp-badge[data-tone='miss'] {
+  background: #2c1616;
+  color: #f0a3a2;
+}
+
+/* ------------------------------------------------------------------ */
+/* Plans                                                               */
+/* ------------------------------------------------------------------ */
+
+.rp-plans {
+  margin-top: clamp(28px, 5vw, 48px);
+  padding: clamp(16px, 3vw, 28px);
+  border-radius: 28px;
+  background: var(--rp-plains);
+}
+
+.rp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .rp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  /* Two across, and the odd one centred underneath rather than stretched to
+     double width — a card twice as wide as its siblings reads as a different
+     product. */
+  .rp-grid > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: min(100%, calc(50% - 10px));
+  }
+}
+@media (min-width: 1024px) {
+  .rp-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+  }
+  .rp-grid > :last-child:nth-child(odd) {
+    grid-column: auto;
+    justify-self: stretch;
+    width: auto;
+  }
+}
+
+/* A grid, not a stack: the price row, the divider, the feature list and the
+   button line up across all three cards whatever the titles do. */
+.rp-card {
+  display: grid;
+  grid-template-rows: auto auto auto 1fr auto;
+  min-width: 0;
+  padding: clamp(20px, 2vw, 24px);
+  border: 1px solid var(--rp-line);
+  border-radius: var(--rp-card-radius);
+  background: var(--rp-surface);
+  box-shadow: var(--rp-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.rp-card[data-featured='true'] {
+  border-color: transparent;
+  background: linear-gradient(160deg, var(--rp-green) 0%, var(--rp-green-2) 100%);
+  color: #fff;
+}
+@media (min-width: 1024px) {
+  /* The design lifts the middle card a little. Transform rather than margin so
+     nothing else in the row moves. */
+  .rp-card[data-featured='true'] {
+    transform: translateY(-8px);
+  }
+}
+
+/* The "signal" mark in the corner of the featured card: three arcs, drawn in
+   CSS, at the opacity of a watermark. */
+.rp-signal {
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  width: 120px;
+  height: 120px;
+  pointer-events: none;
+  opacity: 0.16;
+}
+
+.rp-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: inherit;
+}
+.rp-card:not([data-featured='true']) .rp-card-title {
+  color: var(--rp-ink);
+}
+
+.rp .rp-price {
+  margin-top: 10px;
+  font-size: clamp(44px, 5.4vw, 58px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  /* 320px has to hold "453 999" at 44px. Wrapping a price in half is worse
+     than a hair of tracking. */
+  white-space: nowrap;
+}
+
+.rp .rp-unit {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rp-muted);
+}
+.rp .rp-card[data-featured='true'] .rp-unit {
+  color: rgb(255 255 255 / 0.78);
+}
+
+.rp-divider {
+  margin: 18px 0;
+  height: 1px;
+  background: var(--rp-line);
+}
+.rp-card[data-featured='true'] .rp-divider {
+  background: rgb(255 255 255 / 0.22);
+}
+
+.rp-features {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rp-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--rp-ink);
+}
+.rp-card[data-featured='true'] .rp-feature {
+  color: rgb(255 255 255 / 0.92);
+}
+
+/* One size for every icon in the list, whatever it is. */
+.rp-feature-icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--rp-green);
+}
+.rp-card[data-featured='true'] .rp-feature-icon {
+  color: #fff;
+}
+
+.rp-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 20px;
+  padding: 12px 18px;
+  border-radius: var(--rp-btn-radius);
+  background: var(--rp-green);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.rp-cta:hover {
+  background: var(--rp-green-2);
+}
+.rp-card[data-featured='true'] .rp-cta {
+  background: #fff;
+  color: var(--rp-green);
+}
+.rp-card[data-featured='true'] .rp-cta:hover {
+  background: rgb(255 255 255 / 0.9);
+}
+
+.rp-plans-empty {
+  padding: 40px 16px;
+  text-align: center;
+}
+.rp .rp-plans-empty h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--rp-ink);
+}
+.rp .rp-plans-empty p {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--rp-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* FAQ                                                                 */
+/* ------------------------------------------------------------------ */
+
+.rp-faq {
+  margin-top: clamp(32px, 5vw, 56px);
+  padding-top: clamp(24px, 4vw, 36px);
+  border-top: 1px solid var(--rp-line);
+  padding-bottom: clamp(40px, 6vw, 72px);
+}
+
+.rp-faq-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 20px;
+}
+
+.rp .rp-faq-title {
+  margin: 0;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--rp-ink);
+}
+
+.rp-faq-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rp-green);
+}
+
+.rp-faq-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  .rp-faq-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+@media (min-width: 1024px) {
+  .rp-faq-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.rp-q {
+  border: 1px solid var(--rp-line);
+  border-radius: 18px;
+  background: var(--rp-surface);
+  overflow: hidden;
+}
+
+.rp-q-btn {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 16px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--rp-ink);
+}
+
+.rp-q-chev {
+  flex: none;
+  margin-top: 1px;
+  color: var(--rp-muted);
+  transition: transform 0.2s ease;
+}
+.rp-q-btn[aria-expanded='true'] .rp-q-chev {
+  transform: rotate(180deg);
+}
+
+.rp-a {
+  padding: 0 16px 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--rp-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* Country picker: a modal on a desktop, a sheet on a phone            */
+/* ------------------------------------------------------------------ */
+
+.rp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 69;
+  background: rgb(8 13 36 / 0.45);
+}
+
+.rp-sheet {
+  position: fixed;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  background: var(--rp-surface);
+  color: var(--rp-ink);
+  box-shadow: 0 24px 64px -24px rgb(8 13 36 / 0.45);
+  /* Bottom sheet on a phone. The tab bar sits at z-index 60, hence 69/70. */
+  inset: auto 0 0;
+  max-height: min(78vh, 620px);
+  border-radius: 24px 24px 0 0;
+  animation: rp-sheet-in 0.22s ease-out;
+}
+@media (min-width: 768px) {
+  .rp-sheet {
+    inset: 50% auto auto 50%;
+    translate: -50% -50%;
+    width: min(520px, calc(100vw - 48px));
+    max-height: min(72vh, 560px);
+    border-radius: 24px;
+    animation: rp-modal-in 0.18s ease-out;
+  }
+}
+
+@keyframes rp-sheet-in {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+}
+@keyframes rp-modal-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.rp-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 12px;
+}
+
+.rp .rp-sheet-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--rp-ink);
+}
+
+.rp-sheet-close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 12px;
+  color: var(--rp-muted);
+}
+.rp-sheet-close:hover {
+  background: var(--rp-plains);
+  color: var(--rp-ink);
+}
+
+.rp-search {
+  position: relative;
+  padding: 0 18px 12px;
+}
+.rp-search svg {
+  position: absolute;
+  left: 32px;
+  top: 50%;
+  translate: 0 -60%;
+  color: var(--rp-muted);
+  pointer-events: none;
+}
+.rp-search input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px 12px 42px;
+  border: 1px solid var(--rp-line);
+  border-radius: var(--rp-btn-radius);
+  background: var(--rp-surface);
+  color: var(--rp-ink);
+  font-size: 16px; /* 16px or iOS zooms the page on focus */
+}
+.rp-search input:focus-visible {
+  outline: 2px solid var(--rp-green);
+  outline-offset: 1px;
+}
+
+.rp-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0 10px 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.rp-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--rp-ink);
+}
+.rp-option:hover:not(:disabled) {
+  background: var(--rp-plains);
+}
+.rp-option:disabled {
+  color: var(--rp-muted);
+  cursor: default;
+}
+
+.rp-option-tag {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rp-green);
+}
+
+.rp .rp-empty {
+  padding: 28px 16px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--rp-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/* Order summary                                                       */
+/* ------------------------------------------------------------------ */
+
+.rp-sum-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rp-line);
+  font-size: 15px;
+}
+.rp-sum-row:last-of-type {
+  border-bottom: 0;
+}
+.rp-sum-key {
+  color: var(--rp-muted);
+  font-weight: 600;
+}
+.rp-sum-val {
+  text-align: right;
+  font-weight: 700;
+  color: var(--rp-ink);
+}
+.rp-sum-total .rp-sum-val {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.rp .rp-sum-note {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--rp-muted);
+}
+.rp-sum-actions {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px 20px;
+}
+@media (min-width: 768px) {
+  .rp-sum-actions {
+    grid-template-columns: 1fr auto;
+    direction: rtl; /* primary action on the right, still first in the DOM */
+  }
+  .rp-sum-actions > * {
+    direction: ltr;
+  }
+}
+.rp-sum-body {
+  padding: 0 18px;
+  overflow-y: auto;
+}
+.rp-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 1px solid var(--rp-line);
+  border-radius: var(--rp-btn-radius);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rp-ink);
+}
+.rp-ghost:hover {
+  background: var(--rp-plains);
+}
+
+/* ------------------------------------------------------------------ */
+/* Focus and motion                                                    */
+/* ------------------------------------------------------------------ */
+
+.rp :focus-visible {
+  outline: 2px solid var(--rp-green);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+.rp-card[data-featured='true'] :focus-visible {
+  outline-color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rp *,
+  .rp-sheet,
+  .rp-backdrop {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .rp-card[data-featured='true'] {
+    transform: none;
+  }
+}
+
+/* The accordion's heading is a landmark for a screen reader and nothing for a
+   reader's eye — the button inside it carries all the type. Without this it
+   also inherits the global h3 margin and pushes the card open by 24px. */
+.rp-q h3 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+/* The add-country button is a list item that must not become a grid cell of
+   its own shape — `display: contents` on the <li> lets the button be the cell. */
+.rp-chips .contents {
+  display: contents;
+}
+
+/* A shorter arc on a phone: the chips are two to a row there, so a 72px sweep
+   over them is a lot of empty page before anything is read. */
+@media (max-width: 767px) {
+  .rp-route {
+    height: 48px;
+  }
+}
