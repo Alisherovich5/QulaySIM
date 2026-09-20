@@ -17,8 +17,10 @@ import RelatedDestinations from '../components/RelatedDestinations'
 import { useCart } from '../context/CartContext'
 import { SITE_URL, type SeoLang } from '../lib/seo'
 import { descriptionParams, factsFor } from '../lib/destination-facts'
+import DestinationNetworks from '../components/DestinationNetworks'
+import { countryFaq } from '../lib/networks-copy'
 import { geoFor } from '../lib/geo'
-import { breadcrumbLd, destinationLd } from '../lib/structured-data'
+import { breadcrumbLd, destinationLd, faqLd } from '../lib/structured-data'
 
 export default function CountryDetail() {
   const { slug } = useParams()
@@ -120,6 +122,11 @@ export default function CountryDetail() {
         geo={geo}
         jsonLd={[
           ...(product ? [product] : []),
+          ...(() => {
+            const qa = countryFaq(country.iso2, country.name, facts, lang as 'uz' | 'ru' | 'en')
+            const ld = faqLd(qa.map((x) => ({ question: x.q, answer: x.a })))
+            return ld ? [ld] : []
+          })(),
           breadcrumbLd(
             [
               { name: t('nav.destinations'), path: '/destinations' },
@@ -189,6 +196,8 @@ export default function CountryDetail() {
           <DestinationFacts facts={facts} country={country.name} />
         </div>
       )}
+
+      <DestinationNetworks iso2={country.iso2} country={country.name} facts={facts} />
 
       <RelatedDestinations regionSlug={country.region?.slug} currentSlug={country.slug} />
     </div>

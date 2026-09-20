@@ -25,6 +25,8 @@ export interface DestinationFacts {
   networks: string[]
   minDays: number
   maxDays: number
+  /** Megabytes, sorted and de-duplicated — the rungs this destination sells. */
+  sizesMb: number[]
   hasUnlimited: boolean
   /** True only when *every* plan supports it — a partial yes would mislead. */
   hotspot: boolean
@@ -54,6 +56,9 @@ export function factsFor(plans: Plan[]): DestinationFacts | null {
     networks,
     minDays: days.length ? Math.min(...days) : 0,
     maxDays: days.length ? Math.max(...days) : 0,
+    sizesMb: [...new Set(priced.map((p) => p.data_amount_mb).filter((m) => m > 0))].sort(
+      (a, b) => a - b,
+    ),
     hasUnlimited: priced.some((p) => p.is_unlimited),
     hotspot: priced.every((p) => p.supports_hotspot),
   }

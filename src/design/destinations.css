@@ -274,3 +274,88 @@
     font-size: 15px;
   }
 }
+
+/* The networks a destination's eSIM roams on.
+ *
+ * Set as a readable block rather than another card: this is the part of the
+ * page a person reads to answer "will it actually work where I am going", and
+ * the operator names are the answer. */
+.dest-networks {
+  margin-top: 44px;
+  padding-top: 28px;
+  border-top: 1px solid var(--color-line);
+  max-width: 68ch;
+}
+
+.site-shell .dest-networks h2 {
+  margin: 0 0 12px;
+  font-size: 24px;
+}
+
+.dest-networks p {
+  margin-top: 12px;
+  color: var(--color-slate-soft);
+  line-height: 1.7;
+}
+
+.dest-networks .dest-networks-lead {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.dest-networks-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.dest-networks-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.dest-networks-list svg {
+  color: var(--color-brand-600, #007365);
+}
+
+/* The band, not a word: it is data about the row it sits in. */
+.dest-networks-list em {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-slate-soft);
+}
+
+/* The country's own questions, under its networks. */
+.dest-faq {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-line);
+}
+
+.dest-faq > div + div {
+  margin-top: 18px;
+}
+
+.site-shell .dest-faq h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.dest-faq p {
+  margin-top: 6px;
+}
