@@ -967,6 +967,15 @@ const uz: Translation = {
       deviceText:
         '2018-yildan keyingi ko‘pchilik iPhone, Samsung, Google Pixel va Xiaomi modellari eSIM’ni qo‘llab-quvvatlaydi. Bir daqiqada aniq tekshirib olishingiz mumkin:',
       deviceBtn: 'Qurilmani tekshirish',
+      termsTitle: 'Atamalar — qisqacha',
+      terms: [
+        { t: 'eSIM', x: 'Telefon ichiga zavodda payvandlangan chip. Uni qo‘lda qo‘yib-olib bo‘lmaydi; uning ustiga tarif yuklanadi.' },
+        { t: 'EID', x: 'Shu chipning 32 raqamli seriyasi. *#06# terilganda IMEI bilan birga chiqsa, telefonda eSIM bor degani.' },
+        { t: 'QR-kod', x: 'Tarifni telefonga yuklash uchun bir martalik kod. Skanerlangach ishlatilgan hisoblanadi — shuning uchun uni boshqa telefonga qayta o‘rnatib bo‘lmaydi.' },
+        { t: 'Profil', x: 'Telefonga yuklangan tarifning o‘zi. Bitta telefonda bir nechta profil turishi va ular orasida almashish mumkin.' },
+        { t: 'APN', x: 'Internet uchun ulanish nuqtasi. QulaySIM profillarida u avtomatik keladi, qo‘lda yozish kerak emas.' },
+        { t: 'Roaming', x: 'O‘z operatoringiz chet elda begona tarmoqdan internet berishi. Eng qimmat variant — eSIM aynan shundan qochish uchun.' },
+      ],
       faqTitle: 'Ko‘p so‘raladigan savollar',
       faqs: [
         {
@@ -988,6 +997,26 @@ const uz: Translation = {
         {
           q: 'Telefonim operatorga qulflangan bo‘lsa-chi?',
           a: 'Operator qulfi bo‘lgan telefon boshqa tarmoqlarning eSIM’ini qabul qilmaydi. Avval operatoringizdan qulfni ochtirish kerak bo‘ladi.',
+        },
+        {
+          q: 'eSIM’ni o‘rnatish uchun internet kerakmi?',
+          a: 'Ha, o‘rnatish paytida Wi-Fi yoki mavjud internet kerak bo‘ladi: profil telefoningizga shu payt yuklanadi. Shuning uchun eSIM’ni uydan, jo‘nashdan oldin o‘rnatib qo‘yish qulay — chet elda internetsiz qolib, uni yuklay olmaslik holati bo‘lmasin.',
+        },
+        {
+          q: 'Bitta QR-kodni ikkinchi telefonga o‘rnatsam bo‘ladimi?',
+          a: 'Yo‘q. QR bir martalik: skanerlangandan keyin u ishlatilgan hisoblanadi. Telefon almashtirsangiz, yangi tarif kerak bo‘ladi.',
+        },
+        {
+          q: 'Internet tugab qolsa nima bo‘ladi?',
+          a: 'Ulanish to‘xtaydi, lekin eSIM telefonda qoladi. Xohlasangiz o‘sha eSIM’ga qo‘shimcha paket (to‘ldirish) olasiz — qaytadan o‘rnatish shart emas.',
+        },
+        {
+          q: 'eSIM orqali qo‘ng‘iroq qilsa bo‘ladimi?',
+          a: 'Bizning sayohat tariflari faqat internet uchun. Qo‘ng‘iroqni internet orqali qilasiz — Telegram, WhatsApp, FaceTime. Oddiy raqamli qo‘ng‘iroqlar asosiy SIM’ingizda qoladi.',
+        },
+        {
+          q: 'Muddat qachondan sanaladi?',
+          a: 'Sotib olgandan emas, eSIM birinchi marta chet el tarmog‘iga ulangandan boshlab. Ya’ni uydan o‘rnatib qo‘ysangiz ham, hisob siz yetib borguningizcha boshlanmaydi.',
         },
       ],
       ctaTitle: 'Sayohatga tayyormisiz?',
@@ -1059,6 +1088,23 @@ const uz: Translation = {
           q: 'Internet tugasa, to‘ldirsam bo‘ladimi?',
           a: 'Ko‘pchilik tariflarda ha — kabinetingizdagi eSIM sahifasida to‘ldirish tugmasi bor. Yangi eSIM o‘rnatish shart emas.',
         },
+      ],
+      androidBrandsTitle: 'Android: brend bo‘yicha yo‘l',
+      androidBrands: [
+        'Samsung (One UI): Sozlamalar → Ulanishlar → SIM boshqaruvi → «eSIM qo‘shish» → «QR-kodni skanerlash».',
+        'Google Pixel: Sozlamalar → Tarmoq va internet → SIM-kartalar → «SIM yuklab olish» → QR.',
+        'Xiaomi / Redmi (HyperOS): Sozlamalar → SIM-kartalar va mobil tarmoqlar → «eSIM qo‘shish». Bu band faqat eSIM’li modellarda ko‘rinadi.',
+        'Honor / Huawei: Sozlamalar → Mobil tarmoq → SIM boshqaruvi → «eSIM qo‘shish».',
+        'Menyu nomlari Android versiyasiga qarab biroz farq qiladi. Topolmasangiz, sozlamalar qidiruviga «eSIM» deb yozing — band bo‘lsa, chiqadi.',
+      ],
+      fixTitle: 'Ishlamasa — nimadan boshlash kerak',
+      fix: [
+        'QR skanerlanmayapti: ekran yorqinligini oshiring yoki kodni boshqa ekrandan ko‘rsating. Rasm sifatida saqlab, galereyadan tanlash ham ishlaydi.',
+        '«Bu kod yaroqsiz» deyapti: kod allaqachon ishlatilgan. QR bir martalik — boshqa telefonga qayta o‘rnatib bo‘lmaydi.',
+        'eSIM qo‘shildi, lekin internet yo‘q: Sozlamalarda shu liniya yoqilganini va «Mobil internet» aynan unga qo‘yilganini tekshiring.',
+        'Tarmoq topilmayapti: aviarejimni 10 soniyaga yoqib-o‘chiring, keyin telefonni qayta yoqing. Ro‘yxatdan o‘tish bir necha daqiqa olishi mumkin.',
+        'Data roaming o‘chiq bo‘lsa, sayohat eSIM’i ishlamaydi — u begona tarmoqqa ulanadi. Shu liniya uchun roamingni yoqib qo‘ying.',
+        'Hech biri yordam bermasa, Telegram orqali yozing: buyurtma raqamingiz bilan qaysi bosqichda to‘xtaganini ayting.',
       ],
       ctaTitle: 'Hali eSIM olmadingizmi?',
       ctaText: 'Yo‘nalishingizni tanlang — QR-kod bir necha daqiqada tayyor bo‘ladi.',

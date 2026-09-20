@@ -40,6 +40,8 @@ export default function GuideInstallEsim() {
   const android = t('guides.install.android', { returnObjects: true }) as string[]
   const arrive = t('guides.install.arrive', { returnObjects: true }) as string[]
   const trouble = t('guides.install.trouble', { returnObjects: true }) as string[]
+  const androidBrands = t('guides.install.androidBrands', { returnObjects: true }) as string[]
+  const fix = t('guides.install.fix', { returnObjects: true }) as string[]
   const faqs = t('guides.install.faqs', { returnObjects: true }) as { q: string; a: string }[]
 
   return (
@@ -162,6 +164,33 @@ export default function GuideInstallEsim() {
           </h2>
           <ul className="mt-4 space-y-3">
             {trouble.map((item) => (
+              <li key={item} className="flex items-start gap-3 text-[15px] leading-6">
+                <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-400" />
+                <span className="min-w-0 text-ink">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        {/* The same steps, by the menu each brand actually uses. Android is not
+            one path: Samsung, Pixel, Xiaomi and Honor each name the entry
+            differently, and "Settings → SIMs" is the answer for none of them. */}
+        <Card className="mt-6 p-5 sm:p-6">
+          <h2 className="text-lg font-700">{t('guides.install.androidBrandsTitle')}</h2>
+          <ul className="mt-4 space-y-3">
+            {androidBrands.map((item) => (
+              <li key={item} className="flex items-start gap-3 text-[15px] leading-6">
+                <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-400" />
+                <span className="min-w-0 text-ink">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        <Card className="mt-6 p-5 sm:p-6">
+          <h2 className="text-lg font-700">{t('guides.install.fixTitle')}</h2>
+          <ul className="mt-4 space-y-3">
+            {fix.map((item) => (
               <li key={item} className="flex items-start gap-3 text-[15px] leading-6">
                 <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-400" />
                 <span className="min-w-0 text-ink">{item}</span>

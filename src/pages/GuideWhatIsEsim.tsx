@@ -4,6 +4,7 @@ import { ArrowRight, Globe2, PlaneTakeoff, Smartphone, Wallet, Zap } from 'lucid
 
 import Seo from '../components/Seo'
 import { Button, Card, FaqItem, IconBadge } from '../components/ui'
+import DeviceSupport from '../components/guides/DeviceSupport'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd, faqLd, guideArticleLd } from '../lib/structured-data'
 
@@ -105,6 +106,22 @@ export default function GuideWhatIsEsim() {
         </Card>
 
         {/* FAQ ------------------------------------------------------------- */}
+        <DeviceSupport />
+
+        <section className="guide-terms">
+          <h2>{t('guides.what.termsTitle')}</h2>
+          <dl>
+            {(t('guides.what.terms', { returnObjects: true }) as { t: string; x: string }[]).map(
+              (term) => (
+                <div key={term.t}>
+                  <dt>{term.t}</dt>
+                  <dd>{term.x}</dd>
+                </div>
+              ),
+            )}
+          </dl>
+        </section>
+
         <h2 className="mt-12 text-xl font-700 sm:text-2xl">{t('guides.what.faqTitle')}</h2>
         <div className="mt-5 space-y-3">
           {faqs.map((f, i) => (

@@ -69,6 +69,8 @@ import {
   type DestinationFacts,
 } from '../src/lib/destination-facts'
 import { countryFaq, networkCopy } from '../src/lib/networks-copy'
+import { deviceSummary } from '../src/lib/device-summary'
+import { DEVICE_BRANDS } from '../src/data/esimDevices'
 import { copy as DESIGN_COPY } from '../src/lib/design-copy'
 import { MEDIA } from '../src/lib/media.generated'
 import { geoFor, HOME_GEO, type GeoFacts } from '../src/lib/geo'
@@ -635,12 +637,25 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
         title: s.guideWhatTitle,
         heading: STRINGS[lang].guides.what.title,
         description: s.guideWhatDescription,
-        sections: [
-          { text: STRINGS[lang].guides.what.lead },
-          { heading: STRINGS[lang].guides.what.diffTitle, pairs: STRINGS[lang].guides.what.diff },
-          { heading: STRINGS[lang].guides.what.whyTitle, pairs: STRINGS[lang].guides.what.why },
-          { heading: STRINGS[lang].guides.what.faqTitle, qa: STRINGS[lang].guides.what.faqs },
-        ],
+        sections: (() => {
+          /* The device section is counted off the same table /device-check
+             searches, so the baked copy carries the same figures the rendered
+             page shows rather than a second set that ages on its own. */
+          const dev = deviceSummary(DEVICE_BRANDS, lang)
+          return [
+            { text: STRINGS[lang].guides.what.lead },
+            { heading: STRINGS[lang].guides.what.diffTitle, pairs: STRINGS[lang].guides.what.diff },
+            { heading: STRINGS[lang].guides.what.whyTitle, pairs: STRINGS[lang].guides.what.why },
+            { heading: dev.heading, text: dev.lead, items: dev.rows },
+            { heading: dev.noneHeading, text: dev.noneText },
+            { heading: dev.checkHeading, items: dev.checkSteps },
+            {
+              heading: STRINGS[lang].guides.what.termsTitle,
+              pairs: STRINGS[lang].guides.what.terms,
+            },
+            { heading: STRINGS[lang].guides.what.faqTitle, qa: STRINGS[lang].guides.what.faqs },
+          ]
+        })(),
         jsonLd: [
           guideArticleLd({
             headline: STRINGS[lang].guides.what.title,
@@ -673,6 +688,14 @@ function metaForStaticRoute(route: string, lang: SeoLang): PageMeta {
           {
             heading: STRINGS[lang].guides.install.androidTitle,
             items: STRINGS[lang].guides.install.android,
+          },
+          {
+            heading: STRINGS[lang].guides.install.androidBrandsTitle,
+            items: STRINGS[lang].guides.install.androidBrands,
+          },
+          {
+            heading: STRINGS[lang].guides.install.fixTitle,
+            items: STRINGS[lang].guides.install.fix,
           },
           {
             heading: STRINGS[lang].guides.install.arriveTitle,

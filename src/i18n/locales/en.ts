@@ -981,6 +981,15 @@ const en = {
       deviceText:
         'Most iPhone, Samsung, Google Pixel and Xiaomi models released since 2018 support eSIM. Check your model in under a minute:',
       deviceBtn: 'Check your device',
+      termsTitle: 'The words, briefly',
+      terms: [
+        { t: 'eSIM', x: 'A chip soldered into the phone at the factory. It cannot be put in or taken out; a plan is loaded onto it.' },
+        { t: 'EID', x: 'That chip\'s 32-digit serial. If it appears next to the IMEI when you dial *#06#, the phone has an eSIM.' },
+        { t: 'QR code', x: 'A one-time code that loads the plan onto the phone. Once scanned it counts as used, so it cannot be installed again on another phone.' },
+        { t: 'Profile', x: 'The loaded plan itself. One phone can hold several profiles and switch between them.' },
+        { t: 'APN', x: 'The access point used for data. QulaySIM profiles carry it automatically; there is nothing to type in.' },
+        { t: 'Roaming', x: 'Your own operator giving you data abroad through someone else\'s network. The most expensive option — avoiding it is the point of an eSIM.' },
+      ],
       faqTitle: 'Frequently asked questions',
       faqs: [
         {
@@ -1002,6 +1011,26 @@ const en = {
         {
           q: 'What if my phone is carrier-locked?',
           a: 'A carrier-locked phone will not accept eSIMs from other networks. Ask your carrier to unlock it first.',
+        },
+        {
+          q: 'Do I need internet to install an eSIM?',
+          a: 'Yes — installing needs Wi-Fi or a working connection, because that is when the profile downloads to the phone. This is why it is worth installing at home before you fly, rather than arriving with no data and no way to fetch it.',
+        },
+        {
+          q: 'Can I install the same QR on a second phone?',
+          a: 'No. The QR is one-time: once scanned it counts as used. Changing phones means a new plan.',
+        },
+        {
+          q: 'What happens when the data runs out?',
+          a: 'The connection stops but the eSIM stays on the phone. You can top the same eSIM up with another package — there is nothing to install again.',
+        },
+        {
+          q: 'Can I make calls over the eSIM?',
+          a: 'Our travel plans are data only. Calls go over the internet — Telegram, WhatsApp, FaceTime. Ordinary number calls stay on your main SIM.',
+        },
+        {
+          q: 'When does the validity start?',
+          a: 'Not when you buy it, but the first time the eSIM connects to a network abroad. So you can install it at home and the clock will not start until you arrive.',
         },
       ],
       ctaTitle: 'Ready to travel?',
@@ -1073,6 +1102,23 @@ const en = {
           q: 'Can I top up if I run out of data?',
           a: 'On most plans, yes — your eSIM page in the account has a top-up button. No need to install a new eSIM.',
         },
+      ],
+      androidBrandsTitle: 'Android: the path by brand',
+      androidBrands: [
+        'Samsung (One UI): Settings → Connections → SIM manager → “Add eSIM” → “Scan QR code”.',
+        'Google Pixel: Settings → Network & internet → SIMs → “Download a SIM” → QR.',
+        'Xiaomi / Redmi (HyperOS): Settings → SIM cards & mobile networks → “Add eSIM”. The entry only appears on models that have one.',
+        'Honor / Huawei: Settings → Mobile network → SIM management → “Add eSIM”.',
+        'Menu names shift a little between Android versions. If you cannot find it, type “eSIM” into the settings search — if the entry exists, it will come up.',
+      ],
+      fixTitle: 'If it does not work — where to start',
+      fix: [
+        'The QR will not scan: raise the screen brightness or show the code from another screen. Saving it as an image and picking it from the gallery also works.',
+        'It says the code is invalid: the code has already been used. A QR is one-time — it cannot be installed again on another phone.',
+        'The eSIM is added but there is no data: check that the line is switched on and that “Mobile data” is set to it.',
+        'No network: turn airplane mode on for ten seconds and off again, then restart the phone. Registering can take a few minutes.',
+        'With data roaming off a travel eSIM will not work — it attaches to someone else’s network. Turn roaming on for that line.',
+        'If none of it helps, message us on Telegram with your order number and the step you stopped at.',
       ],
       ctaTitle: 'No eSIM yet?',
       ctaText: 'Pick your destination — the QR code is ready in minutes.',

@@ -359,3 +359,91 @@
 .dest-faq p {
   margin-top: 6px;
 }
+
+/* The eSIM explainer's two new blocks: which phones have one, and the words.
+   Set as reading, not as cards — these are the parts of the page somebody
+   arrives on from a search and reads top to bottom. */
+.guide-devices,
+.guide-terms {
+  margin-top: 44px;
+  max-width: 68ch;
+}
+
+.site-shell .guide-devices h2,
+.site-shell .guide-terms h2 {
+  font-size: 24px;
+}
+
+.site-shell .guide-devices h3 {
+  margin-top: 28px;
+  font-size: 18px;
+}
+
+.guide-devices p {
+  margin-top: 12px;
+  color: var(--color-slate-soft);
+  line-height: 1.7;
+}
+
+.guide-devices-list,
+.guide-devices-steps {
+  margin-top: 16px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.guide-devices-list li,
+.guide-devices-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-ink);
+}
+
+.guide-devices-list svg {
+  margin-top: 3px;
+  flex-shrink: 0;
+  color: var(--color-brand-600, #007365);
+}
+
+.guide-devices-steps svg {
+  margin-top: 3px;
+  flex-shrink: 0;
+  color: var(--color-slate-soft);
+}
+
+.guide-devices-none {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.guide-devices-none svg {
+  margin-top: 4px;
+  flex-shrink: 0;
+  color: #c2410c;
+}
+
+.guide-terms dl {
+  margin-top: 16px;
+}
+
+.guide-terms dl > div + div {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-line);
+}
+
+.guide-terms dt {
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.guide-terms dd {
+  margin: 4px 0 0;
+  color: var(--color-slate-soft);
+  line-height: 1.7;
+}
