@@ -116,6 +116,25 @@
   }
 }
 
+/* One optical height for every mark on the picker.
+ *
+ * The tile caps each logo's width and lets `object-contain` decide the rest, so
+ * a wide wordmark lands short and a square symbol grows to fill the tile.
+ * Measured on the live grid: SAMSUNG, HONOR, SONY and NOKIA drew at 23–33px
+ * while Apple, Google, Xiaomi, Huawei, Motorola and OnePlus drew at 52–65 —
+ * twice the height, which is what made the symbols look out of line with the
+ * wordmarks beside them. It got worse, not better, on a wide screen: the taller
+ * tile gave the symbols more room and the wordmarks none, because their width
+ * was already at its cap.
+ *
+ * 40px is above every wordmark here and below every symbol, so this touches
+ * only the marks that were too big, and it holds at all three tile heights
+ * (72 / 88 / 107) without a breakpoint of its own. A logo added later is
+ * brought into line without anybody measuring it. */
+.dc-grid img {
+  max-height: 40px;
+}
+
 /* --- The header, at rest ------------------------------------------------- */
 
 /* The site already has this pill — navigation.css draws it the moment the page
