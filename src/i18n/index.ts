@@ -4,12 +4,10 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 
 import { setApiLanguage } from '../lib/api'
 import { DEFAULT_LANG, langFromPath } from '../lib/seo'
-import en from './locales/en'
 import { CART_BAR_COPY } from './locales/cart-bar'
 import { DESTINATIONS_PAGE_COPY } from './locales/destinations-page'
 import { DEVICE_CHECK_COPY } from './locales/device-check'
 import { ESIM_STATUS_COPY } from './locales/esim-status'
-import ru from './locales/ru'
 import uz from './locales/uz'
 
 export const LANGUAGES = [
@@ -28,6 +26,56 @@ export const LANGUAGES = [
  * the unprefixed pages, so a returning customer is not thrown back to Uzbek on
  * the home page.
  */
+type Lang = 'uz' | 'ru' | 'en'
+
+/** One language's strings: the big file plus the per-feature ones that are kept
+ *  beside the components they belong to. */
+function bundleFor(lang: Lang, main: Record<string, unknown>) {
+  return {
+    ...main,
+    // eSIM holati matnlari alohida modulda -- sababi o'sha faylning
+    // boshida yozilgan.
+    ...ESIM_STATUS_COPY[lang],
+    ...DEVICE_CHECK_COPY[lang],
+    ...DESTINATIONS_PAGE_COPY[lang],
+    ...CART_BAR_COPY[lang],
+  }
+}
+
+/**
+ * Russian and English arrive when they are asked for, not before.
+ *
+ * All three locale files used to be in the entry bundle: ru 70.6 kB, uz 50.6,
+ * en 45.8. A visitor reading Uzbek — which is most of them, and every
+ * unprefixed URL — downloaded 116 kB of Russian and English they would never
+ * see. Uzbek stays static because it is the default and because the first paint
+ * must not wait on a request; the other two are one dynamic import each.
+ *
+ * Awaited before the app mounts (main.tsx), so a /ru or /en visitor never sees
+ * a frame of Uzbek before their own language lands.
+ */
+const LOADERS: Record<string, () => Promise<{ default: Record<string, unknown> }>> = {
+  ru: () => import('./locales/ru'),
+  en: () => import('./locales/en'),
+}
+
+export async function ensureLanguage(lng: string | undefined): Promise<void> {
+  const base = (lng || DEFAULT_LANG).split('-')[0] as Lang
+  if (base === DEFAULT_LANG || i18n.hasResourceBundle(base, 'translation')) return
+  const load = LOADERS[base]
+  if (!load) return
+  try {
+    const mod = await load()
+    i18n.addResourceBundle(base, 'translation', bundleFor(base, mod.default), true, true)
+    // The bundle landed after i18next had already resolved this language to the
+    // fallback, so the tree has to be told there is something new to read.
+    if (i18n.language.split('-')[0] === base) await i18n.changeLanguage(lng)
+  } catch {
+    /* Offline or a failed chunk: the Uzbek fallback is already rendering, which
+       is a worse page than the visitor asked for but still a working one. */
+  }
+}
+
 const pathLang = typeof window === 'undefined' ? DEFAULT_LANG : langFromPath(window.location.pathname)
 
 i18n
@@ -35,13 +83,10 @@ i18n
   .use(initReactI18next)
   .init({
     ...(pathLang === DEFAULT_LANG ? {} : { lng: pathLang }),
-    resources: {
-      // eSIM holati matnlari alohida modulda -- sababi o'sha faylning
-      // boshida yozilgan.
-      en: { translation: { ...en, ...ESIM_STATUS_COPY.en, ...DEVICE_CHECK_COPY.en, ...DESTINATIONS_PAGE_COPY.en, ...CART_BAR_COPY.en } },
-      ru: { translation: { ...ru, ...ESIM_STATUS_COPY.ru, ...DEVICE_CHECK_COPY.ru, ...DESTINATIONS_PAGE_COPY.ru, ...CART_BAR_COPY.ru } },
-      uz: { translation: { ...uz, ...ESIM_STATUS_COPY.uz, ...DEVICE_CHECK_COPY.uz, ...DESTINATIONS_PAGE_COPY.uz, ...CART_BAR_COPY.uz } },
-    },
+    // Only Uzbek is in the bundle. Russian and English are fetched by
+    // `ensureLanguage` below — see the note there for the number that decided
+    // it.
+    resources: { uz: { translation: bundleFor('uz', uz) } },
     // Uzbek, because the unprefixed URLs are the Uzbek edition and the audience
     // is in Uzbekistan. It used to be English, which meant a missing key showed
     // English text on a page that had told search engines it was Uzbek.
@@ -74,6 +119,8 @@ export default i18n
 // be left with a document that claims to be in another one — screen readers
 // pick their pronunciation from it.
 i18n.on('languageChanged', (lng) => {
+  // In-app switch without a reload: the strings may not be here yet.
+  void ensureLanguage(lng)
   if (typeof document !== 'undefined') {
     document.documentElement.lang = lng.split('-')[0]
   }

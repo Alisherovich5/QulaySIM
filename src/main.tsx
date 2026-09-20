@@ -14,14 +14,20 @@ import './design/how-steps.css'
 // After journey.css, which is the only way the FAQ's own h2 and h3 sizes
 // outrank the shell's. Shared by the landing page and /support.
 import './design/faq.css'
-import './i18n'
+import i18n, { ensureLanguage } from './i18n'
 import App from './App.tsx'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+/* Mount once the active language's strings are in hand. For Uzbek — the
+   default, and every unprefixed URL — that resolves immediately and nothing
+   waits. A /ru or /en visitor pays one small request rather than seeing their
+   page in Uzbek for a frame. */
+void ensureLanguage(i18n.language).then(() => {
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  )
+})
 
 // Field measurement, after the app is on screen: every performance target in
 // the plan is a p75 of real visits, and only the visitor's browser can report
