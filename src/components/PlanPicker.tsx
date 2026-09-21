@@ -62,7 +62,14 @@ export default function PlanPicker({
                 type="radio"
                 name={id + '-plan'}
                 checked={picked.id === plan.id}
-                onChange={() => setSelected(plan.id)}
+                /* The tap both picks and buys. The summary beside it repeats
+                   what the row already prints, so waiting for a second tap on
+                   a button below the fold was a step that told nobody
+                   anything. */
+                onChange={() => {
+                  setSelected(plan.id)
+                  onAdd(plan)
+                }}
                 value={plan.id}
               />
               <div className="plan-option-top">

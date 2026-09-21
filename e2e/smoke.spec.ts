@@ -449,11 +449,16 @@ test('the route planner sells only the plans that cover the whole trip', async (
   await expect(page.getByRole('dialog')).toHaveCount(0)
 })
 
-test('choosing a plan offers the two answers instead of deciding for you', async ({ page }) => {
-  // Feedback from the shop floor, 2026-09-19: tapping a tariff used to throw
-  // the customer into checkout 350 ms later, so comparing a 5 GB against a
-  // 10 GB was impossible — the first tap ended the comparison. And before
-  // that, the only way forward sat at the bottom of a twenty-row list.
+test('choosing a plan goes straight to the cart', async ({ page }) => {
+  // The owner's instruction, 2026-09-21: a tap on a tariff is a decision, so it
+  // opens the cart rather than waiting for a second tap.
+  //
+  // It worked this way before and was taken out on 2026-09-19 after feedback
+  // from the shop floor — comparing a 5 GB against a 10 GB was impossible when
+  // the first tap ended the comparison. What is different now is that the list
+  // prints size, days, network and price on every row, so the comparison
+  // happens in the list and nobody has to open a plan to read it. If that
+  // reasoning stops holding, this test is the thing to change back.
   await page.route('**/api/countries/*', (route) =>
     route.fulfill({
       json: {
@@ -475,24 +480,15 @@ test('choosing a plan offers the two answers instead of deciding for you', async
     }),
   )
   await page.goto('/destinations/vietnam')
-  await page.getByRole('button', { name: 'Tarifni tanlash' }).first().click()
 
-  // The page it was on is the page it stays on.
-  await expect(page.locator('.cart-bar')).toBeVisible()
-  await expect(page).not.toHaveURL(/checkout/)
-
-  // "Keep choosing" puts the list back, with the comparison still on screen —
-  // which is the whole point: the 5 GB the customer was weighing up is still
-  // one tap away.
-  await page.locator('.cart-bar__more').click()
-  await expect(page.locator('.cart-bar')).toHaveCount(0)
-  await expect(page.getByText('Vietnam 5 GB', { exact: false }).first()).toBeVisible()
-
-  // And the other answer still works: pick the one they were comparing, then go.
-  await page.getByText('Vietnam 5 GB', { exact: false }).first().click()
-  await page.getByRole('button', { name: 'Tarifni tanlash' }).first().click()
-  await page.locator('.cart-bar__go').click()
+  // Tapping the row itself is the whole interaction — no second control below
+  // the fold, which on a phone is where the button used to be.
+  await page.locator('.plan-option input[type=radio]').nth(1).click()
   await expect(page).toHaveURL(/checkout/)
+
+  // And the plan that arrives is the one that was tapped, not the one that
+  // happened to be selected when the page loaded.
+  await expect(page.getByText('Vietnam 5 GB', { exact: false }).first()).toBeVisible()
 })
 
 test('minus removes the last one instead of refusing', async ({ page }) => {
@@ -515,8 +511,8 @@ test('minus removes the last one instead of refusing', async ({ page }) => {
     }),
   )
   await page.goto('/destinations/vietnam')
+  // One tap: choosing a plan opens the cart.
   await page.getByRole('button', { name: 'Tarifni tanlash' }).first().click()
-  await page.locator('.cart-bar__go').click()
   await expect(page).toHaveURL(/checkout/)
 
   const minus = page.locator('.lucide-minus')
@@ -571,8 +567,8 @@ test('a paid order moves to the eSIMs without the customer closing anything', as
   )
 
   await page.goto('/destinations/vietnam')
+  // One tap: choosing a plan opens the cart.
   await page.getByRole('button', { name: 'Tarifni tanlash' }).first().click()
-  await page.locator('.cart-bar__go').click()
   await expect(page).toHaveURL(/checkout/)
 
   // Exactly the pay button, never the "sign in to pay" one it turns into for a
