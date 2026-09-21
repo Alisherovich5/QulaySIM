@@ -68,7 +68,7 @@ export default function Home() {
           cards. */}
       <div className="border-t border-line/70 pb-16 pt-10 sm:pb-24 sm:pt-14">
         <Suspense fallback={<Placeholder height={640} />}>
-          <SupportBody hero={false} />
+          <SupportBody />
         </Suspense>
       </div>
     </div>

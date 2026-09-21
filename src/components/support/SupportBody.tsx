@@ -37,15 +37,9 @@ const TELEGRAM_HANDLE = '@qulaysim_support'
 export default function SupportBody({
   as = 'h2',
   seo = false,
-  hero = true,
 }: {
   as?: 'h1' | 'h2'
   seo?: boolean
-  /* The landing page leaves it out. Its own hero is two screens up and the
-     route planner's headline one screen up, and a third large heading saying
-     the same kind of thing is the "too much text" the owner named. The cards
-     and the answers are the part of this page that does work down there. */
-  hero?: boolean
 }) {
   const Heading = as
   const { t, i18n } = useTranslation()
@@ -123,7 +117,6 @@ export default function SupportBody({
         />
       )}
 
-      {hero && (
       <section className="sup-hero">
         <div>
           <p className="sup-label">{t('support.eyebrow')}</p>
@@ -134,7 +127,6 @@ export default function SupportBody({
 
         <SupportIllustration />
       </section>
-      )}
 
       <section className="sup-cards">
         <SupportActionCard
