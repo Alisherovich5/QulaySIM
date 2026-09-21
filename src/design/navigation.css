@@ -349,24 +349,31 @@
  *
  * `data-detached` is set from an IntersectionObserver on a sentinel at the top
  * of the document — see Navbar.tsx for why not a scroll listener. */
-/* The header sits on the top edge and stays there.
+/* Flush at rest, floating once the page has moved.
  *
- * It used to detach on scroll into a floating pill: `top: 0.75rem`, a margin
- * either side, a radius and `overflow: hidden`. Three things came with that and
- * all three were bugs. The 12px it moved down left a strip of page background
- * above it, which is what the owner saw as a panel over the navbar. The
- * `overflow: hidden` clipped the language menu, which hangs below the header —
- * that is why it opened and showed nothing. And `backdrop-filter: blur(12px)`,
- * removed from the element in Navbar.tsx, made the browser re-blur a
- * full-width strip of the page on every scrolled frame.
+ * The owner wants the detached bar back, and it is worth having — but it
+ * arrived the first time carrying two bugs, and neither of them is part of the
+ * effect:
  *
- * What is left is the part that was worth having: the bar gets shorter and
- * grows a shadow once the page has moved, which reads as the header settling
- * rather than as a thing that jumps out of the layout. */
+ *   `overflow: hidden` was there to clip the bar to its own rounded corners.
+ *   The only thing that ever reached those corners was the language menu, which
+ *   is supposed to hang below the bar — so the menu opened and showed nothing.
+ *   The corners look the same without it: nothing else overflows them.
+ *
+ *   `backdrop-filter: blur(12px)` re-blurred a full-width strip of the page on
+ *   every scrolled frame, and in Chrome it also clips a descendant that escapes
+ *   the filtered box — the same menu again, by a second route. The bar is
+ *   opaque instead, which at 1px of visible difference is not a loss.
+ *
+ * What is kept is the movement: flush and square at the top of the document,
+ * then inset, rounded and lifted once it is scrolling over content. */
 .site-header {
   transition:
-    box-shadow 0.25s ease,
-    border-color 0.25s ease;
+    top 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    margin 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 0.26s ease,
+    box-shadow 0.26s ease,
+    border-color 0.26s ease;
 }
 
 .nav-bar {
@@ -390,13 +397,33 @@
   }
 }
 
+/* Note what is NOT here: no `overflow: hidden`, no `backdrop-filter`. Both were
+   in the original and both ate the language menu. */
 .site-header[data-detached='true'] {
-  border-bottom-color: transparent;
-  box-shadow: 0 10px 30px -18px rgb(13 62 70 / 0.5);
+  top: 0.625rem;
+  margin-inline: clamp(0.625rem, 2vw, 1.25rem);
+  border: 1px solid rgb(123 192 188 / 0.34);
+  border-radius: 1.125rem;
+  box-shadow: 0 16px 38px -20px rgb(13 62 70 / 0.55);
 }
 
 :root.dark .site-header[data-detached='true'] {
-  box-shadow: 0 12px 34px -18px rgb(0 0 0 / 0.75);
+  border-color: rgb(123 217 200 / 0.24);
+  box-shadow: 0 18px 44px -20px rgb(0 0 0 / 0.7);
+}
+
+@media (max-width: 640px) {
+  .site-header[data-detached='true'] {
+    top: 0.5rem;
+  }
+}
+
+/* The page must not slide under the gap the detached bar leaves. `--header-h`
+   is published by the Navbar and everything below it is laid out from that. */
+@media (prefers-reduced-motion: reduce) {
+  .site-header {
+    transition: none;
+  }
 }
 
 /* The language menu, arriving.
