@@ -24,6 +24,7 @@ const en = {
     device: 'Device',
   },
   common: {
+    clear: 'Clear',
     switchToLight: 'Switch to light mode',
     switchToDark: 'Switch to dark mode',
     language: 'Language',
@@ -174,6 +175,13 @@ const en = {
     all: 'See all plans',
   },
   global: {
+    checkPlaceholder: 'Which country are you going to?',
+    checkYes: '{{country}} is covered',
+    checkPlans: '{{count}} worldwide plans work there, from {{price}}.',
+    checkNo: '{{country}} is not in the worldwide plan',
+    checkNoHint: 'There is a plan for this country on its own, and it is usually cheaper.',
+    checkNoCta: 'See {{country}} plans',
+    checkHint: 'Type any of the 167 countries — coverage is checked here.',
     statCountries: 'Countries',
     statPlans: 'Plans',
     coverageStripTitle: 'Countries covered',

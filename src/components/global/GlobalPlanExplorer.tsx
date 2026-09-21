@@ -37,6 +37,14 @@ interface Props {
   added: number | null
   /** Our own destinations, for their names in the visitor's language. */
   countries: Country[]
+  /** The country picked in the hero's coverage check, if any.
+   *
+   *  The page had two inputs asking the same question — one in the hero and the
+   *  filter here — and a visitor who answered the first found the second still
+   *  blank. One answer, carried through: picking a country above filters the
+   *  plans below, and this control still works on its own for anybody who
+   *  scrolled straight to it. */
+  pickedCountry?: { iso2: string; name: string } | null
 }
 
 type Sort = 'price' | 'data' | 'coverage'
@@ -58,11 +66,17 @@ const fold = (value: string) =>
     .toLowerCase()
     .trim()
 
-export default function GlobalPlanExplorer({ plans, onAdd, added, countries }: Props) {
+export default function GlobalPlanExplorer({ plans, onAdd, added, countries, pickedCountry }: Props) {
   const { t, i18n } = useTranslation()
   const [sizes, setSizes] = useState<Set<number>>(new Set())
   const [durations, setDurations] = useState<Set<string>>(new Set())
   const [country, setCountry] = useState<{ iso2: string; name: string } | null>(null)
+
+  /* Follows the hero's answer when there is one, and is otherwise left alone —
+     clearing it here must not be undone by a stale pick from above. */
+  useEffect(() => {
+    if (pickedCountry) setCountry(pickedCountry)
+  }, [pickedCountry])
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<Sort>('price')
   const [openMenu, setOpenMenu] = useState<'size' | 'duration' | 'sort' | null>(null)

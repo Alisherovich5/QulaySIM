@@ -26,6 +26,7 @@ const ru: Translation = {
     device: 'Устройство',
   },
   common: {
+    clear: 'Очистить',
     switchToLight: 'Переключить на светлую тему',
     switchToDark: 'Переключить на тёмную тему',
     language: 'Язык',
@@ -175,6 +176,13 @@ const ru: Translation = {
     all: 'Показать все',
   },
   global: {
+    checkPlaceholder: 'В какую страну едете?',
+    checkYes: '{{country}} — входит в покрытие',
+    checkPlans: 'В этой стране работают {{count}} глобальных тарифа, от {{price}}.',
+    checkNo: '{{country}} не входит в глобальный тариф',
+    checkNoHint: 'Для этой страны есть отдельный тариф — обычно он дешевле.',
+    checkNoCta: 'Смотреть тарифы: {{country}}',
+    checkHint: 'Введите любую из 167 стран — покрытие проверяется здесь.',
     statCountries: 'Стран',
     statPlans: 'Тарифов',
     coverageStripTitle: 'Покрываемые страны',

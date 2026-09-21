@@ -447,3 +447,258 @@
   color: var(--color-slate-soft);
   line-height: 1.7;
 }
+
+/* ---------------------------------------------------------------------------
+   /global — the worldwide page, built around one question.
+   --------------------------------------------------------------------------- */
+
+.gl-hero {
+  max-width: 44rem;
+  margin: 8px auto 0;
+  text-align: center;
+}
+
+.gl-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-brand-600, #007365);
+}
+
+:root.dark .gl-eyebrow {
+  color: var(--color-accent-400, #34e3b0);
+}
+
+.site-shell .gl-hero h1 {
+  margin: 12px 0 0;
+  font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+}
+
+.gl-lead {
+  margin: 14px auto 0;
+  max-width: 34rem;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--color-slate-soft);
+}
+
+/* The three numbers, level and equal. They were a wrapped definition list under
+   the lead, where the eye read them as a caption; here they are the fact the
+   page is making. */
+.gl-figures {
+  display: grid;
+  /* Each column takes the width its own figure needs, rather than a third
+     each. "167" and "20" need very little; "125 999 so'm" needs the rest, and
+     on equal thirds it wrapped and dragged its label a line below the other
+     two. */
+  grid-template-columns: repeat(3, auto);
+  justify-content: space-between;
+  align-items: start;
+  gap: 8px 22px;
+  margin: 26px auto 0;
+  max-width: 30rem;
+  padding: 16px 0;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.gl-figures > div {
+  min-width: 0;
+}
+
+.gl-figures dd {
+  margin: 0;
+  font-family: var(--font-display);
+  /* Smaller than it wants to be, so "125 999 so'm" stays on one line where the
+     column allows it. */
+  font-size: clamp(1.25rem, 0.85rem + 1.2vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.gl-figures dt {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--color-slate-soft);
+}
+
+/* --- The coverage check --- */
+
+.gl-check {
+  position: relative;
+  margin: 26px auto 0;
+  max-width: 32rem;
+  text-align: left;
+}
+
+.gl-check-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 14px;
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  background: var(--color-surface);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.gl-check-field:focus-within {
+  border-color: var(--color-brand-400, #1aa28e);
+  box-shadow: 0 0 0 4px rgb(0 143 124 / 0.12);
+}
+
+.gl-check-field > svg {
+  flex-shrink: 0;
+  color: var(--color-slate-soft);
+}
+
+.gl-check-field input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  color: var(--color-ink);
+  outline: none;
+}
+
+.gl-check-field input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.gl-check-clear {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  color: var(--color-slate-soft);
+}
+
+.gl-check-clear:hover {
+  background: var(--color-surface-2);
+}
+
+/* The suggestions float: the answer below them must not push the page around
+   while somebody is still typing. */
+.gl-check-list {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  margin: 6px 0 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--color-line);
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow: 0 18px 40px -22px rgb(13 62 70 / 0.5);
+}
+
+.gl-check-list button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  color: var(--color-ink);
+}
+
+.gl-check-list button:hover {
+  background: var(--color-surface-2);
+}
+
+.gl-check-answer {
+  margin-top: 12px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid;
+}
+
+.gl-check-answer.is-yes {
+  border-color: rgb(0 143 124 / 0.32);
+  background: rgb(0 143 124 / 0.07);
+}
+
+.gl-check-answer.is-no {
+  border-color: rgb(194 65 12 / 0.28);
+  background: rgb(194 65 12 / 0.06);
+}
+
+.gl-check-verdict {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.gl-check-answer.is-yes .gl-check-verdict svg {
+  color: var(--color-brand-600, #007365);
+}
+
+.gl-check-answer.is-no .gl-check-verdict svg {
+  color: #c2410c;
+}
+
+:root.dark .gl-check-answer.is-yes .gl-check-verdict svg {
+  color: var(--color-accent-400, #34e3b0);
+}
+
+.gl-check-detail {
+  margin: 6px 0 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--color-slate-soft);
+}
+
+.gl-check-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--color-brand-600, #007365);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.gl-check-cta:hover {
+  background: #005a4e;
+}
+
+:root.dark .gl-check-cta {
+  color: #04222b;
+  background: var(--color-accent-400, #34e3b0);
+}
+
+.gl-check-hint {
+  margin: 12px auto 0;
+  max-width: 32rem;
+  font-size: 13px;
+  color: var(--color-slate-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gl-check-field {
+    transition: none;
+  }
+}

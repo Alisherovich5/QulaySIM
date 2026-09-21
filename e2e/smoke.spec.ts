@@ -187,11 +187,11 @@ test('the worldwide filter narrows by country', async ({ page }) => {
   await page.goto('/global')
 
   await expect(page.getByText(/2 tarifdan 2 tasi/)).toBeVisible()
-  await page.getByPlaceholder(/qaysi davlatga/i).fill('Turkiya')
-  await page
-    .getByRole('button', { name: /Turkiya/ })
-    .first()
-    .click()
+
+  // The hero's coverage check, which is the page's one country control: picking
+  // a country there filters the plan list below to the same country.
+  await page.locator('.gl-check-field input').fill('Turkiya')
+  await page.locator('.gl-check-list button').first().click()
 
   // One plan covers Turkey, the other does not — and the one that does not is
   // removed rather than quietly ranked lower.

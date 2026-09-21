@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 import Seo from '../components/Seo'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd } from '../lib/structured-data'
@@ -9,8 +9,8 @@ import { api } from '../lib/api'
 import { boot } from '../lib/boot'
 import { useCatalogue } from '../lib/useCatalogue'
 import type { Country, Plan, Region, RegionDetail } from '../lib/types'
-import Flag from '../components/Flag'
 import GlobalPlanExplorer from '../components/global/GlobalPlanExplorer'
+import CoverageCheck from '../components/global/CoverageCheck'
 import { Card } from '../components/ui'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
@@ -46,6 +46,7 @@ export default function Global() {
   // be empty for anyone whose request was lost, on a route where requests are
   // lost in bursts. The fetch below still runs and replaces it.
   const [added, setAdded] = useState<number | null>(null)
+  const [picked, setPicked] = useState<{ iso2: string; name: string } | null>(null)
 
   // Three independent requests: losing the region list should cost a section,
   // not the page. Each keeps what is on screen when its request is lost — the
@@ -93,18 +94,6 @@ export default function Global() {
     return best
   }, [detail])
 
-  // Twenty-four of them, popular destinations first — the ones a customer here
-  // recognises — then whatever else is covered, alphabetically by our own name.
-  const heroFlags = useMemo(() => {
-    const known = new Map(countries.map((c) => [c.iso2.toUpperCase(), c]))
-    const rows = widest
-      .map((iso2) => ({ iso2, country: known.get(iso2) }))
-      .filter((row) => row.country)
-      .map((row) => ({ iso2: row.iso2, name: row.country!.name, popular: row.country!.is_popular }))
-    rows.sort((a, b) => Number(b.popular) - Number(a.popular) || a.name.localeCompare(b.name))
-    return rows.slice(0, 24)
-  }, [widest, countries])
-
   const handleAdd = (plan: Plan) => {
     // No ISO code: a worldwide eSIM belongs to no country, so the cart shows the
     // plan's own name rather than a flag it cannot choose.
@@ -135,87 +124,48 @@ export default function Global() {
           API, and the count beside them is that list's real length. If a
           supplier drops thirty countries tomorrow, this strip shrinks —
           which is exactly the property a prop does not have. */}
-      <section className="global-hero grid gap-8 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-12">
-        <div>
-          {widest.length > 0 && (
-            <p className="text-xs font-700 uppercase tracking-[0.16em] text-brand-600 dark:text-accent-400">
-              {t('global.eyebrow', { count: widest.length })}
-            </p>
-          )}
-          <h1 className="mt-3 font-display text-3xl font-700 leading-[1.06] text-ink sm:text-[2.75rem]">
-            {t('global.title')}
-          </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-slate-soft">
-            {t('global.lead')}
-          </p>
+      {/* The hero, rebuilt around the question people arrive with.
+       *
+       * It used to be text on the left and, on the right, twenty-four flags out
+       * of a hundred and sixty-seven under a line admitting the rest were not
+       * shown. A visitor could not tell from it whether their own stop was
+       * included, which is the only thing the page is for. The flags are gone
+       * and the same coverage list drives a control that answers.
+       *
+       * One centred column rather than two: the numbers and the check are the
+       * content, and splitting them across a grid put the weakest material in
+       * the larger half. */}
+      <section className="gl-hero">
+        {widest.length > 0 && <p className="gl-eyebrow">{t('global.eyebrow', { count: widest.length })}</p>}
+        <h1>{t('global.title')}</h1>
+        <p className="gl-lead">{t('global.lead')}</p>
 
-          {/* Numbers, not adjectives — and every one of them computed from what
-              is actually on sale a line above. */}
-          <dl className="mt-7 flex flex-wrap items-end gap-x-8 gap-y-4 border-t border-line pt-5">
-            <div>
-              <dt className="text-xs text-slate-soft">{t('global.statCountries')}</dt>
-              <dd className="font-display text-2xl font-700 tabular-nums text-ink">
-                {widest.length || '—'}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs text-slate-soft">{t('global.statPlans')}</dt>
-              <dd className="font-display text-2xl font-700 tabular-nums text-ink">
-                {detail?.plans.length ?? 0}
-              </dd>
-            </div>
-            {cheapest != null && (
-              <div>
-                <dt className="text-xs text-slate-soft">{t('global.fromPrice')}</dt>
-                <dd className="font-display text-2xl font-700 tabular-nums text-ink">
-                  {formatPrice(cheapest)}
-                </dd>
-              </div>
-            )}
-          </dl>
-
-          <div className="mt-7 flex flex-wrap items-center gap-3">
-            <a href="#plans" className="btn btn-primary">
-              {t('global.cta')}
-              <ArrowRight size={17} aria-hidden />
-            </a>
-            <Link
-              to="/esim-ornatish"
-              className="focus-ring rounded-lg px-3 py-2 text-sm font-600 text-slate-soft hover:text-ink"
-            >
-              {t('global.howItWorks')}
-            </Link>
+        {/* Numbers, not adjectives — every one computed from what the catalogue
+            actually holds, so the page cannot promise more than it sells. */}
+        <dl className="gl-figures">
+          <div>
+            <dd>{widest.length}</dd>
+            <dt>{t('global.statCountries')}</dt>
           </div>
-        </div>
-
-        {/* The coverage itself. Real flags, real order, real remainder. */}
-        <div className="rounded-2xl bg-surface p-5 ring-1 ring-line sm:p-6">
-          <div className="flex items-baseline justify-between gap-3">
-            <p className="text-sm font-700 text-ink">{t('global.coverageStripTitle')}</p>
-            <p className="text-xs tabular-nums text-slate-soft">
-              {t('global.coverageCount', { count: widest.length })}
-            </p>
+          <div>
+            <dd>{detail?.plans.length ?? 0}</dd>
+            <dt>{t('global.statPlans')}</dt>
           </div>
-          <ul className="mt-4 grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-5 xl:grid-cols-6">
-            {heroFlags.map(({ iso2, name }) => (
-              <li
-                key={iso2}
-                title={name}
-                className="flex flex-col items-center gap-1.5 rounded-lg bg-mist px-1.5 py-2"
-              >
-                <Flag iso2={iso2} className="h-4 w-6 rounded-[2px]" />
-                <span className="line-clamp-2 w-full text-center text-[10px] leading-tight text-slate-soft">
-                  {name}
-                </span>
-              </li>
-            ))}
-          </ul>
-          {widest.length > heroFlags.length && (
-            <p className="mt-3 text-xs text-slate-soft">
-              {t('global.coverageMore', { count: widest.length - heroFlags.length })}
-            </p>
+          {cheapest != null && (
+            <div>
+              <dd>{formatPrice(cheapest)}</dd>
+              <dt>{t('global.fromPrice')}</dt>
+            </div>
           )}
-        </div>
+        </dl>
+
+        <CoverageCheck
+          covered={widest}
+          countries={countries}
+          plans={detail?.plans ?? []}
+          onPick={setPicked}
+        />
+        <p className="gl-check-hint">{t('global.checkHint')}</p>
       </section>
 
       {/* The plans */}
@@ -230,6 +180,7 @@ export default function Global() {
           onAdd={handleAdd}
           added={added}
           countries={countries}
+          pickedCountry={picked}
         />
       ) : (
         <Card className="mt-6 p-6 text-sm text-slate-soft">{t('global.plansEmpty')}</Card>
