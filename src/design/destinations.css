@@ -293,14 +293,21 @@
 }
 
 .dest-networks p {
-  margin-top: 12px;
+  /* 12px between paragraphs against a 1.7 line height put the gap between two
+     paragraphs below the gap between two lines of one — so five paragraphs read
+     as one slab of text. */
+  margin-top: 20px;
   color: var(--color-slate-soft);
   line-height: 1.7;
 }
 
+/* The opening sentence, set as a lead rather than as bold body: a whole
+   paragraph at 600 is the heaviest thing on the page after its heading, and it
+   is a sentence, not a title. */
 .dest-networks .dest-networks-lead {
+  margin-top: 0;
+  font-size: 17px;
   color: var(--color-ink);
-  font-weight: 600;
 }
 
 .dest-networks-list {
@@ -340,24 +347,30 @@
 
 /* The country's own questions, under its networks. */
 .dest-faq {
-  margin-top: 28px;
-  padding-top: 20px;
+  margin-top: 36px;
+  padding-top: 24px;
   border-top: 1px solid var(--color-line);
 }
 
+/* A question belongs to the answer under it, not to the answer above it. The
+   two gaps were 18px and 6px — near enough that the pairs did not read as
+   pairs, so a hairline says it outright. */
 .dest-faq > div + div {
-  margin-top: 18px;
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid var(--color-line);
 }
 
 .site-shell .dest-faq h3 {
   margin: 0;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--color-ink);
 }
 
 .dest-faq p {
-  margin-top: 6px;
+  margin-top: 10px;
+  line-height: 1.7;
 }
 
 /* The eSIM explainer's two new blocks: which phones have one, and the words.

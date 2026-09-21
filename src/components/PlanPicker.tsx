@@ -36,22 +36,36 @@ export default function PlanPicker({
     <section className="plan-picker">
       <div className="plan-picker-toolbar">
         <p>{c.planNote}</p>
-        <label htmlFor={id}>
-          {c.duration}
-          <select
-            id={id}
-            name="validity"
-            value={validity}
-            onChange={(e) => setValidity(e.target.value)}
-          >
-            <option value="all">{t('destinations.all')}</option>
+        {/* Chips, not a dropdown. A <select> draws the operating system's own
+            popup — a white sheet with a system-blue row, in neither the site's
+            colours nor its dark mode — and hides four options behind three
+            interactions: open, read, choose. There are never more than a
+            handful of durations, so they all fit on one line and cost one tap.
+            The same swap was made for the region filter on /destinations. */}
+        <div className="dst-filter">
+          <span className="dst-filter__label" id={id}>
+            {c.duration}
+          </span>
+          <div className="dst-chips" role="group" aria-labelledby={id}>
+            <button
+              type="button"
+              aria-pressed={validity === 'all'}
+              onClick={() => setValidity('all')}
+            >
+              {t('destinations.all')}
+            </button>
             {durations.map((days) => (
-              <option key={days} value={days}>
+              <button
+                key={days}
+                type="button"
+                aria-pressed={validity === String(days)}
+                onClick={() => setValidity(String(days))}
+              >
                 {days} {c.days}
-              </option>
+              </button>
             ))}
-          </select>
-        </label>
+          </div>
+        </div>
       </div>
       <div className="plan-layout">
         <fieldset className="plan-options">
@@ -72,18 +86,29 @@ export default function PlanPicker({
                 }}
                 value={plan.id}
               />
+              {/* The row is the button — the radio circle is kept for the
+                  keyboard and the screen reader, and drawn as a tick on the
+                  chosen card instead. A dial beside a row that already buys
+                  promised a second step that does not exist. */}
+              <span className="plan-option-mark" aria-hidden="true">
+                <Check size={15} strokeWidth={3} />
+              </span>
               <div className="plan-option-top">
                 <strong>{plan.is_unlimited ? t('plan.unlimited') : plan.data_label}</strong>
                 {plan.is_popular && <span>{t('plan.mostPopular')}</span>}
               </div>
-              <p>{plan.title}</p>
+              {/* The supplier's own title used to sit here: "Afghanistan 1 GB
+                  · 7 days", in English, under a card already printing 1 GB and
+                  7 kun in Uzbek. Three facts, each said twice, one of them in a
+                  language the page is not written in. */}
+              <p className="plan-option-meta">
+                {plan.validity_days} {c.days} · {plan.network_type}
+                {plan.supports_hotspot ? ` · ${c.hotspot}` : ''}
+              </p>
               <div className="plan-option-spec">
-                <span>
-                  {plan.validity_days} {c.days} · {plan.network_type}
-                </span>
                 <strong>{formatPrice(plan.price_usd)}</strong>
               </div>
-              {plan.price_note && <p>{plan.price_note}</p>}
+              {plan.price_note && <p className="plan-option-note">{plan.price_note}</p>}
             </label>
           ))}
         </fieldset>

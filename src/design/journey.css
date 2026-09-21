@@ -999,6 +999,15 @@ h4 {
   max-width: 57%;
   color: #ecf5f6;
 }
+/* No photograph, no picture column: the text takes the width and the band
+   stops being a 320px box mostly filled with nothing. */
+.destination-intro.is-plain {
+  min-height: 0;
+}
+.destination-intro.is-plain > div:first-child {
+  max-width: 62ch;
+  padding: 32px 40px;
+}
 .destination-title {
   display: flex;
   align-items: center;
@@ -1050,13 +1059,6 @@ h4 {
   height: 100%;
   object-fit: cover;
 }
-.destination-photo.is-globe img {
-  object-fit: contain;
-  padding: 20px;
-}
-.destination-photo.is-globe:after {
-  display: none;
-}
 .plan-picker {
   margin-top: 24px;
 }
@@ -1071,22 +1073,9 @@ h4 {
   max-width: 48ch;
   color: var(--color-slate-soft);
 }
-.plan-picker-toolbar label {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 13px;
-  color: var(--color-slate-soft);
-  white-space: nowrap;
-}
-.plan-picker-toolbar select {
-  min-height: 48px;
-  border: 1px solid var(--color-line);
-  border-radius: 12px;
-  padding: 10px 34px 10px 14px;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  font-size: 14px;
+.plan-picker-toolbar .dst-filter {
+  margin-bottom: 0;
+  min-width: 0;
 }
 .plan-layout {
   display: grid;
@@ -1099,83 +1088,113 @@ h4 {
   gap: 12px;
   min-width: 0;
 }
+/* One row, one tap.
+ *
+ * It was a radio dial, a data label, the supplier's English title, a spec line
+ * and a price, in a 126px box — five things competing where a person is doing
+ * one thing: reading a size and a price. The dial went (the row already buys,
+ * so a control promising a second step was a lie), the English title went, and
+ * what is left is the size, the one line of facts under it, and the price.
+ */
 .plan-option {
   position: relative;
   display: grid;
-  grid-template-columns: 22px minmax(120px, 0.8fr) minmax(160px, 1fr);
-  align-items: center;
-  gap: 6px 20px;
-  min-height: 126px;
-  padding: 22px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: center;
+  gap: 4px 20px;
+  min-height: 92px;
+  padding: 18px 22px;
   border: 1px solid var(--color-line);
-  border-radius: 20px;
+  border-radius: 18px;
   background: var(--color-surface);
   cursor: pointer;
+  transition:
+    border-color 0.16s,
+    box-shadow 0.16s;
+}
+.plan-option:hover {
+  border-color: var(--color-brand-300);
 }
 .plan-option:has(input:checked) {
-  border: 2px solid var(--color-brand-600);
-  padding: 21px;
+  border-color: var(--color-brand-600);
+  box-shadow: inset 0 0 0 1px var(--color-brand-600);
 }
 .plan-option:focus-within {
   outline: 3px solid #24ae97;
   outline-offset: 3px;
 }
+/* Kept for the keyboard and the screen reader, taken out of the layout. */
 .plan-option > input {
-  grid-column: 1;
-  grid-row: 1/3;
-  width: 20px;
-  height: 20px;
-  margin: 0;
-  accent-color: #007365;
-  cursor: pointer;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.plan-option-mark {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--color-brand-600);
+  color: #fff;
+}
+.plan-option:has(input:checked) .plan-option-mark {
+  display: grid;
 }
 .plan-option-top {
-  grid-column: 2;
+  grid-column: 1;
   grid-row: 1;
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 14px;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-width: 0;
 }
 .plan-option-top > strong {
   font-family: var(--font-display);
-  font-size: 25px;
+  font-size: 26px;
   font-weight: 600;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.05em;
   white-space: nowrap;
 }
 .plan-option-top > span {
-  font-size: 11px;
-  color: var(--color-brand-600);
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-brand-50, #e8f7f2);
+  color: var(--color-brand-700, #00584d);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
 }
-.plan-option > p {
-  grid-column: 2;
+.plan-option-meta {
+  grid-column: 1;
   grid-row: 2;
   color: var(--color-slate-soft);
-  font-size: 12px !important;
-  line-height: 1.5;
+  font-size: 14px !important;
+  line-height: 1.45;
 }
 .plan-option-spec {
-  grid-column: 3;
+  grid-column: 2;
   grid-row: 1/3;
   display: flex;
-  align-items: flex-end;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
   min-width: 0;
 }
-.plan-option-spec > span {
-  font-size: 13px;
-  color: var(--color-slate-soft);
-}
 .plan-option-spec > strong {
-  font-size: 20px;
+  font-size: 21px;
   white-space: nowrap;
   letter-spacing: -0.03em;
 }
-.plan-option > p:last-child {
-  grid-column: 2/-1;
+.plan-option-note {
+  grid-column: 1/-1;
   grid-row: 3;
+  color: var(--color-slate-soft);
+  font-size: 13px !important;
 }
 .plan-summary {
   position: sticky;
@@ -2806,9 +2825,8 @@ h4 {
   .destination-photo:after {
     background: linear-gradient(180deg, #0f273b, transparent 65%);
   }
-  .destination-photo.is-globe {
-    display: none;
-  }
+  /* The chips go under the sentence rather than beside it: on a phone the two
+     together are wider than the screen. */
   .plan-picker-toolbar {
     align-items: stretch;
     flex-direction: column;
@@ -2817,49 +2835,37 @@ h4 {
   .plan-picker-toolbar > p {
     font-size: 16px;
   }
-  .plan-picker-toolbar label {
-    justify-content: space-between;
-    white-space: normal;
-    font-size: 13px;
-  }
-  .plan-picker-toolbar select {
-    min-height: 48px;
-    font-size: 16px;
-    max-width: 50%;
+  .plan-picker-toolbar .dst-filter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
   .plan-layout {
     gap: 24px;
   }
   .plan-option {
-    grid-template-columns: 20px minmax(0, 1fr) minmax(90px, auto);
-    gap: 7px 12px;
-    padding: 20px 16px;
-    min-height: 128px;
-    border-radius: 18px;
-  }
-  .plan-option:has(input:checked) {
-    padding: 19px 15px;
+    gap: 3px 14px;
+    padding: 16px 18px;
+    min-height: 84px;
+    border-radius: 16px;
   }
   .plan-option-top {
-    gap: 4px 8px;
+    gap: 3px 10px;
   }
   .plan-option-top > strong {
-    font-size: 22px;
+    font-size: 23px;
   }
-  .plan-option-top > span {
-    font-size: 10px;
-  }
-  .plan-option > p {
-    font-size: 11px !important;
-    overflow-wrap: anywhere;
-  }
-  .plan-option-spec > span {
-    font-size: 11px;
+  /* 11px was the smallest text on the page and it carried the two facts a
+     tariff is chosen on — how long it lasts and what network it uses. */
+  .plan-option-meta {
+    font-size: 13.5px !important;
   }
   .plan-option-spec > strong {
-    font-size: 17px;
-    white-space: normal;
-    text-align: right;
+    font-size: 19px;
+  }
+  .plan-option-mark {
+    top: 12px;
+    right: 12px;
   }
   .plan-summary {
     padding: 26px;
@@ -3315,21 +3321,17 @@ h4 {
     inset: auto 12px 16px;
   }
   .plan-option {
-    grid-template-columns: 18px minmax(0, 1fr) 94px;
-    gap: 6px 10px;
-    padding: 18px 12px;
-  }
-  .plan-option:has(input:checked) {
-    padding: 17px 11px;
+    gap: 3px 10px;
+    padding: 14px 14px;
   }
   .plan-option-top > strong {
-    font-size: 19px;
+    font-size: 21px;
   }
   .plan-option-spec > strong {
-    font-size: 15px;
+    font-size: 17px;
   }
-  .plan-option > p {
-    font-size: 10px !important;
+  .plan-option-meta {
+    font-size: 13px !important;
   }
   .destination-intro > div:first-child {
     padding: 24px 20px;

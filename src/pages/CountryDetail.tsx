@@ -165,7 +165,7 @@ export default function CountryDetail() {
         <ArrowLeft size={16} /> {t('country.backToAll')}
       </Link>
 
-      <div className="destination-intro">
+      <div className={"destination-intro" + (photo ? "" : " is-plain")}>
         <div>
           <div className="destination-title">
             <Flag iso2={country.iso2} alt="" />
@@ -183,11 +183,15 @@ export default function CountryDetail() {
         </div>
         {/* The photograph is the subject of this heading, not decoration
             behind it, so it keeps its alt text — "Istanbul" tells a screen
-            reader something the country name beside it does not. Destinations
-            we have no photograph of fall back to the still globe, which is what
-            `is-globe` restyles: contained rather than cropped, and no scrim. */}
-        <div className={'destination-photo' + (photo ? '' : ' is-globe')}>
-          {photo ? (
+            reader something the country name beside it does not.
+            
+            A destination we have no photograph of gets no picture at all. It
+            used to get a globe: the same still of Europe and Africa on all one
+            hundred and ninety of them, including Australia, where it showed
+            the wrong half of the planet. A generic image is not neutral — it
+            says this page had nothing specific to show. */}
+        {photo && (
+          <div className="destination-photo">
             <Photo
               name={photo.name}
               alt={photo.place}
@@ -196,10 +200,8 @@ export default function CountryDetail() {
               sizes="(min-width: 1024px) 560px, 56vw"
               priority
             />
-          ) : (
-            <img src="/hero-globe@2x.webp" alt="" width={512} height={512} />
-          )}
-        </div>
+          </div>
+        )}
       </div>
       <h2>{c.planTitle}</h2>
       <PlanPicker key={country.slug} plans={country.plans} onAdd={handleAdd} added={added} />
