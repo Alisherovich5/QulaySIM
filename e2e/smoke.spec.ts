@@ -482,8 +482,12 @@ test('choosing a plan goes straight to the cart', async ({ page }) => {
   await page.goto('/destinations/vietnam')
 
   // Tapping the row itself is the whole interaction — no second control below
-  // the fold, which on a phone is where the button used to be.
-  await page.locator('.plan-option input[type=radio]').nth(1).click()
+  // the fold, which on a phone is where the button used to be. The row, not the
+  // radio inside it: the dial is no longer drawn, because a control promising a
+  // second step on a row that buys was telling the truth about nothing. It is
+  // still there for the keyboard, one pixel wide and transparent, which is
+  // exactly what a click cannot reach.
+  await page.locator('.plan-option').nth(1).click()
   await expect(page).toHaveURL(/checkout/)
 
   // And the plan that arrives is the one that was tapped, not the one that
