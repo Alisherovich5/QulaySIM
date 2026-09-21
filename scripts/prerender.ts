@@ -809,6 +809,9 @@ function metaForCountry(
   country: ApiCountry,
   lang: SeoLang,
   facts: DestinationFacts | undefined,
+  /** Every sellable plan for this destination, from the detail body the build
+   *  already fetched. Absent only when that request failed. */
+  plans: Plan[] | undefined,
 ): PageMeta {
   const s = STRINGS[lang].seo
   const path = `/destinations/${country.slug}`
@@ -848,16 +851,28 @@ function metaForCountry(
       return out.length ? out : undefined
     })(),
     jsonLd: [
-      // The list endpoint gives only the cheapest plan, so the baked product
-      // carries one offer rather than the full range. React fills in the real
-      // aggregate once it mounts; a crawler gets a true "from" price either
-      // way, which is the number that shows in a result.
+      // The whole price range, from the same plans the page bakes into its
+      // body. It used to carry one offer, because the LIST endpoint returns
+      // only a starting price — but the DETAIL body is already in hand here,
+      // and the page it renders shows seven prices. So the markup said
+      // "offerCount: 1, $1.00 to $1.00" beside a description reading "7 tariffs
+      // from $1.00": a shopping agent comparing destinations saw a single
+      // dollar plan, and the page contradicted itself in its own head.
+      //
+      // The fallback is the old single price, for a destination whose detail
+      // request failed — a true "from" price still beats no product at all.
       destinationLd(
         s.countryProductName.replace('{{country}}', country.name),
         description,
         path,
         lang,
-        [{ name: country.name, price: country.starting_price ?? 0, currency: 'USD' }],
+        plans && plans.length
+          ? plans.map((plan) => ({
+              name: plan.title,
+              price: plan.price_usd,
+              currency: 'USD',
+            }))
+          : [{ name: country.name, price: country.starting_price ?? 0, currency: 'USD' }],
         geoFor(country.iso2),
       ),
       breadcrumbLd(
@@ -983,8 +998,13 @@ export function prerender(): Plugin {
         }
         pages.push(...regionPages(catalogue, lang))
         for (const country of catalogue) {
-          const meta = metaForCountry(country, lang, facts.get(country.slug))
           const detail = details.get(country.slug)
+          const meta = metaForCountry(
+            country,
+            lang,
+            facts.get(country.slug),
+            (detail?.plans as Plan[] | undefined) ?? undefined,
+          )
           if (detail) {
             // The numbers come from the shared single-language fetch; the name
             // comes from this language's catalogue, because it is the only

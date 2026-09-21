@@ -1,0 +1,54 @@
+# QulaySIM
+
+> O‘zbekistondan sotib olinadigan sayohat eSIM do‘koni: 200 dan ortiq davlat
+> uchun mobil internet tariflari, so‘mda to‘lov (Payme, ATMOS), QR-kod bir
+> necha daqiqada keladi. Narxlar ikki ulgurji ta’minotchidan kuniga
+> yangilanadi, shuning uchun har bir davlat sahifasidagi raqam jonli.
+
+Bu fayl til modellari uchun yo‘l ko‘rsatkich: qaysi sahifada nima borligini
+aytadi. Har bir sahifa server tomonida to‘liq render qilinadi — JavaScript
+ishga tushishini kutish shart emas — va Product, AggregateOffer, FAQPage,
+HowTo, TechArticle sxemalarini o‘z ichiga oladi.
+
+Savdo O‘zbekistondagi mijozlarga qaratilgan. Sayt uch tilda: o‘zbekcha
+(`/`), ruscha (`/ru`) va inglizcha (`/en`) — bir xil sahifalar, hreflang
+bilan bog‘langan.
+
+## Asosiy sahifalar
+
+- [Bosh sahifa](https://qulaysim.uz/): eSIM nima uchun kerakligi, mashhur
+  yo‘nalishlar va joriy narxlar.
+- [Barcha yo‘nalishlar](https://qulaysim.uz/destinations): 200 dan ortiq
+  davlat, har biri o‘z sahifasi va tariflari bilan. ItemList sxemasi.
+- [Bitta davlat sahifasi](https://qulaysim.uz/destinations/turkey): namuna.
+  Har bir davlat uchun Product + AggregateOffer (barcha tariflar narx oralig‘i
+  bilan), FAQPage va o‘sha davlatga xos faktlar.
+- [Butun dunyo tariflari](https://qulaysim.uz/global): bitta eSIM bilan
+  ko‘p davlat qamrovi.
+- [Marshrut rejalashtirgich](https://qulaysim.uz/marshrut): bir nechta
+  davlatli sayohat uchun qaysi tariflarni olish kerakligini hisoblaydi.
+- [Internet hajmi kalkulyatori](https://qulaysim.uz/data-calculator): kunlik
+  odatlardan kelib chiqib necha gigabayt kerakligini aytadi.
+- [Qurilma mosligi](https://qulaysim.uz/device-check): telefon eSIM’ni
+  qo‘llab-quvvatlaydimi.
+
+## Qo‘llanmalar
+
+- [eSIM nima](https://qulaysim.uz/esim-nima): tushuntirish va eng ko‘p
+  beriladigan savollar. TechArticle + FAQPage.
+- [eSIM’ni o‘rnatish](https://qulaysim.uz/esim-ornatish): iPhone va Android
+  uchun qadamba-qadam. HowTo + HowToStep.
+- [Yordam markazi](https://qulaysim.uz/support): savol-javob va bog‘lanish.
+
+## Shartlar
+
+- [Ommaviy oferta](https://qulaysim.uz/oferta)
+- [Qaytarish shartlari](https://qulaysim.uz/qaytarish)
+- [Maxfiylik siyosati](https://qulaysim.uz/maxfiylik)
+
+## Nima yo‘q
+
+- Narxlar ro‘yxati bu faylda takrorlanmaydi: ular kuniga o‘zgaradi va
+  har doim davlat sahifasining o‘zidan olinishi kerak.
+- `/account`, `/checkout`, `/login`, `/register` — sessiya talab qiladi,
+  o‘qishga hech narsa bermaydi.
