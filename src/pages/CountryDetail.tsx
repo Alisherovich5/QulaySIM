@@ -67,7 +67,14 @@ export default function CountryDetail() {
     // choosing — from the bottom of the screen, where the thumb already is.
   }
 
-  if (loading) {
+  // Only when there is nothing to show. The seed above already holds this
+  // country's plans — they were baked into the HTML by the build — and
+  // returning early on `loading` threw them away: the page rendered a one-line
+  // "loading plans" for ~700 ms and then grew to five thousand pixels, which
+  // measured as a cumulative layout shift of 0.73 on every destination page.
+  // The threshold for "good" is 0.1, and destination pages are what search
+  // sends people to.
+  if (loading && !country) {
     return <div className="container-page py-16 text-slate-soft">{t('country.loadingPlans')}</div>
   }
   if (!country) {

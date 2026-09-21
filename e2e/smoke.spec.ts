@@ -585,3 +585,48 @@ test('a paid order moves to the eSIMs without the customer closing anything', as
   // Nothing is closed, nothing is tapped: the page moves on its own.
   await expect(page).toHaveURL(/\/account/, { timeout: 30000 })
 })
+
+/**
+ * A destination page must not throw away the prices the build baked into it.
+ *
+ * The page seeds itself from a `__DATA__` block so the tariffs are on screen in
+ * the first frame. It also returned early while `loading` was true — which is
+ * every first render, seed or no seed — so it drew a one-line "loading plans",
+ * waited for the network, then grew to five thousand pixels. Cumulative layout
+ * shift measured 0.73 on every destination page; 0.1 is the threshold for
+ * "good", and destination pages are what search sends people to.
+ *
+ * The API is delayed deliberately. With the regression back, nothing but the
+ * loading line is on screen for those two seconds.
+ */
+test('a destination shows its baked prices before the API answers', async ({ page }) => {
+  await page.route('**/api/countries/turkey*', async (route) => {
+    await new Promise((r) => setTimeout(r, 2000))
+    await route.fulfill({
+      status: 200,
+      json: { ...COUNTRIES[0], plans: PLANS },
+    })
+  })
+
+  await page.goto('/destinations/turkey')
+
+  // Before the delayed answer: the country and its tariffs, from the page itself.
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Turkiya', { timeout: 1500 })
+  await expect(page.getByText(/1 GB/).first()).toBeVisible({ timeout: 1500 })
+
+  const shift = await page.evaluate(
+    () =>
+      new Promise<number>((resolve) => {
+        let total = 0
+        new PerformanceObserver((list) => {
+          for (const entry of list.getEntries() as PerformanceEntry[] &
+            { hadRecentInput?: boolean; value?: number }[]) {
+            if (!entry.hadRecentInput) total += entry.value ?? 0
+          }
+        }).observe({ type: 'layout-shift', buffered: true })
+        setTimeout(() => resolve(total), 3000)
+      }),
+  )
+  // 0.1 is Google's "good". The regression measured 0.73.
+  expect(shift).toBeLessThan(0.1)
+})
