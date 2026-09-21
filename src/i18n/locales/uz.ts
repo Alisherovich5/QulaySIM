@@ -724,7 +724,7 @@ const uz: Translation = {
     globalPageTitle: 'Global eSIM — bir tarif, ko‘p davlat',
     globalPageDescription:
       'Bir marta sotib oling va yo‘lingizdagi hamma davlatda ishlatavering. Qamrov ro‘yxati va narxlar sahifada.',
-    homeTitle: 'Sayohat uchun eSIM — 200+ davlatda internet',
+    homeTitle: 'eSIM O‘zbekistondan — 200+ davlatga internet',
     homeDescription:
       'Sayohat uchun eSIM’ni bir necha daqiqada oling. Manzilingizga tarif tanlang, QR-kodni skanerlang va yetib borganingizda darhol ulaning — roaming hisobisiz, SIM almashtirmasdan.',
     destinationsTitle: 'eSIM yo‘nalishlari — 200+ davlat tariflari',

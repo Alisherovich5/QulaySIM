@@ -733,7 +733,7 @@ const en = {
     globalPageTitle: 'Global eSIM — one plan, many countries',
     globalPageDescription:
       'Buy once and use it in every country on your route. Coverage list and prices on the page.',
-    homeTitle: 'eSIM for travel — data in 200+ countries',
+    homeTitle: 'eSIM from Uzbekistan — data in 200+ countries',
     homeDescription:
       'Buy a travel eSIM in minutes. Pick a plan for your destination, scan the QR code and land connected — no roaming bills, no SIM swap, no queue at the airport.',
     destinationsTitle: 'eSIM destinations — plans for 200+ countries',
