@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Check } from 'lucide-react'
+import { Check, Globe, Layers, Tag } from 'lucide-react'
 import Seo from '../components/Seo'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd } from '../lib/structured-data'
@@ -113,67 +113,91 @@ export default function Global() {
         jsonLd={breadcrumbLd([{ name: t('global.title'), path: '/global' }], lang)}
       />
 
-      {/* Hero.
-          What was here: a green ball drawn in CSS with five flag pills floating
-          around it. The owner's word for it was "aldov" — a prop. It said
-          nothing true: the ball was not a map, the five countries were picked
-          because they fit the layout, and the "+200" was decoration.
-          
-          What replaces it is the same claim made with evidence. The flags are
-          the actual coverage list of the widest plan we sell, read from the
-          API, and the count beside them is that list's real length. If a
-          supplier drops thirty countries tomorrow, this strip shrinks —
-          which is exactly the property a prop does not have. */}
-      {/* The hero, rebuilt around the question people arrive with.
+      {/* The hero, laid out the way the decision is made.
        *
-       * It used to be text on the left and, on the right, twenty-four flags out
-       * of a hundred and sixty-seven under a line admitting the rest were not
-       * shown. A visitor could not tell from it whether their own stop was
-       * included, which is the only thing the page is for. The flags are gone
-       * and the same coverage list drives a control that answers.
+       * Two columns rather than one centred stack: the left half carries the
+       * claim, the numbers behind it and the control that answers "is my stop
+       * included?", and the right half carries the product. A centred column
+       * put the search — the only thing on this page a visitor can act on —
+       * below the fold on a laptop.
        *
-       * One centred column rather than two: the numbers and the check are the
-       * content, and splitting them across a grid put the weakest material in
-       * the larger half. */}
+       * Every figure is still read from the catalogue, so the page cannot
+       * promise more countries or a lower price than we actually sell. */}
       <section className="gl-hero">
-        {widest.length > 0 && <p className="gl-eyebrow">{t('global.eyebrow', { count: widest.length })}</p>}
-        <h1>{t('global.title')}</h1>
-        <p className="gl-lead">{t('global.lead')}</p>
+        <div className="gl-hero-copy">
+          {/* Two lines, two colours, and the full sentence still one heading
+              for anything that reads the page aloud. The stops sit outside the
+              translated strings because they are punctuation, not words —
+              which is also what lets them carry their own colour. */}
+          <h1 className="gl-title">
+            <span className="gl-title-line">
+              {t('global.titleLead')}
+              <span className="gl-title-dot">.</span>
+            </span>
+            <span className="gl-title-line is-accent">
+              {t('global.titleTrail')}
+              <span className="gl-title-dot">.</span>
+            </span>
+          </h1>
+          <p className="gl-lead">{t('global.lead', { count: widest.length })}</p>
 
-        {/* Numbers, not adjectives — every one computed from what the catalogue
-            actually holds, so the page cannot promise more than it sells. */}
-        <dl className="gl-figures">
-          <div>
-            <dd>{widest.length}</dd>
-            <dt>{t('global.statCountries')}</dt>
-          </div>
-          <div>
-            <dd>{detail?.plans.length ?? 0}</dd>
-            <dt>{t('global.statPlans')}</dt>
-          </div>
-          {cheapest != null && (
+          {/* Numbers, not adjectives — every one computed from what the
+              catalogue actually holds. */}
+          <dl className="gl-figures">
             <div>
-              <dd>{formatPrice(cheapest)}</dd>
-              <dt>{t('global.fromPrice')}</dt>
+              <Globe size={22} strokeWidth={1.75} aria-hidden />
+              <dd>{widest.length}</dd>
+              <dt>{t('global.statCountries')}</dt>
             </div>
-          )}
-        </dl>
+            <div>
+              <Layers size={22} strokeWidth={1.75} aria-hidden />
+              <dd>{detail?.plans.length ?? 0}</dd>
+              <dt>{t('global.statPlans')}</dt>
+            </div>
+            {cheapest != null && (
+              <div>
+                <Tag size={22} strokeWidth={1.75} aria-hidden />
+                <dd>{formatPrice(cheapest)}</dd>
+                <dt>{t('global.fromPrice')}</dt>
+              </div>
+            )}
+          </dl>
 
+        </div>
+
+        {/* Outside the copy column on purpose: on a wide screen the search runs
+            under both halves, which is where the design puts it and where a
+            wide field belongs. Between copy and art in the DOM so that on a
+            phone it comes before the illustration — it is the one thing on
+            this page a visitor can act on. */}
         <CoverageCheck
           covered={widest}
           countries={countries}
           plans={detail?.plans ?? []}
           onPick={setPicked}
         />
-        <p className="gl-check-hint">{t('global.checkHint')}</p>
+
+        {/* One finished illustration, not a scene assembled in the browser.
+            Width and height are on the tag so the column reserves its box
+            before the file arrives — this hero is the largest paint on the
+            page, and without them it lands by pushing the search down. */}
+        <div className="gl-hero-art">
+          <picture>
+            <source srcSet="/global-esim-phone.webp" type="image/webp" />
+            <img
+              src="/global-esim-phone.png"
+              alt=""
+              width={1374}
+              height={1145}
+              fetchPriority="high"
+              decoding="async"
+            />
+          </picture>
+        </div>
       </section>
 
-      {/* The plans */}
-      <h2 id="plans" className="mt-12 scroll-mt-24 text-xl font-700 sm:text-2xl">
-        {t('global.plansTitle')}
-      </h2>
-      <p className="mt-1.5 text-sm text-slate-soft">{t('global.plansSubtitle')}</p>
-
+      {/* The plans. The title travels with the control bar rather than sitting
+          above it — see the `heading` prop. */}
       {detail && detail.plans.length > 0 ? (
         <GlobalPlanExplorer
           plans={detail.plans}
@@ -181,9 +205,20 @@ export default function Global() {
           added={added}
           countries={countries}
           pickedCountry={picked}
+          heading={
+            <h2 id="plans" className="gl-plans-title">
+              {t('global.plansTitle')}
+            </h2>
+          }
+          note={<p className="gl-plans-note">{t('global.plansSubtitle')}</p>}
         />
       ) : (
-        <Card className="mt-6 p-6 text-sm text-slate-soft">{t('global.plansEmpty')}</Card>
+        <>
+          <h2 id="plans" className="mt-12 scroll-mt-24 text-xl font-700 sm:text-2xl">
+            {t('global.plansTitle')}
+          </h2>
+          <Card className="mt-6 p-6 text-sm text-slate-soft">{t('global.plansEmpty')}</Card>
+        </>
       )}
 
       {/* The cheaper alternative, said plainly. A customer going only around

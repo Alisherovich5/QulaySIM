@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Check, ChevronDown, Globe2, Search, X } from 'lucide-react'
 import PlanCard from '../PlanCard'
@@ -45,6 +46,16 @@ interface Props {
    *  plans below, and this control still works on its own for anybody who
    *  scrolled straight to it. */
   pickedCountry?: { iso2: string; name: string } | null
+  /** The section's own title, rendered inside the control bar.
+   *
+   *  It sits here rather than above because the bar is sticky: a heading left
+   *  behind at the top of the section stops naming the controls the moment you
+   *  scroll, and the row then reads as three unlabelled dropdowns. */
+  heading?: ReactNode
+  /** The line under the bar. Kept out of `heading` so the sticky bar stays one
+   *  row tall — a two-line explainer travelling down the page with the
+   *  controls costs more room than it is worth. */
+  note?: ReactNode
 }
 
 type Sort = 'price' | 'data' | 'coverage'
@@ -66,16 +77,29 @@ const fold = (value: string) =>
     .toLowerCase()
     .trim()
 
-export default function GlobalPlanExplorer({ plans, onAdd, added, countries, pickedCountry }: Props) {
+export default function GlobalPlanExplorer({
+  plans,
+  onAdd,
+  added,
+  countries,
+  pickedCountry,
+  heading,
+  note,
+}: Props) {
   const { t, i18n } = useTranslation()
   const [sizes, setSizes] = useState<Set<number>>(new Set())
   const [durations, setDurations] = useState<Set<string>>(new Set())
   const [country, setCountry] = useState<{ iso2: string; name: string } | null>(null)
 
-  /* Follows the hero's answer when there is one, and is otherwise left alone —
-     clearing it here must not be undone by a stale pick from above. */
+  /* Follows the hero's answer, including when that answer is withdrawn.
+   *
+   * The guard here used to be `if (pickedCountry)`, which let a country in but
+   * never let one out: clearing the hero search left the plans still filtered
+   * to it, with only the chip in this bar to say why the list was short. The
+   * effect runs on a change of the pick, so a country chosen with the control
+   * in this bar is not disturbed by it. */
   useEffect(() => {
-    if (pickedCountry) setCountry(pickedCountry)
+    setCountry(pickedCountry ?? null)
   }, [pickedCountry])
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<Sort>('price')
@@ -207,6 +231,7 @@ export default function GlobalPlanExplorer({ plans, onAdd, added, countries, pic
         className="sticky top-[var(--header-h,104px)] z-40 -mx-4 mt-6 border-y border-line bg-canvas/95 px-4 py-3 backdrop-blur-md sm:mx-0 sm:rounded-xl sm:border sm:px-4"
       >
         <div className="flex flex-wrap items-center gap-2">
+          {heading}
           {/* Search, with real suggestions. Typing used to be answered with
               silence: a name that matched nothing left the list unchanged, and
               there was no way to tell "not covered" from "spelled differently". */}
@@ -411,6 +436,8 @@ export default function GlobalPlanExplorer({ plans, onAdd, added, countries, pic
           </div>
         )}
       </div>
+
+      {note}
 
       {!dirty && (
         <p className="mt-4 text-sm tabular-nums text-slate-soft">

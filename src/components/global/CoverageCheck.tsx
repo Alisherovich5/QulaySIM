@@ -83,8 +83,22 @@ export default function CoverageCheck({
 
   return (
     <div className="gl-check">
-      <label className="gl-check-field">
-        <Search size={18} aria-hidden />
+      {/* A real form, so the keyboard behaves the way a search box promises:
+          Enter answers with the best match instead of doing nothing. It was a
+          list you could only reach with the mouse. */}
+      <form
+        className="gl-check-field"
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault()
+          const first = matches[0]
+          if (!first) return
+          setPicked(first)
+          setQuery(first.name)
+          onPick({ iso2: first.iso2.toUpperCase(), name: first.name })
+        }}
+      >
+        <Search size={20} aria-hidden />
         <input
           type="search"
           value={query}
@@ -109,7 +123,17 @@ export default function CoverageCheck({
             <X size={16} aria-hidden />
           </button>
         )}
-      </label>
+        {/* The fill comes from `bg-brand-600`, not the token: in the dark theme
+            the token carries the TEXT green, and the fill is pinned by a rule in
+            travel-palette.css that only matches the class. */}
+        <button
+          type="submit"
+          className="gl-check-go focus-ring bg-brand-600 hover:bg-brand-700"
+          aria-label={t('global.searchSubmit')}
+        >
+          <Search size={20} aria-hidden />
+        </button>
+      </form>
 
       {!picked && matches.length > 0 && (
         <ul className="gl-check-list">

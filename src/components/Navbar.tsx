@@ -62,9 +62,15 @@ export default function Navbar() {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
+  /* The active page wears a tinted pill rather than only a colour: on a header
+     of five same-sized links, colour alone was not enough to find where you
+     are. The padding sits on every link, not just the active one, so arriving
+     on a page does not shift the row sideways. */
   const linkClass = ({ isActive }: { isActive: boolean }) =>
-    `inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-600 transition-colors ${
-      isActive ? 'text-brand-600' : 'text-slate-soft hover:text-ink'
+    `inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-sm font-600 transition-colors ${
+      isActive
+        ? 'bg-brand-50 text-brand-700 dark:bg-brand-800/40 dark:text-accent-400'
+        : 'text-slate-soft hover:bg-mist hover:text-ink'
     }`
 
   return (

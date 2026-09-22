@@ -198,6 +198,42 @@ test('the worldwide filter narrows by country', async ({ page }) => {
   await expect(page.getByText(/2 tarifdan 1 tasi/)).toBeVisible()
 })
 
+test('the worldwide search answers the keyboard, and ignores an empty one', async ({ page }) => {
+  // The hero search looks like every search box on the web, so Enter has to
+  // mean what it means everywhere else. It used to mean nothing: the answer
+  // was reachable only by clicking a suggestion with the mouse.
+  await page.route('**/api/regions/global*', (route) =>
+    route.fulfill({
+      json: {
+        id: 8,
+        name: 'Global',
+        slug: 'global',
+        country_count: 0,
+        starting_price: 10.5,
+        plans: [
+          { ...PLANS[0], id: 20, scope: 'global', title: 'Global 3 GB · 30 days', coverage: ['TR', 'GE'] },
+          { ...PLANS[1], id: 21, scope: 'global', title: 'Global 10 GB · 30 days', coverage: ['GE'] },
+        ],
+      },
+    }),
+  )
+  await page.goto('/global')
+  await expect(page.getByText(/2 tarifdan 2 tasi/)).toBeVisible()
+
+  // Enter alone, no suggestion clicked.
+  await page.locator('.gl-check-field input').fill('Turkiya')
+  await page.locator('.gl-check-field input').press('Enter')
+  await expect(page.locator('.gl-check-answer.is-yes')).toBeVisible()
+  await expect(page.getByText(/2 tarifdan 1 tasi/)).toBeVisible()
+
+  // An empty search submits nothing: a bare Enter must not reload the page or
+  // throw away the list, which is what a form does when nobody stops it.
+  await page.locator('.gl-check-clear').click()
+  await page.locator('.gl-check-field input').press('Enter')
+  await expect(page).toHaveURL(/\/global$/)
+  await expect(page.getByText(/2 tarifdan 2 tasi/)).toBeVisible()
+})
+
 test('the region filter never offers a region that empties the page', async ({ page }) => {
   // What "the countries disappeared" turned out to mean: the worldwide region
   // holds plans rather than countries, so picking it filtered the catalogue down

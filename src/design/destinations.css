@@ -466,68 +466,208 @@
    --------------------------------------------------------------------------- */
 
 .gl-hero {
-  max-width: 44rem;
-  margin: 8px auto 0;
-  text-align: center;
+  position: relative;
+  display: grid;
+  gap: 28px;
+  margin-top: 8px;
 }
 
-.gl-eyebrow {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-brand-600, #007365);
+/* The mint light behind the hero.
+ *
+ * It runs the full width of the viewport rather than the page container: the
+ * design puts the light behind the phone, and stopping it at the container
+ * edge drew a visible seam down both sides. `body` already carries
+ * `overflow-x: clip`, so the 100vw width costs no horizontal scrollbar. */
+.gl-hero::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -64px;
+  bottom: -60px;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(46% 56% at 76% 38%, var(--gl-glow-near), transparent 70%),
+    radial-gradient(44% 52% at 16% 24%, var(--gl-glow-far), transparent 74%),
+    var(--gl-hero-base);
+  /* Faded out before the plans start, so the light belongs to the hero rather
+     than tinting the whole page — the rest of the site keeps its own canvas. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  pointer-events: none;
 }
 
-:root.dark .gl-eyebrow {
+/* Kept as tokens rather than literals inside the gradient so the dark theme
+   can dim the same light instead of inheriting a wash mixed for white. */
+/* The page paints its own ground.
+ *
+ * The site canvas is a cool near-white that reads grey beside the mint light,
+ * and the design asks for white. Scoped here rather than changed on the token,
+ * which every other page shares. */
+.qs-global {
+  position: relative;
+  /* Painted on the element rather than a pseudo-element behind it: `main`
+     carries the canvas colour, and a negative z-index child paints behind
+     that, so the white never showed. The spread shadow carries the same
+     colour out to the viewport edges, and the clip keeps it from becoming
+     horizontal scroll — vertical stays tight so the header and footer keep
+     their own ground. */
+  background: var(--gl-page-base);
+  box-shadow: 0 0 0 100vmax var(--gl-page-base);
+  /* 24px up: `main` carries that much margin under the header, and leaving it
+     the canvas colour drew a grey band across the top of a white page. */
+  clip-path: inset(-24px -100vmax 0);
+}
+
+.qs-global {
+  --gl-page-base: #ffffff;
+  --gl-hero-base: #ffffff;
+  --gl-glow-near: rgb(148 216 205 / 0.34);
+  --gl-glow-far: rgb(193 232 226 / 0.3);
+}
+
+:root.dark .qs-global {
+  /* No white base in the dark theme: the page canvas already is the ground,
+     and painting one here would put a pale slab behind the hero. */
+  --gl-page-base: transparent;
+  --gl-hero-base: transparent;
+  --gl-glow-near: rgb(26 162 142 / 0.15);
+  --gl-glow-far: rgb(0 142 124 / 0.1);
+}
+
+@media (min-width: 900px) {
+  .gl-hero {
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    grid-template-areas:
+      'copy art'
+      'search search';
+    align-items: center;
+    gap: 4px 16px;
+    margin-top: 20px;
+    margin-bottom: 48px;
+  }
+
+  .gl-hero-copy {
+    grid-area: copy;
+  }
+
+  .gl-hero-art {
+    grid-area: art;
+  }
+
+  .gl-hero > .gl-check {
+    grid-area: search;
+    max-width: 62rem;
+  }
+}
+
+.gl-hero-copy {
+  min-width: 0;
+}
+
+/* --- The illustration --- */
+
+.gl-hero-art {
+  min-width: 0;
+  justify-self: center;
+}
+
+.gl-hero-art img {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  /* The ring and the phone's corners run to the edges of the file, so the box
+     must never crop: `contain` keeps the whole illustration whatever the
+     column does. */
+  object-fit: contain;
+}
+
+@media (min-width: 900px) {
+  .gl-hero-art img {
+    max-width: 620px;
+  }
+}
+
+/* --- The claim --- */
+
+.site-shell .gl-hero h1 {
+  margin: 0;
+  font-size: clamp(2.3rem, 1.1rem + 4.4vw, 5.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.gl-title-line {
+  display: block;
+  color: var(--color-ink);
+}
+
+.gl-title-line.is-accent {
+  color: var(--color-brand-700, #005a4e);
+}
+
+:root.dark .gl-title-line.is-accent {
   color: var(--color-accent-400, #34e3b0);
 }
 
-.site-shell .gl-hero h1 {
-  margin: 12px 0 0;
-  font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3rem);
-  line-height: 1.06;
-  letter-spacing: -0.03em;
+/* The two stops carry the brand colour on both lines, which is what stops the
+   second line reading as a different heading. */
+.gl-title-dot {
+  color: var(--color-brand-400, #1aa28e);
 }
 
-.gl-lead {
-  margin: 14px auto 0;
-  max-width: 34rem;
-  font-size: 16px;
-  line-height: 1.65;
+.site-shell .gl-lead {
+  margin: 22px 0 0;
+  max-width: 30rem;
+  font-size: clamp(1rem, 0.9rem + 0.6vw, 1.6rem);
+  line-height: 1.5;
   color: var(--color-slate-soft);
 }
 
-/* The three numbers, level and equal. They were a wrapped definition list under
-   the lead, where the eye read them as a caption; here they are the fact the
+/* The three numbers, on one line with hairlines between them. Stacked as a
+   value over a label they read as a caption; inline they read as the fact the
    page is making. */
 .gl-figures {
-  display: grid;
-  /* Each column takes the width its own figure needs, rather than a third
-     each. "167" and "20" need very little; "125 999 so'm" needs the rest, and
-     on equal thirds it wrapped and dragged its label a line below the other
-     two. */
-  grid-template-columns: repeat(3, auto);
-  justify-content: space-between;
-  align-items: start;
-  gap: 8px 22px;
-  margin: 26px auto 0;
-  max-width: 30rem;
-  padding: 16px 0;
-  border-top: 1px solid var(--color-line);
-  border-bottom: 1px solid var(--color-line);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+  margin: 38px 0 0;
 }
 
 .gl-figures > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   min-width: 0;
+}
+
+/* The hairline between the figures only exists where all three fit on one
+   line. Flex wrapping cannot tell a separator that it has started a new row,
+   so below this width the divider appeared floating to the left of the third
+   figure; the gap alone separates them there. */
+@media (min-width: 1280px) {
+  .gl-figures > div + div {
+    border-inline-start: 1px solid var(--color-line);
+    padding-inline-start: 20px;
+  }
+}
+
+.gl-figures svg {
+  flex-shrink: 0;
+  color: var(--color-brand-500, #008e7c);
+}
+
+:root.dark .gl-figures svg {
+  color: var(--color-accent-400, #34e3b0);
 }
 
 .gl-figures dd {
   margin: 0;
   font-family: var(--font-display);
-  /* Smaller than it wants to be, so "125 999 so'm" stays on one line where the
-     column allows it. */
-  font-size: clamp(1.25rem, 0.85rem + 1.2vw, 1.7rem);
+  font-size: clamp(1.05rem, 0.9rem + 0.8vw, 1.75rem);
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.02em;
@@ -536,30 +676,39 @@
 }
 
 .gl-figures dt {
-  margin-top: 4px;
-  font-size: 12.5px;
+  font-size: clamp(0.95rem, 0.88rem + 0.45vw, 1.3rem);
   color: var(--color-slate-soft);
 }
+
 
 /* --- The coverage check --- */
 
 .gl-check {
   position: relative;
-  margin: 26px auto 0;
-  max-width: 32rem;
+  margin: 30px 0 0;
+  max-width: 40rem;
   text-align: left;
 }
 
 .gl-check-field {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 56px;
-  padding: 0 14px;
+  gap: 12px;
+  /* Tall enough that the submit button sits inside it with air around it,
+     which is what makes the control read as one object rather than a box with
+     a button stuck on. */
+  height: 64px;
+  padding: 0 8px 0 20px;
   border: 1px solid var(--color-line);
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--color-surface);
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+@media (min-width: 900px) {
+  .gl-check-field {
+    height: 72px;
+  }
 }
 
 .gl-check-field:focus-within {
@@ -577,10 +726,34 @@
   flex: 1;
   border: 0;
   background: transparent;
-  font-size: 16px;
+  font-size: 16.5px;
   color: var(--color-ink);
   outline: none;
 }
+
+.gl-check-field input::placeholder {
+  color: var(--color-slate-soft);
+}
+
+/* The submit. Enter already answers; this is the same answer for a thumb. */
+.gl-check-go {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 64px;
+  height: 48px;
+  border-radius: 14px;
+  color: #fff;
+  transition: background-color 0.18s ease;
+}
+
+@media (min-width: 900px) {
+  .gl-check-go {
+    width: 88px;
+    height: 56px;
+  }
+}
+
 
 .gl-check-field input::-webkit-search-cancel-button {
   display: none;
@@ -714,4 +887,24 @@
   .gl-check-field {
     transition: none;
   }
+}
+
+/* --- The plans section header, inside the sticky control bar --- */
+
+.site-shell .gl-plans-title {
+  margin: 0;
+  margin-inline-end: auto;
+  scroll-margin-top: 6rem;
+  font-size: clamp(1.3rem, 1.05rem + 1vw, 2.05rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.site-shell .gl-plans-note {
+  margin: 14px 0 0;
+  max-width: 62ch;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-slate-soft);
 }
