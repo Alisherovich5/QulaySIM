@@ -68,7 +68,6 @@ import {
   interpolate,
   type DestinationFacts,
 } from '../src/lib/destination-facts'
-import { countryFaq, networkCopy } from '../src/lib/networks-copy'
 import { deviceSummary } from '../src/lib/device-summary'
 import { DEVICE_BRANDS } from '../src/data/esimDevices'
 import { copy as DESIGN_COPY } from '../src/lib/design-copy'
@@ -831,25 +830,6 @@ function metaForCountry(
     geo: geoFor(country.iso2),
     title: s.countryTitle.replace('{{country}}', country.name),
     description,
-    /* The one part of a destination page that no other destination repeats.
-       Baked as well as rendered, because a crawler that only reads the HTML is
-       exactly who this is for: without it these 214 pages are the same 161
-       words with a name swapped, which is what thin content means. */
-    sections: (() => {
-      const nets = networkCopy(country.iso2, country.name, lang)
-      const out: BakedSection[] = []
-      if (nets) {
-        out.push({
-          heading: nets.heading,
-          text: nets.lead,
-          items: nets.operators.map((o) => `${o.name} — ${o.network}`),
-        })
-        out.push({ text: nets.notes.join(' ') })
-      }
-      const qa = countryFaq(country.iso2, country.name, facts, lang)
-      if (qa.length) out.push({ heading: STRINGS[lang].support.faqTitle, qa })
-      return out.length ? out : undefined
-    })(),
     jsonLd: [
       // The whole price range, from the same plans the page bakes into its
       // body. It used to carry one offer, because the LIST endpoint returns
@@ -882,13 +862,6 @@ function metaForCountry(
         ],
         lang,
       ),
-      /* The questions are on the page, so they are allowed to be declared —
-         and a destination FAQ is the cheapest rich result left to win. */
-      ...(() => {
-        const qa = countryFaq(country.iso2, country.name, facts, lang)
-        const ld = faqLd(qa.map((x) => ({ question: x.q, answer: x.a })))
-        return ld ? [ld] : []
-      })(),
     ],
   }
 }
