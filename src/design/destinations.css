@@ -559,10 +559,6 @@
   .gl-hero > .gl-check {
     grid-area: search;
     max-width: 62rem;
-    /* The 30px above is for the phone, where this follows the copy directly and
-       needs the separation. On a wide screen it is a row of its own under a
-       grid that has already left a gap, so the same margin reads as a hole. */
-    margin-top: 0;
   }
 }
 
@@ -590,13 +586,7 @@
 
 @media (min-width: 900px) {
   .gl-hero-art img {
-    /* Sized against the copy beside it, not against the column it can fill.
-       At 620 the illustration ran 112px below the last line of the copy, and
-       because the search sits in a row of its own underneath both halves, that
-       overhang became 146px of blank space between the figures and the one
-       control on the page. The picture is still the largest thing in the hero;
-       it just stops dictating where the search starts. */
-    max-width: 520px;
+    max-width: 620px;
   }
 }
 
