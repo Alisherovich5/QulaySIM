@@ -10,7 +10,6 @@ import { boot } from '../lib/boot'
 import { useCatalogue } from '../lib/useCatalogue'
 import type { Country, Plan, Region, RegionDetail } from '../lib/types'
 import GlobalPlanExplorer from '../components/global/GlobalPlanExplorer'
-import CoverageCheck from '../components/global/CoverageCheck'
 import { Card } from '../components/ui'
 import { useCart } from '../context/CartContext'
 import { useCurrency } from '../context/CurrencyContext'
@@ -46,7 +45,6 @@ export default function Global() {
   // be empty for anyone whose request was lost, on a route where requests are
   // lost in bursts. The fetch below still runs and replaces it.
   const [added, setAdded] = useState<number | null>(null)
-  const [picked, setPicked] = useState<{ iso2: string; name: string } | null>(null)
 
   // Three independent requests: losing the region list should cost a section,
   // not the page. Each keeps what is on screen when its request is lost — the
@@ -165,18 +163,6 @@ export default function Global() {
 
         </div>
 
-        {/* Outside the copy column on purpose: on a wide screen the search runs
-            under both halves, which is where the design puts it and where a
-            wide field belongs. Between copy and art in the DOM so that on a
-            phone it comes before the illustration — it is the one thing on
-            this page a visitor can act on. */}
-        <CoverageCheck
-          covered={widest}
-          countries={countries}
-          plans={detail?.plans ?? []}
-          onPick={setPicked}
-        />
-
         {/* One finished illustration, not a scene assembled in the browser.
             Width and height are on the tag so the column reserves its box
             before the file arrives — this hero is the largest paint on the
@@ -204,7 +190,6 @@ export default function Global() {
           onAdd={handleAdd}
           added={added}
           countries={countries}
-          pickedCountry={picked}
           heading={
             <h2 id="plans" className="gl-plans-title">
               {t('global.plansTitle')}

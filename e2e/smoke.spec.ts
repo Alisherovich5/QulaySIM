@@ -188,10 +188,11 @@ test('the worldwide filter narrows by country', async ({ page }) => {
 
   await expect(page.getByText(/2 tarifdan 2 tasi/)).toBeVisible()
 
-  // The hero's coverage check, which is the page's one country control: picking
-  // a country there filters the plan list below to the same country.
-  await page.locator('.gl-check-field input').fill('Turkiya')
-  await page.locator('.gl-check-list button').first().click()
+  // The filter bar's own search, which is the page's one country control since
+  // the hero stopped carrying a second box asking the same question: picking a
+  // country there filters the plan list to it.
+  await page.getByLabel('Davlat bo\u2018yicha qidirish').fill('Turkiya')
+  await page.getByRole('button', { name: /Turkiya/ }).first().click()
 
   // One plan covers Turkey, the other does not — and the one that does not is
   // removed rather than quietly ranked lower.
@@ -199,9 +200,11 @@ test('the worldwide filter narrows by country', async ({ page }) => {
 })
 
 test('the worldwide search answers the keyboard, and ignores an empty one', async ({ page }) => {
-  // The hero search looks like every search box on the web, so Enter has to
-  // mean what it means everywhere else. It used to mean nothing: the answer
-  // was reachable only by clicking a suggestion with the mouse.
+  // The filter search looks like every search box on the web, so Enter has to
+  // mean what it means everywhere else. It used to mean nothing: the answer was
+  // reachable only by clicking a suggestion with the mouse. The hero once
+  // carried this test; when its search was removed as a duplicate the rule came
+  // here with it, because this is now the only country control on the page.
   await page.route('**/api/regions/global*', (route) =>
     route.fulfill({
       json: {
@@ -221,15 +224,15 @@ test('the worldwide search answers the keyboard, and ignores an empty one', asyn
   await expect(page.getByText(/2 tarifdan 2 tasi/)).toBeVisible()
 
   // Enter alone, no suggestion clicked.
-  await page.locator('.gl-check-field input').fill('Turkiya')
-  await page.locator('.gl-check-field input').press('Enter')
-  await expect(page.locator('.gl-check-answer.is-yes')).toBeVisible()
+  const search = page.getByLabel('Davlat bo\u2018yicha qidirish')
+  await search.fill('Turkiya')
+  await search.press('Enter')
   await expect(page.getByText(/2 tarifdan 1 tasi/)).toBeVisible()
 
   // An empty search submits nothing: a bare Enter must not reload the page or
   // throw away the list, which is what a form does when nobody stops it.
-  await page.locator('.gl-check-clear').click()
-  await page.locator('.gl-check-field input').press('Enter')
+  await page.getByRole('button', { name: /Turkiya/ }).first().click()
+  await search.press('Enter')
   await expect(page).toHaveURL(/\/global$/)
   await expect(page.getByText(/2 tarifdan 2 tasi/)).toBeVisible()
 })

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, ChevronDown, Globe2, Search, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { ArrowRight, Check, ChevronDown, Globe2, Search, X } from 'lucide-react'
 import PlanCard from '../PlanCard'
 import Flag from '../Flag'
 import { Card } from '../ui'
@@ -160,6 +161,25 @@ export default function GlobalPlanExplorer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plans, ours, lang])
 
+  /* One of our own destinations that no worldwide plan reaches.
+   *
+   * The suggestion list is built from `covered`, so a country we sell but do
+   * not cover globally can never appear in it — typing "Kuba" used to fall
+   * through to "no such destination", which is false and unhelpful: we do sell
+   * Cuba, just not on a worldwide plan. The hero used to answer this in its own
+   * search; that search is gone because two boxes asking the same question is
+   * one too many, so the answer moves here rather than being lost with it. */
+  const uncovered = useMemo(() => {
+    const needle = fold(query)
+    if (country || needle.length < 2) return null
+    const reach = new Set(plans.flatMap((p) => p.coverage ?? []).map((c) => c.toUpperCase()))
+    return (
+      countries.find(
+        (c) => c.iso2 && !reach.has(c.iso2.toUpperCase()) && fold(c.name).startsWith(needle),
+      ) ?? null
+    )
+  }, [countries, plans, query, country])
+
   const suggestions = useMemo(() => {
     const needle = fold(query)
     if (needle.length < 2) return []
@@ -248,6 +268,22 @@ export default function GlobalPlanExplorer({
                 setCountry(null)
                 setQuery(e.target.value)
               }}
+              /* Enter takes the first suggestion.
+               *
+               * This box looks like every search box on the web, so Enter has
+               * to mean what it means everywhere else. The hero used to carry
+               * that lesson — its search answered the keyboard because the
+               * answer had been reachable only by mouse — and when the hero
+               * search went, the lesson had to come here rather than leave
+               * with it. This is now the only country control on the page. */
+              onKeyDown={(e) => {
+                if (e.key !== 'Enter') return
+                e.preventDefault()
+                const first = suggestions[0]
+                if (!first) return
+                setCountry(first)
+                setQuery('')
+              }}
               placeholder={t('global.filterCountryPlaceholder')}
               aria-label={t('global.filterCountry')}
               className="focus-ring w-full rounded-lg bg-mist py-2 pl-9 pr-9 text-sm text-ink ring-1 ring-line placeholder:text-slate-soft [&::-webkit-search-cancel-button]:hidden"
@@ -291,9 +327,25 @@ export default function GlobalPlanExplorer({
               </ul>
             )}
             {!country && query.trim().length >= 2 && suggestions.length === 0 && (
-              <p className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl bg-surface px-3 py-2.5 text-xs text-slate-soft shadow-xl ring-1 ring-line">
-                {t('global.filterCountryUnknown')}
-              </p>
+              <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl bg-surface px-3 py-2.5 text-xs text-slate-soft shadow-xl ring-1 ring-line">
+                {uncovered ? (
+                  <>
+                    <p className="font-600 text-ink">
+                      {t('global.checkNo', { country: uncovered.name })}
+                    </p>
+                    <p className="mt-1">{t('global.checkNoHint')}</p>
+                    <Link
+                      to={`/destinations/${uncovered.slug}`}
+                      className="focus-ring mt-2 inline-flex items-center gap-1.5 font-600 text-brand-600 dark:text-accent-400"
+                    >
+                      {t('global.checkNoCta', { country: uncovered.name })}
+                      <ArrowRight size={14} aria-hidden />
+                    </Link>
+                  </>
+                ) : (
+                  t('global.filterCountryUnknown')
+                )}
+              </div>
             )}
           </div>
 
