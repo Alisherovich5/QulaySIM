@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { deviceLabel, type EsimDevice } from '../../data/esimDevices'
 import { CheckExactlyButton, Mark } from './shared'
 import { REVEAL, verdictOf } from './verdictRules'
-import { Button } from '../ui'
+import { Button, PlaneIcon } from '../ui'
 
 /**
  * The answer, and nothing before there is one.
@@ -59,7 +59,7 @@ export default function Verdict({
                     to="/destinations"
                     className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-lg bg-brand-600 px-4 text-[13.5px] font-700 text-white transition-colors hover:bg-brand-700"
                   >
-                    {t('device.yesCta')} <ArrowRight size={16} />
+                    {t('device.yesCta')} <PlaneIcon size={16} />
                   </Link>
                   <CheckExactlyButton onClick={onCheckExactly} />
                 </div>
@@ -139,7 +139,7 @@ export default function Verdict({
                       to="/destinations"
                       className="focus-ring-invert inline-flex min-h-11 items-center gap-2 rounded-lg bg-white px-4 text-[13.5px] font-700 text-brand-700 transition-colors hover:bg-brand-50"
                     >
-                      {t('device.yesCta')} <ArrowRight size={16} />
+                      {t('device.yesCta')} <PlaneIcon size={16} />
                     </Link>
                     <CheckExactlyButton onClick={onCheckExactly} tone="invert" />
                   </div>

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Globe2, PlaneTakeoff, Smartphone, Wallet, Zap } from 'lucide-react'
+import { Globe2, PlaneTakeoff, Smartphone, Wallet, Zap } from 'lucide-react'
 
 import Seo from '../components/Seo'
-import { Button, Card, FaqItem, IconBadge } from '../components/ui'
+import { Button, Card, FaqItem, IconBadge, PlaneIcon } from '../components/ui'
 import DeviceSupport from '../components/guides/DeviceSupport'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd, faqLd, guideArticleLd } from '../lib/structured-data'
@@ -99,7 +99,7 @@ export default function GuideWhatIsEsim() {
                 {t('guides.what.deviceText')}
               </p>
               <Button to="/device-check" variant="ghost" className="mt-4 w-fit px-5 py-2.5">
-                {t('guides.what.deviceBtn')} <ArrowRight size={16} />
+                {t('guides.what.deviceBtn')} <PlaneIcon size={16} />
               </Button>
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function GuideWhatIsEsim() {
           <h2 className="text-2xl font-700">{t('guides.what.ctaTitle')}</h2>
           <p className="mt-2 text-slate-soft">{t('guides.what.ctaText')}</p>
           <Button to="/destinations" className="mx-auto mt-6 w-fit px-7 py-3">
-            {t('guides.what.ctaBtn')} <ArrowRight size={17} />
+            {t('guides.what.ctaBtn')} <PlaneIcon size={17} />
           </Button>
         </Card>
       </div>

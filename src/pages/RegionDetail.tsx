@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { api } from '../lib/api'
@@ -9,7 +9,7 @@ import CountryCard from '../components/CountryCard'
 import PlanPicker from '../components/PlanPicker'
 import Reveal from '../components/Reveal'
 import Seo from '../components/Seo'
-import { Button } from '../components/ui'
+import { Button, PlaneIcon } from '../components/ui'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd, destinationListLd } from '../lib/structured-data'
 import { useCart } from '../context/CartContext'
@@ -195,7 +195,7 @@ export default function RegionDetail() {
 
       <div className="mt-10 flex justify-center">
         <Button to="/destinations" variant="ghost" className="px-6 py-3">
-          {t('seo.regionAllCta')} <ArrowRight size={16} />
+          {t('seo.regionAllCta')} <PlaneIcon size={16} />
         </Button>
       </div>
     </div>

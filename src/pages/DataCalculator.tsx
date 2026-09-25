@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, MapPin, MessageCircle, MonitorPlay, Phone, Smartphone } from 'lucide-react'
+import { MapPin, MessageCircle, MonitorPlay, Phone, Smartphone } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
 import { boot } from '../lib/boot'
@@ -9,6 +9,7 @@ import { estimateData, type Activity } from '../lib/data-estimate'
 import { useDesignCopy } from '../lib/design-copy'
 import type { Country } from '../lib/types'
 import Seo from '../components/Seo'
+import { PlaneIcon } from '../components/ui'
 
 const words = {
   uz: {
@@ -191,7 +192,7 @@ export default function DataCalculator() {
             to={destination ? '/destinations/' + destination : '/destinations'}
           >
             {w.cta}
-            <ArrowRight size={18} />
+            <PlaneIcon size={18} />
           </Link>
           <p className="estimate-note">{w.note}</p>
         </aside>

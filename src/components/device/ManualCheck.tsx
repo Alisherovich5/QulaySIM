@@ -1,12 +1,12 @@
 import { useCallback, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Check, ChevronDown, Copy, X } from 'lucide-react'
+import { Check, ChevronDown, Copy, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { DialPadFigure, IdentifierSheetFigure } from './Figures'
 import { Mark } from './shared'
 import { REVEAL } from './verdictRules'
-import { Button } from '../ui'
+import { Button, PlaneIcon } from '../ui'
 
 /**
  * The method that is certain, kept one tap away.
@@ -103,7 +103,6 @@ function Choice({
     </button>
   )
 }
-
 
 export default function ManualCheck({
   open,
@@ -214,7 +213,7 @@ export default function ManualCheck({
                             to="/destinations"
                             className="focus-ring mt-2.5 inline-flex min-h-10 items-center gap-2 rounded-lg bg-brand-600 px-3.5 text-[13px] font-700 text-white hover:bg-brand-700"
                           >
-                            {t('device.yesCta')} <ArrowRight size={15} />
+                            {t('device.yesCta')} <PlaneIcon size={15} />
                           </Link>
                         ) : (
                           <Button to="/support" variant="ghost" className="mt-2.5 min-h-10 px-3.5 text-[13px]">

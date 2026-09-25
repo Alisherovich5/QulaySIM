@@ -1,20 +1,20 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight } from 'lucide-react'
+
 import { api } from '../lib/api'
 import { boot } from '../lib/boot'
 import { useCatalogue } from '../lib/useCatalogue'
 import type { Plan, RegionDetail } from '../lib/types'
 import PlanCard from './PlanCard'
 import { useCart } from '../context/CartContext'
+import { PlaneIcon } from './ui'
 /* A stable identity for "nothing yet".
  *
  * `?? []` builds a new array on every render, which quietly defeats every
  * useMemo downstream — the filters and sorts below re-run on each keystroke
  * elsewhere in the page. One frozen constant costs nothing and keeps them memoised. */
 const NO_PLANS: Plan[] = []
-
 
 /**
  * Worldwide plans, offered where the customer already is.
@@ -91,7 +91,7 @@ export default function GlobalTeaser({ variant = 'inline', className = '' }: Pro
           to="/global"
           className="focus-ring inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-600 text-brand-600 hover:underline dark:text-accent-400"
         >
-          {t('globalTeaser.all')} <ArrowRight size={15} aria-hidden />
+          {t('globalTeaser.all')} <PlaneIcon size={15} aria-hidden />
         </Link>
       </div>
 

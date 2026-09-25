@@ -3,7 +3,7 @@
 // dependency direction the layers audit exists to stop.
 import './support.css'
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowRight, BookOpen, Send, Smartphone } from 'lucide-react'
+import { BookOpen, Send, Smartphone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -16,6 +16,7 @@ import { api } from '../../lib/api'
 import { faqLd } from '../../lib/structured-data'
 import type { Faq } from '../../lib/types'
 import { CATEGORY_LABELS, categoryRank } from '../../lib/faq-categories'
+import { PlaneIcon } from '../ui'
 
 /**
  * The help centre — the whole of /support, and the same block again at the foot
@@ -137,7 +138,7 @@ export default function SupportBody({
           <div className="sup-card-links">
             <Link to="/device-check">
               {t('support.deviceCta')}
-              <ArrowRight size={17} aria-hidden />
+              <PlaneIcon size={17} aria-hidden />
             </Link>
           </div>
         </SupportActionCard>
@@ -152,12 +153,12 @@ export default function SupportBody({
           <div className="sup-card-links">
             <Link to="/esim-ornatish#iphone">
               iPhone
-              <ArrowRight size={17} aria-hidden />
+              <PlaneIcon size={17} aria-hidden />
             </Link>
             <span className="sup-card-sep" aria-hidden />
             <Link to="/esim-ornatish#android">
               Android
-              <ArrowRight size={17} aria-hidden />
+              <PlaneIcon size={17} aria-hidden />
             </Link>
           </div>
         </SupportActionCard>
@@ -170,7 +171,7 @@ export default function SupportBody({
         >
           <a className="sup-pill focus-ring" href={TELEGRAM} target="_blank" rel="noreferrer">
             {t('support.writeTelegram')}
-            <ArrowRight size={17} aria-hidden />
+            <PlaneIcon size={17} aria-hidden />
           </a>
         </SupportActionCard>
       </section>

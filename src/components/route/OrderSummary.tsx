@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useCurrency } from '../../context/CurrencyContext'
 import { useDialog } from '../../lib/useDialog'
 import type { Country, Plan } from '../../lib/types'
+import { PlaneIcon } from '../ui'
 
 /**
  * What is about to be bought, before anything is bought.
@@ -72,7 +73,7 @@ export default function OrderSummary({ plan, stops, onConfirm, onClose }: Props)
         <div className="rp-sum-actions">
           <button type="button" className="rp-cta" data-dialog-focus onClick={onConfirm}>
             {t('rp.summaryGo')}
-            <ArrowRight size={18} aria-hidden="true" />
+            <PlaneIcon size={18} aria-hidden="true" />
           </button>
           <button type="button" className="rp-ghost" onClick={onClose}>
             {t('rp.summaryCancel')}

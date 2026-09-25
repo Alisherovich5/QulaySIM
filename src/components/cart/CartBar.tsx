@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, ShoppingBag } from 'lucide-react'
+import { ShoppingBag } from 'lucide-react'
 import { useCart } from '../../context/CartContext'
 import { useCurrency } from '../../context/CurrencyContext'
 import './cart-bar.css'
+import { PlaneIcon } from '../ui'
 
 /** Pages where a plan can be chosen — and so where the answer belongs. */
 const BROWSING = [/^\/$/, /^\/destinations/, /^\/global/, /^\/marshrut/]
@@ -68,7 +69,7 @@ export default function CartBar() {
         >
           <ShoppingBag size={16} aria-hidden="true" />
           {t('cartbar.go')}
-          <ArrowRight size={16} aria-hidden="true" />
+          <PlaneIcon size={16} aria-hidden="true" />
         </button>
       </span>
     </div>

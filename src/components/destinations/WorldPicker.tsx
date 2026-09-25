@@ -1,6 +1,6 @@
 import './world-picker.css'
 import { lazy, Suspense, useCallback, useMemo, useState } from 'react'
-import { ArrowRight, BarChart3, ChevronRight, Globe, Map as MapIcon, Minus, Plus, Search } from 'lucide-react'
+import { BarChart3, ChevronRight, Globe, Map as MapIcon, Minus, Plus, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -12,6 +12,7 @@ import { useCurrency } from '../../context/CurrencyContext'
 import { numericFor } from '../../lib/isoNumeric'
 import { CENTROIDS, LAND_PATH, MAP_HEIGHT, MAP_WIDTH } from '../../data/world-map.generated'
 import type { Country, Region } from '../../lib/types'
+import { PlaneIcon } from '../ui'
 
 type Tab = 'countries' | 'regions' | 'global'
 
@@ -220,7 +221,7 @@ export default function WorldPicker({
               a shortlist and the full index is already below it. */}
           <a href="#hammasi" className="wp-all">
             {t('destinations.allCountries')}
-            <ArrowRight size={18} aria-hidden />
+            <PlaneIcon size={18} aria-hidden />
           </a>
         </div>
 

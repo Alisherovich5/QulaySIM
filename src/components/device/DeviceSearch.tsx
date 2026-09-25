@@ -1,11 +1,12 @@
 import { useMemo, useRef, useState } from 'react'
-import { ArrowRight, HelpCircle, Search, X } from 'lucide-react'
+import { HelpCircle, Search, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { DEVICE_BRANDS, ESIM_DEVICES, deviceLabel, findDevices, type EsimDevice } from '../../data/esimDevices'
 import BrandTile from './BrandTile'
 import { DeviceRow } from './shared'
 import { REVEAL } from './verdictRules'
+import { PlaneIcon } from '../ui'
 
 /**
  * The instrument: a search field over every model on the list, and the brands
@@ -151,7 +152,7 @@ export default function DeviceSearch({
           className="focus-ring group inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-[11px] bg-[#0E8675] px-7 text-[15px] font-600 text-white transition duration-200 hover:bg-brand-700 active:scale-[0.99] sm:text-base lg:h-[71px] lg:w-[221px] lg:gap-2.5 lg:px-0 lg:text-[22px]"
         >
           {t('dc.check')}
-          <ArrowRight
+          <PlaneIcon
             size={18}
             className="transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
           />

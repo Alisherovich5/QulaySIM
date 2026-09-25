@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { boot } from '../../lib/boot'
 import type { Country } from '../../lib/types'
 import Flag from '../Flag'
 import HeroArt from './HeroArt'
-import { Button } from '../ui'
+import { Button, PlaneIcon } from '../ui'
 
 /* A stable identity for "nothing yet".
  *
@@ -126,7 +126,7 @@ export default function HeroSection() {
               sheen
               className="w-full px-5 py-3 shadow-lg shadow-brand-500/30 transition duration-200 hover:-translate-y-0.5 hover:shadow-brand-500/45 active:translate-y-0 sm:w-auto"
             >
-              {t('home.findPlans')} <ArrowRight size={18} />
+              {t('home.findPlans')} <PlaneIcon size={18} />
             </Button>
           </form>
 
@@ -178,7 +178,7 @@ export default function HeroSection() {
                     className="focus-ring group/all flex min-h-11 w-full items-center justify-between gap-1 rounded-xl px-3 text-[13px] font-700 text-brand-700 transition hover:bg-brand-50/70 dark:text-accent-400 dark:hover:bg-white/5"
                   >
                     {t('common.viewAll')}
-                    <ArrowRight
+                    <PlaneIcon
                       size={14}
                       className="shrink-0 transition-transform duration-200 group-hover/all:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover/all:translate-x-0"
                     />

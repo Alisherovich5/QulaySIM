@@ -1,9 +1,9 @@
-import { ArrowRight, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useCurrency } from '../context/CurrencyContext'
 import { useDesignCopy } from '../lib/design-copy'
 import type { Plan } from '../lib/types'
-import { Button } from './ui'
+import { Button, PlaneIcon } from './ui'
 interface Props {
   plan: Plan
   onAdd: (plan: Plan) => void
@@ -49,7 +49,7 @@ export default function PlanCard({ plan, onAdd, added }: Props) {
           ) : (
             <>
               {c.choose}
-              <ArrowRight size={17} />
+              <PlaneIcon size={17} />
             </>
           )}
         </Button>

@@ -1,6 +1,6 @@
 import PriceTag from '../PriceTag'
 import { useMemo, useState } from 'react'
-import { ArrowRight, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { api } from '../../lib/api'
@@ -9,7 +9,7 @@ import { destinationPhoto } from '../../lib/destination-media'
 import DestinationPhotoBed from '../media/DestinationPhotoBed'
 import Flag from '../Flag'
 import Reveal from '../Reveal'
-import { Button, Card } from '../ui'
+import { Button, Card, PlaneIcon } from '../ui'
 import { boot } from '../../lib/boot'
 import { useCatalogue } from '../../lib/useCatalogue'
 /* A stable identity for "nothing yet".
@@ -18,7 +18,6 @@ import { useCatalogue } from '../../lib/useCatalogue'
  * useMemo downstream — the filters and sorts below re-run on each keystroke
  * elsewhere in the page. One frozen constant costs nothing and keeps them memoised. */
 const NO_COUNTRIES: Country[] = []
-
 
 /**
  * A region with nothing promoted falls back to plain browsing, and a whole
@@ -34,7 +33,6 @@ const BROWSE_LIMIT = 12
 const GRID = 'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3'
 
 const TITLE_ID = 'home-destinations-title'
-
 
 const CARD_SHAPE =
   'min-h-[122px] rounded-2xl border border-line sm:min-h-[176px] sm:rounded-3xl lg:min-h-[188px] dark:border-white/10'
@@ -52,7 +50,6 @@ export default function DestinationsExplorer() {
     deps: [i18n.language],
   })
   const countries = data ?? NO_COUNTRIES
-
 
   // Region names are admin-owned catalogue data and arrive in English, which is
   // wrong on an Uzbek page. The slug is the stable key; the API's own name is
@@ -187,7 +184,7 @@ export default function DestinationsExplorer() {
                       aria-label={`${c.name} — ${t('home.choose')}`}
                     >
                       {t('home.choose')}
-                      <ArrowRight size={17} aria-hidden />
+                      <PlaneIcon size={17} aria-hidden />
                     </Link>
                   </div>
                 </article>
@@ -206,7 +203,7 @@ export default function DestinationsExplorer() {
           className="group px-6 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas dark:focus-visible:ring-accent-400"
         >
           {t('home.exploreMore')}{' '}
-          <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+          <PlaneIcon size={18} className="transition-transform duration-200 group-hover:translate-x-0.5" />
         </Button>
       </div>
     </section>

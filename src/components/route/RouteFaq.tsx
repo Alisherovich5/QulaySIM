@@ -1,7 +1,8 @@
 import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, ChevronDown } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
+import { PlaneIcon } from '../ui'
 
 /**
  * Four questions, each its own accordion.
@@ -31,7 +32,7 @@ export default function RouteFaq() {
         </h2>
         <Link to="/support" className="rp-faq-all">
           {t('rp.faqAll')}
-          <ArrowRight size={16} aria-hidden="true" />
+          <PlaneIcon size={16} aria-hidden="true" />
         </Link>
       </div>
 

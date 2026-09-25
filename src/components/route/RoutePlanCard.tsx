@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, ArrowUpRight, ChartNoAxesColumn, Globe, Link2 } from 'lucide-react'
+import { ArrowUpRight, ChartNoAxesColumn, Globe, Link2 } from 'lucide-react'
 import { charmUzs } from '../../lib/charm'
 import { groupUzs } from '../../lib/format'
 import { useCurrency } from '../../context/CurrencyContext'
 import type { Plan } from '../../lib/types'
+import { PlaneIcon } from '../ui'
 
 /**
  * One tariff, drawn as the design draws it: shape, price, what it includes,
@@ -93,7 +94,7 @@ export default function RoutePlanCard({ plan, featured, onChoose }: Props) {
 
       <button type="button" className="rp-cta" onClick={() => onChoose(plan)}>
         {t('rp.choose')}
-        <ArrowRight size={18} aria-hidden="true" />
+        <PlaneIcon size={18} aria-hidden="true" />
       </button>
     </article>
   )

@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, CheckCircle2, LifeBuoy, PlaneLanding } from 'lucide-react'
+import { CheckCircle2, LifeBuoy, PlaneLanding } from 'lucide-react'
 
 import Seo from '../components/Seo'
 import IosWalkthrough from '../components/guide/IosWalkthrough'
-import { Button, Card, FaqItem } from '../components/ui'
+import { Button, Card, FaqItem, PlaneIcon } from '../components/ui'
 import type { SeoLang } from '../lib/seo'
 import { breadcrumbLd, faqLd, guideArticleLd, howToLd } from '../lib/structured-data'
 
@@ -217,7 +217,7 @@ export default function GuideInstallEsim() {
           <h2 className="text-2xl font-700">{t('guides.install.ctaTitle')}</h2>
           <p className="mt-2 text-slate-soft">{t('guides.install.ctaText')}</p>
           <Button to="/destinations" className="mx-auto mt-6 w-fit px-7 py-3">
-            {t('guides.install.ctaBtn')} <ArrowRight size={17} />
+            {t('guides.install.ctaBtn')} <PlaneIcon size={17} />
           </Button>
         </Card>
       </div>

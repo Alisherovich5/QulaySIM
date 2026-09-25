@@ -1,9 +1,10 @@
-import { ArrowRight, Check, ChevronRight, Download, Search } from 'lucide-react'
+import { Check, ChevronRight, Download, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import Flag from '../Flag'
 import Reveal from '../Reveal'
+import { PlaneIcon } from '../ui'
 
 /**
  * "Getting connected — three steps", drawn as the three screens it actually is.
@@ -57,7 +58,7 @@ export default function HowItWorks() {
               </Reveal>
               {i < steps.length - 1 && (
                 <span className="hw-arrow" aria-hidden>
-                  <ArrowRight size={19} />
+                  <PlaneIcon size={19} />
                 </span>
               )}
             </li>
@@ -67,7 +68,7 @@ export default function HowItWorks() {
         <div className="hw-cta">
           <Link to="/destinations" className="hw-btn focus-ring">
             {t('home.howCta')}
-            <ArrowRight size={19} aria-hidden />
+            <PlaneIcon size={19} aria-hidden />
           </Link>
         </div>
       </div>

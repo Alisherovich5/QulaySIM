@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, Check, Sparkles, X } from 'lucide-react'
+import { Check, Sparkles, X } from 'lucide-react'
 
 import type { EsimDevice } from '../../data/esimDevices'
 import { type Verdict, verdictOf } from './verdictRules'
+import { PlaneIcon } from '../ui'
 
 /* The pieces the three parts of the device check share: the verdict itself, the
    one mark that shows it, and the row that renders a model. Split out of a
@@ -82,7 +83,6 @@ export function DeviceRow({
 }
 
 
-
 /**
  * "Check on the phone" — the same button, four times over.
  *
@@ -114,7 +114,7 @@ export function CheckExactlyButton({
   return (
     <button type="button" onClick={onClick} className={`${base} ${tones[tone]} ${className}`}>
       {t('device.checkExactly')}
-      {tone === 'loud' && <ArrowRight size={16} />}
+      {tone === 'loud' && <PlaneIcon size={16} />}
     </button>
   )
 }

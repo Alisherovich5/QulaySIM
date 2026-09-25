@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Check, ChevronDown, Globe2, Search, X } from 'lucide-react'
+import { Check, ChevronDown, Globe2, Search, X } from 'lucide-react'
 import PlanCard from '../PlanCard'
 import Flag from '../Flag'
-import { Card } from '../ui'
+import { Card, PlaneIcon } from '../ui'
 import type { Country, Plan } from '../../lib/types'
 import { useDialog } from '../../lib/useDialog'
 import { useCurrency } from '../../context/CurrencyContext'
@@ -307,7 +307,6 @@ export default function GlobalPlanExplorer({
     return Number.isFinite(value) ? best : null
   }, [shown])
 
-
   function toggle<T>(set: Set<T>, value: T) {
     const next = new Set(set)
     if (next.has(value)) next.delete(value)
@@ -440,7 +439,7 @@ export default function GlobalPlanExplorer({
                       className="focus-ring mt-2 inline-flex items-center gap-1.5 font-600 text-brand-600 dark:text-accent-400"
                     >
                       {t('global.checkNoCta', { country: uncovered.name })}
-                      <ArrowRight size={14} aria-hidden />
+                      <PlaneIcon size={14} aria-hidden />
                     </Link>
                   </>
                 ) : (

@@ -1,11 +1,11 @@
 import { useId, useMemo, useState } from 'react'
-import { ArrowRight, Check, ShieldCheck } from 'lucide-react'
+import { Check, ShieldCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCurrency } from '../context/CurrencyContext'
 import { useDesignCopy } from '../lib/design-copy'
 import type { Plan } from '../lib/types'
-import { Button } from './ui'
+import { Button, PlaneIcon } from './ui'
 
 export default function PlanPicker({
   plans,
@@ -147,7 +147,7 @@ export default function PlanPicker({
             ) : (
               <>
                 {c.choose}
-                <ArrowRight size={18} />
+                <PlaneIcon size={18} />
               </>
             )}
           </Button>
