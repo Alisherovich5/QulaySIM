@@ -8,6 +8,8 @@ import Flag from '../Flag'
 import { Card } from '../ui'
 import type { Country, Plan } from '../../lib/types'
 import { useDialog } from '../../lib/useDialog'
+import { useCurrency } from '../../context/CurrencyContext'
+import { charmUzs } from '../../lib/charm'
 
 /**
  * The worldwide catalogue, filtered rather than pre-selected.
@@ -59,7 +61,31 @@ interface Props {
   note?: ReactNode
 }
 
-type Sort = 'price' | 'data' | 'coverage'
+type Sort = 'price' | 'data' | 'coverage' | 'days' | 'perGb' | 'perDay'
+type Dir = 'asc' | 'desc'
+
+/* Ustun bosilganda qaysi yo'nalish kutiladi.
+ *
+ * Narxda arzondan, qamrovda kengidan — odam ustunni bosganda shu javobni
+ * kutadi. Ikkinchi bosish teskarisiga o'giradi. */
+const DEFAULT_DIR: Record<Sort, Dir> = {
+  price: 'asc',
+  data: 'asc',
+  coverage: 'desc',
+  days: 'asc',
+  perGb: 'asc',
+  perDay: 'asc',
+}
+
+/** Bir gigabayt uchun narx. Cheksiz tarifda ma'nosiz — u har doim oxirida. */
+function usdPerGb(plan: Plan): number {
+  if (plan.is_unlimited || plan.data_amount_mb <= 0) return Number.POSITIVE_INFINITY
+  return plan.price_usd / (plan.data_amount_mb / 1024)
+}
+
+function usdPerDay(plan: Plan): number {
+  return plan.price_usd / Math.max(1, plan.validity_days)
+}
 
 /** Buckets rather than exact durations: 15 and 31 days are the same trip. */
 const DURATIONS: { key: string; test: (days: number) => boolean }[] = [
@@ -104,6 +130,32 @@ export default function GlobalPlanExplorer({
   }, [pickedCountry])
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<Sort>('price')
+  const [dir, setDir] = useState<Dir>('asc')
+  const { currency, formatPrice, usdToUzs } = useCurrency()
+
+  /* Ustunlardagi hosilaviy raqamlar EKRANDAGI jamidan kelib chiqadi.
+   *
+   * So'mda jami 999 ga yaxlitlanadi. Agar GB va kun narxini dollardan alohida
+   * hisoblab, keyin yaxlitlasak, ular jami bilan to'g'ri kelmaydi va mijoz buni
+   * darrov ko'radi. Shuning uchun avval jami, keyin bo'linadi. */
+  const totalOf = (plan: Plan) =>
+    currency === 'USD' ? plan.price_usd : charmUzs(plan.price_usd * usdToUzs)
+
+  const group = (n: number) =>
+    Math.round(n)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')
+
+  const money = (n: number) => (currency === 'USD' ? `$${n.toFixed(2)}` : group(n))
+  const curLabel = currency === 'USD' ? '$' : t('global.table.som')
+
+  const sortBy = (key: Sort) => {
+    if (key === sort) setDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    else {
+      setSort(key)
+      setDir(DEFAULT_DIR[key])
+    }
+  }
   const [openMenu, setOpenMenu] = useState<'size' | 'duration' | 'sort' | null>(null)
   const [coverageOf, setCoverageOf] = useState<Plan | null>(null)
   const coverageRef = useDialog(() => setCoverageOf(null), coverageOf !== null)
@@ -200,12 +252,47 @@ export default function GlobalPlanExplorer({
       if (country && !(plan.coverage ?? []).includes(country.iso2)) return false
       return true
     })
+    const value = (plan: Plan): number => {
+      switch (sort) {
+        case 'price':
+          return plan.price_usd
+        case 'coverage':
+          return plan.coverage?.length ?? 0
+        case 'days':
+          return plan.validity_days
+        case 'perGb':
+          return usdPerGb(plan)
+        case 'perDay':
+          return usdPerDay(plan)
+        default:
+          return plan.data_amount_mb
+      }
+    }
+    const sign = dir === 'asc' ? 1 : -1
     return list.sort((a, b) => {
-      if (sort === 'price') return a.price_usd - b.price_usd
-      if (sort === 'coverage') return (b.coverage?.length ?? 0) - (a.coverage?.length ?? 0)
-      return a.data_amount_mb - b.data_amount_mb || a.validity_days - b.validity_days
+      const d = value(a) - value(b)
+      // Teng qiymatlar har renderda o'rin almashmasin: ikkinchi mezon qat'iy.
+      return (d !== 0 ? d * sign : a.validity_days - b.validity_days) || a.id - b.id
     })
-  }, [plans, sizes, durations, country, sort])
+  }, [plans, sizes, durations, country, sort, dir])
+
+  /* Jadvaldagi eng foydali qator: bir gigabayti eng arzoni.
+   *
+   * Bu belgi o'ylab topilgan emas — u yonidagi ustundan hisoblanadi, ya'ni
+   * filtr o'zgarsa o'zi ko'chadi va hech qachon yolg'on gapira olmaydi. */
+  const bestPerGb = useMemo(() => {
+    let best: number | null = null
+    let value = Number.POSITIVE_INFINITY
+    for (const plan of shown) {
+      const v = usdPerGb(plan)
+      if (v < value) {
+        value = v
+        best = plan.id
+      }
+    }
+    return Number.isFinite(value) ? best : null
+  }, [shown])
+
 
   function toggle<T>(set: Set<T>, value: T) {
     const next = new Set(set)
@@ -498,23 +585,166 @@ export default function GlobalPlanExplorer({
       )}
 
       {shown.length > 0 ? (
-        <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {shown.map((plan) => (
-            <div key={plan.id} className="flex h-full flex-col">
-              <PlanCard plan={plan} onAdd={onAdd} added={added === plan.id} />
-              {(plan.coverage?.length ?? 0) > 0 && (
-                <button
-                  type="button"
-                  onClick={() => setCoverageOf(plan)}
-                  className="focus-ring mt-1 flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-600 text-slate-soft hover:text-brand-600 dark:hover:text-accent-400"
-                >
-                  <Globe2 size={13} aria-hidden />
-                  {t('global.coverageLink')}
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
+        <>
+          {/* Telefonda kartalar. Yetti ustunli jadvalni 390px ekranda o'qib
+              bo'lmaydi, yonlamasiga surish esa xarid qarorini qiyinlashtiradi. */}
+          <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:hidden">
+            {shown.map((plan) => (
+              <div key={plan.id} className="flex h-full flex-col">
+                <PlanCard plan={plan} onAdd={onAdd} added={added === plan.id} />
+                {(plan.coverage?.length ?? 0) > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setCoverageOf(plan)}
+                    className="focus-ring mt-1 flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-600 text-slate-soft hover:text-brand-600 dark:hover:text-accent-400"
+                  >
+                    <Globe2 size={13} aria-hidden />
+                    {t('global.coverageLink')}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Kengroq ekranda jadval: yigirma tarifni yonma-yon solishtirish
+              kartalar ustidan pastga tushib borishdan ancha tez. Bir gigabayt
+              va bir kun narxi shu yerda ko'rinadi — ular kartada yo'q edi va
+              qaysi tarif haqiqatan arzonligini aytib beradigan ikki son shu. */}
+          <div className="mt-4 hidden overflow-hidden rounded-2xl ring-1 ring-line lg:block">
+            <table className="w-full border-collapse text-sm">
+              <caption className="sr-only">{t('global.plansTitle')}</caption>
+              <thead>
+                <tr className="bg-mist">
+                  {(
+                    [
+                      ['data', 'size', 'left'],
+                      ['days', 'duration', 'left'],
+                      ['coverage', 'coverage', 'left'],
+                      [null, 'network', 'left'],
+                      ['perGb', `${curLabel} / GB`, 'right'],
+                      ['perDay', `${curLabel} / ${t('global.table.day')}`, 'right'],
+                      ['price', 'price', 'right'],
+                    ] as [Sort | null, string, 'left' | 'right'][]
+                  ).map(([key, label, align]) => {
+                    const text = key === 'perGb' || key === 'perDay' ? label : t(`global.table.${label}`)
+                    const active = key !== null && sort === key
+                    const cls = `px-4 py-3 text-[11px] font-700 uppercase tracking-wider ${
+                      align === 'right' ? 'text-right' : 'text-left'
+                    }`
+                    return (
+                      <th
+                        key={label}
+                        scope="col"
+                        className={cls}
+                        aria-sort={active ? (dir === 'asc' ? 'ascending' : 'descending') : undefined}
+                      >
+                        {key === null ? (
+                          <span className="text-slate-soft">{text}</span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => sortBy(key)}
+                            className={`focus-ring -mx-1 inline-flex items-center gap-1 whitespace-nowrap rounded px-1 py-0.5 transition-colors ${
+                              active ? 'text-ink' : 'text-slate-soft hover:text-ink'
+                            }`}
+                          >
+                            {text}
+                            {active && <span aria-hidden>{dir === 'asc' ? '↑' : '↓'}</span>}
+                          </button>
+                        )}
+                      </th>
+                    )
+                  })}
+                  <th scope="col" className="px-4 py-3">
+                    <span className="sr-only">{t('global.table.choose')}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {shown.map((plan, i) => {
+                  const total = totalOf(plan)
+                  const gb = plan.data_amount_mb / 1024
+                  const covered = plan.coverage?.length ?? 0
+                  return (
+                    <tr
+                      key={plan.id}
+                      className={`border-t border-line ${i % 2 ? 'bg-mist/40' : ''}`}
+                    >
+                      <td className="whitespace-nowrap px-4 py-3 font-700 text-ink">
+                        {plan.data_label}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-slate-soft">
+                        {t('global.table.days', { count: plan.validity_days })}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3">
+                        {covered > 0 ? (
+                          <button
+                            type="button"
+                            onClick={() => setCoverageOf(plan)}
+                            className="focus-ring rounded font-600 text-brand-600 hover:underline dark:text-accent-400"
+                          >
+                            {t('global.tableCountries', { count: covered })}
+                          </button>
+                        ) : (
+                          <span className="text-slate-soft">—</span>
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <span
+                          className={
+                            plan.network_type.includes('5G')
+                              ? 'font-600 text-brand-600 dark:text-accent-400'
+                              : 'text-slate-soft'
+                          }
+                        >
+                          {plan.network_type}
+                        </span>
+                      </td>
+                      <td
+                        className={`whitespace-nowrap px-4 py-3 text-right tabular-nums ${
+                          plan.id === bestPerGb
+                            ? 'font-700 text-brand-600 dark:text-accent-400'
+                            : 'text-ink'
+                        }`}
+                      >
+                        {plan.is_unlimited || gb <= 0 ? (
+                          <span className="text-slate-soft">—</span>
+                        ) : (
+                          money(total / gb)
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-right tabular-nums text-slate-soft">
+                        {money(total / Math.max(1, plan.validity_days))}
+                      </td>
+                      {/* So'mda birlik takrorlanmaydi: ustun sarlavhasi allaqachon
+                          valyutani aytgan va yigirma qatorda «so'm» shovqinga aylanadi.
+                          Dollarda belgi oldindan turadi, shuning uchun qoladi. */}
+                      <td className="whitespace-nowrap px-4 py-3 text-right font-700 tabular-nums text-ink">
+                        {currency === 'USD' ? formatPrice(plan.price_usd) : group(total)}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => onAdd(plan)}
+                          className={`focus-ring inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg px-4 text-sm font-600 transition ${
+                            added === plan.id || plan.id === bestPerGb
+                              ? 'bg-brand-600 text-white hover:bg-brand-700'
+                              : 'text-brand-600 ring-1 ring-brand-300 hover:bg-brand-600 hover:text-white dark:text-accent-400'
+                          }`}
+                        >
+                          {added === plan.id ? t('plan.added') : t('global.table.choose')}
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 hidden text-xs text-slate-soft lg:block">
+            {t('global.table.sortHint')}
+          </p>
+        </>
       ) : (
         <Card className="mt-4 p-6 text-sm text-slate-soft">{t('global.filterEmpty')}</Card>
       )}

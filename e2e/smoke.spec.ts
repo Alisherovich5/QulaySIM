@@ -199,6 +199,66 @@ test('the worldwide filter narrows by country', async ({ page }) => {
   await expect(page.getByText(/2 tarifdan 1 tasi/)).toBeVisible()
 })
 
+test('the worldwide table sorts by the column you click', async ({ page, viewport }) => {
+  // The table replaces the cards from lg up; on a phone the cards stay.
+  test.skip((viewport?.width ?? 0) < 1024, 'jadval faqat keng ekranda chiziladi')
+
+  // Two plans that disagree on every axis, so each column has a different answer.
+  await page.route('**/api/regions/global*', (route) =>
+    route.fulfill({
+      json: {
+        id: 8,
+        name: 'Global',
+        slug: 'global',
+        country_count: 0,
+        starting_price: 10.5,
+        plans: [
+          {
+            ...PLANS[0],
+            id: 20,
+            scope: 'global',
+            title: 'Global 3 GB',
+            data_amount_mb: 3072,
+            data_label: '3 GB',
+            validity_days: 30,
+            price_usd: 10.5,
+            coverage: ['TR', 'GE'],
+          },
+          {
+            ...PLANS[1],
+            id: 21,
+            scope: 'global',
+            title: 'Global 20 GB',
+            data_amount_mb: 20480,
+            data_label: '20 GB',
+            validity_days: 7,
+            price_usd: 21.5,
+            coverage: ['GE'],
+          },
+        ],
+      },
+    }),
+  )
+  await page.goto('/global')
+
+  const firstCell = page.locator('table tbody tr').first().locator('td').first()
+  // Scoped to the table: "Hajmi" also names the filter dropdown in the bar above.
+  const column = (name: RegExp) => page.getByRole('table').getByRole('button', { name })
+  // Opens on price, cheapest first.
+  await expect(firstCell).toHaveText('3 GB')
+
+  // Sorting by size puts the smaller one first; clicking again reverses it.
+  await column(/Hajmi/).click()
+  await expect(firstCell).toHaveText('3 GB')
+  await column(/Hajmi/).click()
+  await expect(firstCell).toHaveText('20 GB')
+
+  // Per-gigabyte is the column that changes the answer: 20 GB is dearer in
+  // total and far cheaper per GB, which is the whole reason it is shown.
+  await column(/GB$/).click()
+  await expect(firstCell).toHaveText('20 GB')
+})
+
 test('the worldwide search answers the keyboard, and ignores an empty one', async ({ page }) => {
   // The filter search looks like every search box on the web, so Enter has to
   // mean what it means everywhere else. It used to mean nothing: the answer was
