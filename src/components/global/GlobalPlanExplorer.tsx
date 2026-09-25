@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Check, ChevronDown, Globe2, Search, X } from 'lucide-react'
@@ -162,6 +162,20 @@ export default function GlobalPlanExplorer({
 
   const lang = i18n.language.split('-')[0] || 'uz'
   const barRef = useRef<HTMLDivElement>(null)
+
+  /* Panelning balandligi. Jadval sarlavhasi uning ostiga yopishishi kerak, panel
+   * esa filtr chiplari qo'shilganda balandlashadi — ya'ni raqamni qotirib
+   * yozib bo'lmaydi. Navbar `--header-h` ni shu usulda e'lon qiladi. */
+  const [barH, setBarH] = useState(0)
+  useEffect(() => {
+    const el = barRef.current
+    if (!el) return
+    const publish = () => setBarH(Math.round(el.getBoundingClientRect().height))
+    publish()
+    const observer = new ResizeObserver(publish)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   // Any click outside the bar closes whichever menu is open. Without it they
   // stack up and the page ends with three menus hanging open over the plans.
@@ -610,11 +624,14 @@ export default function GlobalPlanExplorer({
               kartalar ustidan pastga tushib borishdan ancha tez. Bir gigabayt
               va bir kun narxi shu yerda ko'rinadi — ular kartada yo'q edi va
               qaysi tarif haqiqatan arzonligini aytib beradigan ikki son shu. */}
-          <div className="mt-4 hidden overflow-hidden rounded-2xl ring-1 ring-line lg:block">
-            <table className="w-full border-collapse text-sm">
+          <div
+            className="mt-4 hidden rounded-2xl ring-1 ring-line lg:block"
+            style={{ '--gl-bar-h': `${barH}px` } as CSSProperties}
+          >
+            <table className="w-full border-collapse text-sm [&_tbody_tr:last-child_td:first-child]:rounded-bl-2xl [&_tbody_tr:last-child_td:last-child]:rounded-br-2xl [&_thead_th:first-child]:rounded-tl-2xl [&_thead_th:last-child]:rounded-tr-2xl">
               <caption className="sr-only">{t('global.plansTitle')}</caption>
               <thead>
-                <tr className="bg-mist">
+                <tr>
                   {(
                     [
                       ['data', 'size', 'left'],
@@ -628,9 +645,15 @@ export default function GlobalPlanExplorer({
                   ).map(([key, label, align]) => {
                     const text = key === 'perGb' || key === 'perDay' ? label : t(`global.table.${label}`)
                     const active = key !== null && sort === key
-                    const cls = `px-4 py-3 text-[11px] font-700 uppercase tracking-wider ${
-                      align === 'right' ? 'text-right' : 'text-left'
-                    }`
+                    /* Yopishqoq sarlavha: panel ostida turadi va yigirma qator
+                       bo'ylab ustun nomlari ko'rinib qoladi. Fon `tr` da emas,
+                       aynan katakda — yopishqoq katak qator fonini olib ketmaydi
+                       va ostidagi qatorlar orqasidan ko'rinib turardi. */
+                    const cls =
+                      `sticky top-[calc(var(--header-h,104px)+var(--gl-bar-h,0px))] z-30 bg-mist ` +
+                      `px-4 py-3 text-[11px] font-700 uppercase tracking-wider ${
+                        align === 'right' ? 'text-right' : 'text-left'
+                      }`
                     return (
                       <th
                         key={label}
@@ -655,7 +678,10 @@ export default function GlobalPlanExplorer({
                       </th>
                     )
                   })}
-                  <th scope="col" className="px-4 py-3">
+                  <th
+                    scope="col"
+                    className="sticky top-[calc(var(--header-h,104px)+var(--gl-bar-h,0px))] z-30 bg-mist px-4 py-3"
+                  >
                     <span className="sr-only">{t('global.table.choose')}</span>
                   </th>
                 </tr>
