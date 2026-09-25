@@ -114,6 +114,7 @@ const en = {
       'Explore eSIMs for the destinations most popular with travellers from Uzbekistan, then buy for where you are going.',
     exploreAll: 'All',
     exploreEmpty: 'No destinations in this region yet.',
+    exploreNoMatch: 'No country by that name. Try spelling it differently.',
     exploreMore: 'View all destinations',
     compatText:
       'Most phones released since 2018 support eSIM. Your device also needs to be carrier-unlocked to use a QulaySIM eSIM.',

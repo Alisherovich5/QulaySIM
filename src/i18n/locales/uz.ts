@@ -116,6 +116,7 @@ const uz: Translation = {
       'Hozirda o‘zbekistonliklar uchun eng ommabop davlatlar eSIM’lari bilan tanishing va boradigan davlatingiz uchun xarid qiling.',
     exploreAll: 'Hammasi',
     exploreEmpty: 'Bu mintaqada hozircha yo‘nalish yo‘q.',
+    exploreNoMatch: 'Bunday davlat topilmadi. Nomini boshqacha yozib ko‘ring.',
     exploreMore: 'Barcha yo‘nalishlar',
     compatText:
       '2018-yildan keyingi aksariyat telefonlar eSIM‘ni qo‘llab-quvvatlaydi. QulaySIM eSIM‘dan foydalanish uchun qurilmangiz operatorga bog‘lanmagan bo‘lishi ham kerak.',

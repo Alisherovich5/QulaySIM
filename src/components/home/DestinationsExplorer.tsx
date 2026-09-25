@@ -67,17 +67,38 @@ export default function DestinationsExplorer() {
     return countries.slice(0, BROWSE_LIMIT)
   }, [countries])
 
-  /* The filter is over what the section already shows, not a second request.
-     The promoted list is nine cards; asking the API for a substring of nine
-     rows it has already sent is a round trip for nothing, and it would make
-     every keystroke depend on the network. Typing past the promoted list is
-     what the destinations page is for, which is where "see all" goes. */
+  /* The search runs over every country the page has loaded, not the nine it
+     shows at rest.
+
+     It used to filter the promoted list only, on the reasoning that typing
+     past it was the destinations page's job. But the box says "search for a
+     country", and a customer who typed "ger" was told there were no
+     destinations — Germany is sold, it just is not one of the nine. All 207
+     are already in memory from the same request, so searching them costs no
+     round trip either.
+
+     The slug is matched too: it is the English name, and people type
+     "Germany" on an Uzbek page. Apostrophes are folded because Uzbek is
+     written with three of them and a keyboard makes a fourth. */
   const [query, setQuery] = useState('')
   const visible = useMemo(() => {
-    const needle = query.trim().toLocaleLowerCase()
+    const fold = (v: string) =>
+      v.toLocaleLowerCase().replace(/[‘’ʻʼ`´']/g, "'").trim()
+    const needle = fold(query)
     if (!needle) return shown
-    return shown.filter((c) => c.name.toLocaleLowerCase().includes(needle))
-  }, [shown, query])
+    const hits = countries.filter(
+      (c) => fold(c.name).includes(needle) || c.slug.includes(needle.replace(/\s+/g, '-')),
+    )
+    // A name that starts with what was typed beats one that merely contains
+    // it; between equals, a promoted destination goes first — "tur" is Turkey
+    // for nearly everyone who types it, not the Turks and Caicos.
+    hits.sort((a, b) => {
+      const ai = fold(a.name).startsWith(needle) ? 0 : 1
+      const bi = fold(b.name).startsWith(needle) ? 0 : 1
+      return ai - bi || Number(b.is_popular) - Number(a.is_popular)
+    })
+    return hits.slice(0, BROWSE_LIMIT)
+  }, [countries, shown, query])
 
   return (
     <section className="container-page py-12 sm:py-16" aria-labelledby={TITLE_ID}>
@@ -144,7 +165,7 @@ export default function DestinationsExplorer() {
             ))}
           </div>
         ) : visible.length === 0 ? (
-          <Card className="p-8 text-center text-slate-soft sm:p-10">{t('home.exploreEmpty')}</Card>
+          <Card className="p-8 text-center text-slate-soft sm:p-10">{query.trim() ? t('home.exploreNoMatch') : t('home.exploreEmpty')}</Card>
         ) : (
           <div className={GRID}>
             {visible.map((c, i) => (
