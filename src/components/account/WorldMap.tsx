@@ -1,8 +1,8 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { feature } from 'topojson-client'
 import { useNavigate } from 'react-router-dom'
-import { AlertTriangle, ChevronRight, Globe2, RotateCw, X } from 'lucide-react'
+import { AlertTriangle, ChevronRight, Globe2, Maximize2, RotateCw, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Country, PassportCountry } from '../../lib/types'
 import { numericFor } from '../../lib/isoNumeric'
@@ -69,6 +69,39 @@ export default function WorldMap({ passport }: Props) {
   const [open, setOpen] = useState(false)
   const [win, setWin] = useState({ w: window.innerWidth, h: window.innerHeight })
   const isDark = useIsDark()
+
+  /* The inline 3D globe, mounted only once the card is near the screen.
+   *
+   * It is a 1.8 MB chunk and a WebGL context. Loaded with the page, every
+   * visit to the account paid for it, including the ones that never scroll
+   * down to it; loaded as the card approaches, it is ready by the time it is
+   * seen. Until then — and on any device where WebGL fails — the SVG globe
+   * holds the space, so there is never an empty box. */
+  const boxRef = useRef<HTMLDivElement>(null)
+  const [near, setNear] = useState(false)
+  const [box, setBox] = useState({ w: 0, h: 0 })
+  useEffect(() => {
+    const el = boxRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: '300px 0px' },
+    )
+    io.observe(el)
+    const ro = new ResizeObserver(([entry]) =>
+      setBox({ w: Math.round(entry.contentRect.width), h: Math.round(entry.contentRect.height) }),
+    )
+    ro.observe(el)
+    return () => {
+      io.disconnect()
+      ro.disconnect()
+    }
+  }, [features.length, geoError])
   const palette = isDark ? GLOBE_THEME.dark : GLOBE_THEME.light
 
   const loadGeo = () => {
@@ -168,10 +201,11 @@ export default function WorldMap({ passport }: Props) {
           </button>
         </div>
 
-        {/* The globe is the other way in: the whole picture opens the
-            interactive one. The error state is not inside the button, because
-            its retry is a button of its own. */}
-        <div className="tm-globe">
+        {/* The globe. A live 3D one once the card is near, the SVG drawing
+            until then and wherever WebGL is missing. The canvas is taller than
+            the card and anchored to its top, so the planet rises from the
+            bottom edge the way the design has it, cropped rather than shrunk. */}
+        <div ref={boxRef} className="tm-globe">
           {geoError ? (
             <div className="grid h-full place-items-center gap-3 p-6 text-center">
               <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-red-500/10 text-red-500">
@@ -183,19 +217,64 @@ export default function WorldMap({ passport }: Props) {
               </button>
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              aria-label={t('account.globeOpenHint')}
-              className="tm-globe-btn focus-ring"
-            >
-              {features.length === 0 ? (
-                <span className="tm-globe-skeleton" aria-hidden />
-              ) : (
-                <StylizedGlobe features={features} visited={visited} dark={isDark} />
-              )}
+            <>
+              {(() => {
+                const flat =
+                  features.length === 0 ? (
+                    <span className="tm-globe-skeleton" aria-hidden />
+                  ) : (
+                    <div className="tm-globe-flat">
+                      <StylizedGlobe features={features} visited={visited} dark={isDark} />
+                    </div>
+                  )
+                // One WebGL context at a time: while the full-screen globe is
+                // open, the card falls back to the drawing.
+                if (!near || open || features.length === 0 || box.w === 0) return flat
+                const stageH = Math.round(box.h * 1.35)
+                return (
+                  <div className="tm-globe-stage" style={{ height: stageH }}>
+                    <GlobeErrorBoundary fallback={flat}>
+                      <Suspense fallback={flat}>
+                        <div className="rise" role="img" aria-label={t('account.globeAria')}>
+                          <GlobeCore
+                            features={features}
+                            catalogByNumeric={catalogByNumeric}
+                            visited={visited}
+                            palette={palette}
+                            width={box.w}
+                            height={stageH}
+                            altitude={box.w < 500 ? 2.3 : 2.1}
+                            enableZoom={false}
+                            onCountryClick={handleClick}
+                          />
+                        </div>
+                      </Suspense>
+                    </GlobeErrorBoundary>
+                  </div>
+                )
+              })()}
+
+              {/* On a touch screen a drag on the globe would turn the planet
+                  instead of scrolling the page, so there the whole picture is
+                  one button into the full-screen globe, where turning it is
+                  the point. With a mouse, this layer is not there. */}
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                aria-label={t('account.globeOpenHint')}
+                className="tm-globe-tap focus-ring"
+              />
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                aria-label={t('account.globeTitle')}
+                title={t('account.globeTitle')}
+                className="tm-expand focus-ring"
+              >
+                <Maximize2 size={17} aria-hidden />
+              </button>
               {passport.length > 0 && (
-                <span className="tm-chip">
+                <button type="button" onClick={() => setOpen(true)} className="tm-chip focus-ring">
                   <span className="flex -space-x-2">
                     {passport.slice(0, 3).map((c) => (
                       <Flag key={c.iso2} iso2={c.iso2} className="h-7 w-7 rounded-full object-cover ring-2 ring-surface" />
@@ -205,9 +284,9 @@ export default function WorldMap({ passport }: Props) {
                     {t('global.card.countries', { count: passport.length })}
                   </span>
                   <ChevronRight size={16} className="text-slate-soft" aria-hidden />
-                </span>
+                </button>
               )}
-            </button>
+            </>
           )}
         </div>
       </div>

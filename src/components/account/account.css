@@ -572,12 +572,66 @@
   }
 }
 
-.tm-globe-btn {
+/* The 3D canvas: taller than the card and pinned to its top, so the planet
+   is cut by the card's lower edge instead of being shrunk to fit. */
+.tm-globe {
+  overflow: hidden;
+}
+
+.tm-globe-stage {
+  position: absolute;
+  inset: 0 0 auto 0;
+}
+
+.tm-globe-stage canvas {
+  cursor: grab;
+}
+
+.tm-globe-stage canvas:active {
+  cursor: grabbing;
+}
+
+.tm-globe-flat {
+  position: absolute;
+  inset: 0;
+}
+
+/* Touch screens: a drag would spin the planet instead of scrolling the page,
+   so the picture becomes one button into the full-screen globe. With a mouse
+   the layer is gone and the globe turns in place. */
+.tm-globe-tap {
   position: absolute;
   inset: 0;
   display: block;
   width: 100%;
   cursor: zoom-in;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tm-globe-tap {
+    display: none;
+  }
+}
+
+.tm-expand {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--color-ink);
+  background: color-mix(in srgb, var(--color-surface) 82%, transparent);
+  box-shadow: 0 0 0 1px var(--color-line), 0 6px 16px -10px rgb(15 40 50 / 0.4);
+  backdrop-filter: blur(6px);
+  transition: transform 0.15s ease;
+}
+
+.tm-expand:hover {
+  transform: scale(1.06);
 }
 
 .tm-globe-skeleton {
@@ -594,6 +648,7 @@
 /* The countries, pinned to the picture on a wide screen. */
 .tm-chip {
   position: absolute;
+  z-index: 2;
   right: 20px;
   bottom: 20px;
   display: inline-flex;
