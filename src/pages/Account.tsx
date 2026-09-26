@@ -256,7 +256,7 @@ export default function Account() {
   return (
     <div className="acc container-page py-6 sm:py-10">
       <Seo title={t('seo.accountTitle')} description={t('seo.homeDescription')} noindex />
-      <Reveal>
+      <Reveal className="acc-hero-layer">
         <ProfileHeader summary={summary} onLogout={handleLogout} onSummaryChange={setSummary} />
       </Reveal>
 

@@ -63,6 +63,15 @@
 
 /* --- Profile ------------------------------------------------------------- */
 
+/* Raised above the cards that follow it: the avatar menu opens downwards out
+   of the profile card, and without its own layer it slid under the stat
+   cards. The layer goes on the reveal wrapper, not the card — the wrapper's
+   will-change makes it a stacking context that would trap the card's z-index. */
+.acc-hero-layer {
+  position: relative;
+  z-index: 5;
+}
+
 .ah-hero {
   display: flex;
   align-items: center;
