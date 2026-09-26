@@ -1,8 +1,8 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { feature } from 'topojson-client'
 import { useNavigate } from 'react-router-dom'
-import { AlertTriangle, Globe2, Maximize2, RotateCw, X } from 'lucide-react'
+import { AlertTriangle, ChevronRight, Globe2, RotateCw, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { Country, PassportCountry } from '../../lib/types'
 import { numericFor } from '../../lib/isoNumeric'
@@ -10,6 +10,8 @@ import Flag from '../Flag'
 import { GlobeErrorBoundary } from '../GlobeErrorBoundary'
 import { api } from '../../lib/api'
 import { GLOBE_THEME, type GlobePalette } from '../../lib/globe-theme'
+import { PlaneIcon } from '../ui'
+import StylizedGlobe from './StylizedGlobe'
 
 // Re-exported so GlobeCore's type-only import keeps working from either file.
 export type { GlobePalette }
@@ -17,7 +19,6 @@ export type { GlobePalette }
 // Heavy (three.js) — only loaded when this account tab renders / globe opens.
 const GlobeCore = lazy(() => import('./GlobeCore'))
 const GEO_URL = '/world-110m.json'
-const INLINE_H = 400
 
 /**
  * How far back the fullscreen camera has to sit for the whole planet to fit.
@@ -66,8 +67,6 @@ export default function WorldMap({ passport }: Props) {
   const [catalog, setCatalog] = useState<Country[]>([])
   const [geoError, setGeoError] = useState(false)
   const [open, setOpen] = useState(false)
-  const inlineRef = useRef<HTMLDivElement>(null)
-  const [inlineW, setInlineW] = useState(640)
   const [win, setWin] = useState({ w: window.innerWidth, h: window.innerHeight })
   const isDark = useIsDark()
   const palette = isDark ? GLOBE_THEME.dark : GLOBE_THEME.light
@@ -86,15 +85,6 @@ export default function WorldMap({ passport }: Props) {
   useEffect(loadGeo, [])
   useEffect(() => {
     api.get<Country[]>('/countries').then((r) => setCatalog(r.data)).catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    if (!inlineRef.current) return
-    const ro = new ResizeObserver((entries) => {
-      for (const e of entries) setInlineW(e.contentRect.width)
-    })
-    ro.observe(inlineRef.current)
-    return () => ro.disconnect()
   }, [])
 
   useEffect(() => {
@@ -131,12 +121,6 @@ export default function WorldMap({ passport }: Props) {
     navigate(`/destinations/${c.slug}`)
   }
 
-  const loadingBox = (
-    <div className="grid h-full place-items-center text-sm text-slate-soft">
-      {t('common.loading')}
-    </div>
-  )
-
   /* The swatches are filled from the same palette the renderer uses, so the key
      is always true to the picture. The hairline ring keeps the darkest swatch
      from disappearing into the card in dark mode. */
@@ -163,119 +147,69 @@ export default function WorldMap({ passport }: Props) {
   )
 
   return (
-    <div className="card overflow-hidden">
-      <button
-        onClick={() => setOpen(true)}
-        className="group flex w-full items-center justify-between gap-3 border-b border-line px-4 py-4 text-left transition hover:bg-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-400 sm:px-6 dark:focus-visible:ring-accent-400"
-      >
-        <div className="flex min-w-0 items-center gap-2.5">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-50 text-brand-600 transition duration-300 group-hover:scale-105 dark:bg-white/10 dark:text-accent-400">
-            <Globe2 size={18} />
-          </span>
-          <div className="min-w-0">
-            <h2 className="font-700 leading-tight">{t('account.mapTitle')}</h2>
-            {/* Wraps rather than truncating. On a 390px phone the hint does not
-                fit on one line in any of the three languages — it read
-                "Interaktiv 3D globusni ochish uchu…", and the Russian string is
-                longer still — so a single line was always going to clip. Two
-                lines is the cap: a long translation can extend the header a
-                little, but not push the globe off the first screen. */}
-            <p className="line-clamp-2 text-xs leading-snug text-slate-soft">
-              {t('account.globeOpenHint')}
-            </p>
+    <section className="tm-card" aria-labelledby="tm-title">
+      <div className="tm-grid">
+        <div className="tm-copy">
+          <div className="flex items-start gap-4">
+            <span className="tm-icon" aria-hidden>
+              <Globe2 size={26} />
+            </span>
+            <div className="min-w-0">
+              <h2 id="tm-title" className="tm-title">
+                {t('account.mapTitle')}
+              </h2>
+              <p className="tm-sub">{t('account.globeOpenHint')}</p>
+            </div>
           </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          {/* Below `sm` this pill squeezed the title down to "You…". The same
-              count is already on the profile header above. */}
-          <span className="hidden sm:inline-flex chip bg-brand-600 text-white shadow-sm shadow-brand-500/30 dark:bg-accent-400 dark:text-brand-900 dark:shadow-accent-400/25">
+          <p className="tm-body">{t('account.mapBody')}</p>
+          <button type="button" onClick={() => setOpen(true)} className="tm-cta focus-ring">
             {t('account.countriesConnected', { count: visited.size })}
-          </span>
-          <span className="grid h-11 w-11 place-items-center rounded-xl text-slate-soft ring-1 ring-line transition group-hover:text-brand-600 group-hover:ring-brand-300 dark:group-hover:text-accent-400 dark:group-hover:ring-accent-400/50">
-            <Maximize2 size={16} />
-          </span>
+            <PlaneIcon size={18} aria-hidden />
+          </button>
         </div>
-      </button>
 
-      {/* inline 3D globe — the panel is a lit window, not a black box: the space
-          behind the planet is darkest exactly where the sphere's limb crosses
-          it, which is what makes the outline read at all. */}
-      <div
-        ref={inlineRef}
-        data-globe-panel
-        className="relative isolate"
-        style={{ height: INLINE_H, background: palette.space, boxShadow: palette.inset }}
-      >
-        {geoError ? (
-          <div className="grid h-full place-items-center gap-3 text-center">
-            <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-red-500/10 text-red-500">
-              <AlertTriangle size={22} />
-            </span>
-            <p className="text-sm text-ink/80">{t('account.mapError')}</p>
-            <button onClick={loadGeo} className="btn-ghost mx-auto min-h-11 px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 dark:focus-visible:ring-accent-400">
-              <RotateCw size={15} /> {t('account.retry')}
-            </button>
-          </div>
-        ) : features.length === 0 ? (
-          loadingBox
-        ) : open ? (
-          // Avoid two live WebGL contexts while the fullscreen globe is open.
-          <div className="grid h-full place-items-center text-slate-soft">
-            <Globe2 size={28} className="opacity-40" />
-          </div>
-        ) : (
-          // Without WebGL the globe throws during render, and an uncaught throw
-          // here blanked the entire account page — profile, eSIM list and QR
-          // code included. The boundary keeps the failure the size of the globe.
-          <GlobeErrorBoundary fallback={loadingBox}>
-            <Suspense fallback={loadingBox}>
-              {/* `rise` is the system's entrance and is already switched off under
-                  prefers-reduced-motion, so the planet fades up instead of
-                  snapping in — felt, not watched.
-                  The label sits here rather than on the panel: `role="img"` makes
-                  its whole subtree presentational, which would have hidden the
-                  retry button in the error state from screen readers. */}
-              <div className="rise" role="img" aria-label={t('account.globeAria')}>
-                <GlobeCore
-                  features={features}
-                  catalogByNumeric={catalogByNumeric}
-                  visited={visited}
-                  palette={palette}
-                  width={inlineW}
-                  height={INLINE_H}
-                  altitude={2}
-                  enableZoom={false}
-                  onCountryClick={handleClick}
-                />
-              </div>
-            </Suspense>
-          </GlobeErrorBoundary>
-        )}
-      </div>
-
-      {/* The countries visited, on the same card as the globe they are marked on.
-          They used to sit in a separate "travel passport" panel below — a second
-          box repeating what the globe already showed, which the owner asked to
-          remove. One flag chip per country, with how many eSIMs were bought for
-          it, is the whole of what that panel said. */}
-      {passport.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 border-t border-line px-4 py-3 sm:px-6">
-          {passport.map((c) => (
-            <span
-              key={c.iso2}
-              className="inline-flex items-center gap-2 rounded-full bg-mist px-2.5 py-1 text-xs ring-1 ring-line"
+        {/* The globe is the other way in: the whole picture opens the
+            interactive one. The error state is not inside the button, because
+            its retry is a button of its own. */}
+        <div className="tm-globe">
+          {geoError ? (
+            <div className="grid h-full place-items-center gap-3 p-6 text-center">
+              <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-red-500/10 text-red-500">
+                <AlertTriangle size={22} />
+              </span>
+              <p className="text-sm text-ink/80">{t('account.mapError')}</p>
+              <button onClick={loadGeo} className="btn-ghost focus-ring mx-auto min-h-11 px-4 py-2 text-sm">
+                <RotateCw size={15} /> {t('account.retry')}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label={t('account.globeOpenHint')}
+              className="tm-globe-btn focus-ring"
             >
-              <Flag iso2={c.iso2} className="h-3.5 w-5 rounded-[3px]" />
-              <span className="font-600 text-ink">{c.name}</span>
-              <span className="text-slate-soft">{t('account.stamps', { count: c.esims })}</span>
-            </span>
-          ))}
+              {features.length === 0 ? (
+                <span className="tm-globe-skeleton" aria-hidden />
+              ) : (
+                <StylizedGlobe features={features} visited={visited} dark={isDark} />
+              )}
+              {passport.length > 0 && (
+                <span className="tm-chip">
+                  <span className="flex -space-x-2">
+                    {passport.slice(0, 3).map((c) => (
+                      <Flag key={c.iso2} iso2={c.iso2} className="h-7 w-7 rounded-full object-cover ring-2 ring-surface" />
+                    ))}
+                  </span>
+                  <span className="font-700 text-ink">
+                    {t('global.card.countries', { count: passport.length })}
+                  </span>
+                  <ChevronRight size={16} className="text-slate-soft" aria-hidden />
+                </span>
+              )}
+            </button>
+          )}
         </div>
-      )}
-
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3 text-xs text-slate-soft sm:px-6">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">{legend}</div>
-        <span className="text-slate-soft/80">{t('account.mapHint')}</span>
       </div>
 
       {/* fullscreen globe */}
@@ -337,6 +271,6 @@ export default function WorldMap({ passport }: Props) {
           </div>,
           document.body,
         )}
-    </div>
+    </section>
   )
 }

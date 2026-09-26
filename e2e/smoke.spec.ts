@@ -199,6 +199,43 @@ test('the worldwide filter narrows by country', async ({ page }) => {
   await expect(page.getByText(/2 tarifdan 1 tasi/)).toBeVisible()
 })
 
+test('the account shows its four figures and switches between all six sections', async ({ page, context }) => {
+  // The section switch used to be a thin rail people did not notice. What
+  // matters is that all six are there, one is visibly active, and each opens
+  // its own content — on a phone as much as on a desktop.
+  await context.addCookies([{ name: 'qs_session', value: '1', url: 'http://127.0.0.1:4173' }])
+  await page.route('**/api/auth/refresh', (r) => r.fulfill({ json: { access_token: 't' } }))
+  await page.route('**/api/auth/me', (r) =>
+    r.fulfill({ json: { id: 1, email: 'a@b.uz', full_name: 'Test Mijoz', created_at: '2026-08-01T00:00:00Z', has_purchases: true } }),
+  )
+  await page.route('**/api/account/summary', (r) =>
+    r.fulfill({
+      json: {
+        full_name: 'Test Mijoz', email: 'a@b.uz', member_since: '2026-08-01T00:00:00Z',
+        active_esims: 0, total_esims: 0, data_used_mb: 3072, data_total_mb: 4096,
+        countries_connected: 2, total_spent: 5.79, orders_count: 1, avatar_url: null,
+        referral_enabled: true, passport: [{ iso2: 'TR', name: 'Turkiya', esims: 1 }],
+      },
+    }),
+  )
+  await page.route('**/api/account/esims', (r) => r.fulfill({ json: [] }))
+  await page.route('**/api/account/orders', (r) => r.fulfill({ json: [] }))
+
+  await page.goto('/account')
+  await expect(page.locator('.as-card')).toHaveCount(4)
+  await expect(page.locator('.as-card').nth(1)).toContainText('3.0 GB')
+
+  const tabs = page.getByRole('tab')
+  await expect(tabs).toHaveCount(6)
+  // The map is where the page opens.
+  await expect(page.getByRole('tab', { name: /Sayohat xaritasi/ })).toHaveAttribute('aria-selected', 'true')
+  await expect(page.locator('.tm-card')).toBeVisible()
+
+  await page.getByRole('tab', { name: /Buyurtmalar/ }).click()
+  await expect(page.getByRole('tab', { name: /Buyurtmalar/ })).toHaveAttribute('aria-selected', 'true')
+  await expect(page.locator('.tm-card')).toHaveCount(0)
+})
+
 test('the worldwide table sorts by the column you click', async ({ page, viewport }) => {
   // The table replaces the cards from lg up; on a phone the cards stay.
   test.skip((viewport?.width ?? 0) < 1024, 'jadval faqat keng ekranda chiziladi')

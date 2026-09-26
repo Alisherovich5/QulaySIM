@@ -496,6 +496,14 @@ const ru: Translation = {
     globeUnavailable: 'Глобус не поддерживается на этом устройстве',
     ordersSubtitle: 'Все покупки, сначала новые.',
     overview: 'Обзор',
+    hero: {
+      activeNone: 'Сейчас нет активных eSIM',
+      activeSome: 'Активных eSIM: {{n}}',
+      dataLabel: 'Израсходовано данных',
+      countriesHint: 'Посещённые страны',
+      spentHint: 'Все расходы',
+    },
+    mapBody: 'Следите за своими поездками по миру наглядно: посещённые страны, активные eSIM и расход трафика — на интерактивной карте.',
   },
   device: {
     back: 'На главную',

@@ -2,16 +2,22 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   AlertTriangle,
-  DollarSign,
+  CardSim,
+  ChartNoAxesColumn,
+  Database,
+  Files,
   Gift,
-  Globe2,
+  Globe,
   Map as MapIcon,
+  MapPin,
   MessageSquareText,
   Plus,
   QrCode,
   Receipt,
   RotateCw,
-  SignalHigh,
+  Settings,
+  Wallet,
+  type LucideIcon,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { api } from '../lib/api'
@@ -24,7 +30,9 @@ import PaymentFrame from '../components/PaymentFrame'
 import Reveal from '../components/Reveal'
 import { Button, Card } from '../components/ui'
 import ProfileHeader from '../components/account/ProfileHeader'
-import StatTile from '../components/account/StatTile'
+import StatCard from '../components/account/StatCard'
+import AccountSectionNav from '../components/account/AccountSectionNav'
+import '../components/account/account.css'
 import { usedLabel, usedTile } from '../lib/format'
 import OrderRow from '../components/account/OrderRow'
 import SettingsForm from '../components/account/SettingsForm'
@@ -33,15 +41,6 @@ import ReferralPanel from '../components/account/ReferralPanel'
 import ReviewPanel from '../components/account/ReviewPanel'
 
 type Tab = 'map' | 'esims' | 'orders' | 'review' | 'referral' | 'settings'
-
-/** Small uppercase label that opens a band of the page. */
-function Eyebrow({ children }: { children: ReactNode }) {
-  return (
-    <p className="text-[11px] font-700 uppercase leading-none tracking-[0.12em] text-slate-soft">
-      {children}
-    </p>
-  )
-}
 
 /**
  * Heading for a tab panel.
@@ -52,30 +51,29 @@ function Eyebrow({ children }: { children: ReactNode }) {
  * panel the same opening beat.
  */
 function SectionHead({
+  icon: Icon,
   title,
   subtitle,
   count,
   action,
 }: {
+  icon: LucideIcon
   title: string
   subtitle?: string
   count?: number
   action?: ReactNode
 }) {
   return (
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-      <div className="min-w-0">
+    <div className="acc-head">
+      <span className="acc-head-icon" aria-hidden>
+        <Icon size={24} />
+      </span>
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2.5">
-          <h2 className="font-display text-lg font-700 leading-tight tracking-[-0.015em] sm:text-xl">
-            {title}
-          </h2>
-          {count !== undefined && (
-            <span className="rounded-full bg-surface-2 px-2.5 py-1 text-xs font-700 tabular-nums text-slate-soft ring-1 ring-line">
-              {count}
-            </span>
-          )}
+          <h2 className="acc-head-title">{title}</h2>
+          {count !== undefined && <span className="acc-head-count">{count}</span>}
         </div>
-        {subtitle && <p className="mt-1 text-sm leading-snug text-slate-soft">{subtitle}</p>}
+        {subtitle && <p className="acc-head-sub">{subtitle}</p>}
       </div>
       {action}
     </div>
@@ -195,7 +193,7 @@ export default function Account() {
   // bo'lsa, xaritaga qaytadi.
   const openTab: Tab = tab === 'referral' && !showReferral ? 'map' : tab
 
-  const tabs: { key: Tab; label: string; icon: typeof QrCode }[] = [
+  const tabs: { key: Tab; label: string; icon: LucideIcon }[] = [
     { key: 'map', label: t('account.tabMap'), icon: MapIcon },
     { key: 'esims', label: t('account.tabEsims'), icon: QrCode },
     { key: 'orders', label: t('account.tabOrders'), icon: Receipt },
@@ -203,10 +201,11 @@ export default function Account() {
     ...(showReferral
       ? [{ key: 'referral' as Tab, label: t('referral.tab'), icon: Gift }]
       : []),
-    { key: 'settings', label: t('account.tabSettings'), icon: SignalHigh },
+    { key: 'settings', label: t('account.tabSettings'), icon: Settings },
   ]
 
   const hasQuota = summary.data_total_mb > 0
+  const used = usedTile(summary.data_used_mb)
 
   /* The eSIM list, kept in one place because it is now shown twice: on its own
      tab, and under the globe on the overview. Duplicating forty lines of JSX is
@@ -214,6 +213,7 @@ export default function Account() {
   const esimsSection = (
       <div>
         <SectionHead
+          icon={QrCode}
           title={t('account.tabEsims')}
           subtitle={t('account.esimsSubtitle')}
           count={esims.length || undefined}
@@ -254,100 +254,71 @@ export default function Account() {
   )
 
   return (
-    <div className="container-page py-6 sm:py-10">
+    <div className="acc container-page py-6 sm:py-10">
       <Seo title={t('seo.accountTitle')} description={t('seo.homeDescription')} noindex />
       <Reveal>
         <ProfileHeader summary={summary} onLogout={handleLogout} onSummaryChange={setSummary} />
       </Reveal>
 
-      {/* Overview -------------------------------------------------------- */}
-      <div className="mt-7 sm:mt-9">
-        <Eyebrow>{t('account.overview')}</Eyebrow>
-        <div className="mt-3 grid grid-cols-2 items-stretch gap-3 sm:gap-4 lg:grid-cols-4">
-          <Reveal delay={0} className="h-full">
-            <StatTile
-              icon={SignalHigh}
-              value={summary.active_esims}
-              label={t('account.statActive')}
-              tone="accent"
-              live={summary.active_esims > 0}
-            />
-          </Reveal>
-          <Reveal delay={60} className="h-full">
-            {/* Birlik qiymatga qarab tanlanadi: 1 MB sarflagan mijoz bu
-                plitkada "0.0 GB" ni ko'rib, hisob ishlamayapti deb o'ylagan va
-                shikoyat yozgan. Qoida lib/format.ts da, bitta joyda. */}
-            <StatTile
-              icon={QrCode}
-              {...usedTile(summary.data_used_mb)}
-              label={t('account.statData')}
-              tone="brand"
-              featured
-              meter={
-                hasQuota
-                  ? {
-                      ratio: summary.data_used_mb / summary.data_total_mb,
-                      caption: t('esim.leftCaption', {
-                        amount: usedLabel(summary.data_total_mb - summary.data_used_mb),
-                      }),
-                    }
-                  : undefined
-              }
-            />
-          </Reveal>
-          <Reveal delay={120} className="h-full">
-            <StatTile
-              icon={Globe2}
-              value={summary.countries_connected}
-              label={t('account.statCountries')}
-              tone="violet"
-            />
-          </Reveal>
-          <Reveal delay={180} className="h-full">
-            <StatTile
-              icon={DollarSign}
-              value={summary.total_spent}
-              decimals={2}
-              prefix="$"
-              label={t('account.statSpent')}
-              tone="amber"
-            />
-          </Reveal>
-        </div>
+      {/* The four figures ---------------------------------------------- */}
+      <div className="acc-stats">
+        <StatCard
+          icon={CardSim}
+          decor={Files}
+          tone="teal"
+          label={t('account.statActive')}
+          value={String(summary.active_esims)}
+          hint={
+            summary.active_esims > 0
+              ? t('account.hero.activeSome', { n: summary.active_esims })
+              : t('account.hero.activeNone')
+          }
+        />
+        {/* The unit follows the value: a customer who had used 1 MB read
+            "0.0 GB" here once and wrote in to say the counter was broken.
+            The rule lives in lib/format.ts, in one place. */}
+        <StatCard
+          icon={Database}
+          tone="green"
+          label={t('account.hero.dataLabel')}
+          value={`${used.value.toFixed(used.decimals)}${used.suffix}`}
+          meter={hasQuota ? summary.data_used_mb / summary.data_total_mb : undefined}
+          hint={
+            hasQuota
+              ? t('esim.leftCaption', {
+                  amount: usedLabel(summary.data_total_mb - summary.data_used_mb),
+                })
+              : undefined
+          }
+        />
+        <StatCard
+          icon={MapPin}
+          decor={Globe}
+          tone="violet"
+          label={t('account.statCountries')}
+          value={String(summary.countries_connected)}
+          hint={t('account.hero.countriesHint')}
+        />
+        <StatCard
+          icon={Wallet}
+          decor={ChartNoAxesColumn}
+          tone="amber"
+          label={t('account.statSpent')}
+          value={`$${Number(summary.total_spent).toFixed(2)}`}
+          hint={t('account.hero.spentHint')}
+        />
       </div>
 
-      {/* Tabs ------------------------------------------------------------ */}
-      {/* Labels are no longer clipped to a fixed 112px on a phone — the rail
-          scrolls and each tab is as wide as its word. */}
-      <div className="-mx-5 mt-7 px-5 sm:mx-0 sm:px-0 md:mt-9">
-        {/* p-1.5 is load-bearing: the rail is a scroll container, so it clips
-            its children — the 2px focus outline plus its 2px offset has to fit
-            inside the padding or the first and last tab lose their ring. */}
-        <div className="account-tab-rail flex snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain rounded-2xl bg-surface-2 p-1.5 ring-1 ring-line [scrollbar-width:none] dark:bg-canvas">
-          {tabs.map((tb) => {
-            const active = openTab === tb.key
-            return (
-              <button
-                key={tb.key}
-                type="button"
-                onClick={() => setTab(tb.key)}
-                aria-pressed={active}
-                className={`focus-ring flex min-h-11 shrink-0 snap-start items-center justify-center gap-2 rounded-xl px-3.5 text-sm font-600 whitespace-nowrap transition-[background-color,color,box-shadow] duration-200 md:min-w-0 md:flex-1 ${
-                  active
-                    ? 'elev-1 bg-surface text-brand-600 dark:bg-surface-2 dark:text-accent-400'
-                    : 'text-slate-soft hover:text-ink'
-                }`}
-              >
-                <tb.icon size={16} className="shrink-0" aria-hidden />
-                <span className="md:truncate">{tb.label}</span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
+      {/* Sections ------------------------------------------------------ */}
+      <AccountSectionNav
+        items={tabs}
+        active={openTab}
+        onChange={setTab}
+        label={t('nav.account')}
+      />
 
       {/* Panel ----------------------------------------------------------- */}
-      <div key={tab} className="page-in mt-6 sm:mt-8">
+      <div key={tab} className="page-in">
         {openTab === 'map' && (
           // The passport panel is gone: it was a second box below the globe
           // saying what the globe already said, and its one useful line — which
@@ -356,10 +327,9 @@ export default function Account() {
           // customer came for, then the referral offer. The tabs still work — this
           // is the overview showing what a customer opening their account wants
           // to see without hunting for a tab.
-          <div className="space-y-10 sm:space-y-12">
+          <div className="space-y-8 sm:space-y-10">
             <WorldMap passport={summary.passport} />
             {esimsSection}
-            <ReferralPanel />
           </div>
         )}
 
@@ -368,6 +338,7 @@ export default function Account() {
         {openTab === 'orders' && (
           <div>
             <SectionHead
+              icon={Receipt}
               title={t('account.tabOrders')}
               subtitle={t('account.ordersSubtitle')}
               count={orders.length || undefined}

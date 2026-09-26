@@ -499,6 +499,14 @@ const en = {
     globeUnavailable: 'The globe cannot be shown on this device',
     ordersSubtitle: 'Every purchase, newest first.',
     overview: 'Overview',
+    hero: {
+      activeNone: 'No active eSIM right now',
+      activeSome: '{{n}} eSIM in use',
+      dataLabel: 'Data used',
+      countriesHint: 'Countries visited',
+      spentHint: 'All spending',
+    },
+    mapBody: 'Follow your travels around the world at a glance. See the countries you have visited, your active eSIMs and your data use on an interactive map.',
   },
   device: {
     back: 'Back to home',

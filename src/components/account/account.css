@@ -1,0 +1,634 @@
+/* ---------------------------------------------------------------------------
+   Account page.
+
+   Scoped under `.acc` and imported by the account page alone. Surfaces, ink
+   and lines come from the site tokens, so the page follows the theme like
+   every other page; the four stat tones and the bright mint of the map's
+   call to action are the only colours of its own.
+   --------------------------------------------------------------------------- */
+
+.acc {
+  --acc-radius: 24px;
+  --acc-fill: #0a7c68;           /* the filled active tab; white on it is 5.2:1 */
+  --acc-mint: #19d3ae;           /* the map CTA, with dark text on it in both themes */
+  --acc-mint-hover: #11b694;
+  --acc-shadow: 0 1px 2px rgb(16 43 54 / 0.04), 0 14px 32px -24px rgb(16 43 54 / 0.28);
+
+  --tone-teal-bg: rgb(11 180 147 / 0.11);
+  --tone-teal: #0a9a80;
+  --tone-green-bg: rgb(16 163 110 / 0.11);
+  --tone-green: #0e9467;
+  --tone-violet-bg: rgb(124 58 237 / 0.1);
+  --tone-violet: #7c3aed;
+  --tone-amber-bg: rgb(245 158 11 / 0.13);
+  --tone-amber: #d97706;
+
+  display: grid;
+  /* One track that may shrink below its content. Left as auto, the track
+     grew to the widest unbreakable line — the email, held on one line —
+     and pushed the whole page 80px past a phone's edge. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+
+:root.dark .acc {
+  --acc-fill: #0b806c;
+  --acc-shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 18px 36px -26px rgb(0 0 0 / 0.6);
+  --tone-teal-bg: rgb(25 211 174 / 0.12);
+  --tone-teal: #19d3ae;
+  --tone-green-bg: rgb(52 211 153 / 0.13);
+  --tone-green: #34d399;
+  --tone-violet-bg: rgb(139 92 246 / 0.16);
+  --tone-violet: #a78bfa;
+  --tone-amber-bg: rgb(251 191 36 / 0.13);
+  --tone-amber: #fbbf24;
+}
+
+@media (min-width: 900px) {
+  .acc {
+    gap: 22px;
+  }
+}
+
+/* Every card on the page is the same object: one radius, one border, one
+   shadow. The hierarchy comes from what is inside, not from four kinds of box. */
+.ah-hero,
+.as-card,
+.an-list,
+.tm-card {
+  border-radius: var(--acc-radius);
+  background: var(--color-surface);
+  box-shadow: var(--acc-shadow), inset 0 0 0 1px var(--color-line);
+}
+
+/* --- Profile ------------------------------------------------------------- */
+
+.ah-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+}
+
+@media (min-width: 640px) {
+  .ah-hero {
+    gap: 22px;
+    padding: 24px 28px;
+  }
+}
+
+/* The picker was built to overhang a banner; there is no banner here. */
+.ah-avatar {
+  flex-shrink: 0;
+}
+
+.ah-avatar > div {
+  margin-top: 0;
+}
+
+.ah-who {
+  min-width: 0;
+  flex: 1;
+}
+
+.site-shell .ah-label {
+  font-size: 13px;
+  color: var(--color-slate-soft);
+}
+
+.site-shell .ah-name {
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 0.95rem + 1.3vw, 2rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+}
+
+.site-shell .ah-mail {
+  margin-top: 4px;
+  overflow: hidden;
+  font-size: clamp(0.85rem, 0.8rem + 0.3vw, 1.05rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-slate-soft);
+}
+
+.site-shell .ah-since {
+  font-size: 13px;
+  color: var(--color-slate-soft);
+}
+
+.ah-since-narrow {
+  margin-top: 4px;
+}
+
+.ah-since-wide {
+  display: none;
+}
+
+.ah-side {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+  align-self: stretch;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .ah-since-narrow {
+    display: none;
+  }
+
+  .ah-since-wide {
+    display: block;
+  }
+
+  .ah-side {
+    justify-content: space-between;
+  }
+}
+
+.ah-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-ink);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-line);
+  transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ah-logout:hover {
+  background: var(--color-surface-2);
+  box-shadow: inset 0 0 0 1px var(--color-brand-300, #5cc2b3);
+}
+
+/* On a phone the way out becomes an icon in the card's corner. Beside the
+   text it took a third of the width, which split the name over two lines,
+   cut the address short and broke the member date into three. */
+@media (max-width: 639px) {
+  .ah-hero {
+    position: relative;
+  }
+
+  /* Only the two lines beside the corner icon give way to it; the address
+     runs under the icon and gets the full width. */
+  .site-shell .ah-label,
+  .site-shell .ah-name {
+    padding-right: 40px;
+  }
+
+  .site-shell .ah-mail {
+    font-size: 13px;
+  }
+
+  .ah-side {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  .ah-logout {
+    width: 44px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .ah-logout span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+}
+
+/* --- The four figures ---------------------------------------------------- */
+
+.acc-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (min-width: 900px) {
+  .acc-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+.as-card {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .as-card {
+    padding: 22px;
+  }
+}
+
+/* On a phone the icon sits over the text: two columns of cards leave too
+   little width for icon and figure side by side. */
+@media (max-width: 639px) {
+  .as-card {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+.as-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  color: var(--tone);
+  background: var(--tone-bg);
+}
+
+@media (min-width: 640px) {
+  .as-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 17px;
+  }
+}
+
+.as-card[data-tone='teal'] {
+  --tone: var(--tone-teal);
+  --tone-bg: var(--tone-teal-bg);
+}
+
+.as-card[data-tone='green'] {
+  --tone: var(--tone-green);
+  --tone-bg: var(--tone-green-bg);
+}
+
+.as-card[data-tone='violet'] {
+  --tone: var(--tone-violet);
+  --tone-bg: var(--tone-violet-bg);
+}
+
+.as-card[data-tone='amber'] {
+  --tone: var(--tone-amber);
+  --tone-bg: var(--tone-amber-bg);
+}
+
+.as-body {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  flex: 1;
+}
+
+.site-shell .as-label {
+  font-size: 13.5px;
+  color: var(--color-slate-soft);
+}
+
+.site-shell .as-value {
+  margin-top: 4px;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 1.15rem + 1vw, 2rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.as-meter {
+  display: block;
+  height: 6px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-line);
+}
+
+.as-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tone);
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-shell .as-hint {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--color-slate-soft);
+}
+
+.as-decor {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  width: 58px;
+  height: 58px;
+  color: var(--tone);
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* --- Section switch ------------------------------------------------------ */
+
+.an-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px;
+}
+
+.an-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 76px;
+  padding: 10px 6px;
+  border-radius: 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--color-slate-soft);
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+.an-item:hover {
+  color: var(--color-ink);
+  background: var(--color-surface-2);
+}
+
+.an-item[aria-selected='true'] {
+  color: #fff;
+  background: var(--acc-fill);
+  box-shadow: 0 8px 18px -10px rgb(10 124 104 / 0.7);
+}
+
+@media (min-width: 900px) {
+  .an-list {
+    display: flex;
+    gap: 4px;
+  }
+
+  .an-item {
+    flex: 1;
+    flex-direction: row;
+    gap: 10px;
+    min-height: 54px;
+    padding: 0 14px;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+}
+
+/* --- Section heading ----------------------------------------------------- */
+
+.acc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 14px;
+  margin-bottom: 18px;
+}
+
+/* The text takes at least 12rem before it shares a row with the action, so
+   on a phone the button drops below instead of squeezing the subtitle into
+   a column one word wide. */
+.acc-head > .min-w-0 {
+  flex: 1 1 12rem;
+}
+
+.acc-head-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  color: var(--tone-teal);
+  background: var(--tone-teal-bg);
+}
+
+.site-shell .acc-head-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1rem + 0.8vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.acc-head-count {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-slate-soft);
+  background: var(--color-surface-2);
+  box-shadow: inset 0 0 0 1px var(--color-line);
+}
+
+.site-shell .acc-head-sub {
+  margin-top: 3px;
+  font-size: 14px;
+  color: var(--color-slate-soft);
+}
+
+/* --- Travel map ---------------------------------------------------------- */
+
+.tm-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* A faint mint light from the globe's side, so the copy and the picture read
+   as one card rather than text beside an image. */
+.tm-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(60% 90% at 85% 70%, rgb(25 211 174 / 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.tm-grid {
+  display: grid;
+}
+
+@media (min-width: 900px) {
+  .tm-grid {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    min-height: 400px;
+  }
+}
+
+.tm-copy {
+  position: relative;
+  z-index: 1;
+  padding: 24px 20px 8px;
+}
+
+@media (min-width: 640px) {
+  .tm-copy {
+    padding: 34px 34px 12px;
+  }
+}
+
+@media (min-width: 900px) {
+  .tm-copy {
+    padding: 40px 0 40px 40px;
+    align-self: center;
+  }
+}
+
+.tm-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  color: var(--tone-teal);
+  background: var(--tone-teal-bg);
+}
+
+.site-shell .tm-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 1.1rem + 1.4vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+.site-shell .tm-sub {
+  margin-top: 6px;
+  font-size: clamp(0.95rem, 0.88rem + 0.3vw, 1.1rem);
+  color: var(--color-slate-soft);
+}
+
+.site-shell .tm-body {
+  max-width: 30rem;
+  margin-top: 22px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--color-slate-soft);
+}
+
+.tm-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  margin-top: 26px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #062b24;
+  background: var(--acc-mint);
+  box-shadow: 0 12px 26px -14px rgb(25 211 174 / 0.9);
+  transition: background-color 0.18s ease, transform 0.18s ease;
+}
+
+.tm-cta:hover {
+  background: var(--acc-mint-hover);
+}
+
+.tm-cta:active {
+  transform: scale(0.98);
+}
+
+.tm-globe {
+  position: relative;
+  min-height: 300px;
+}
+
+@media (min-width: 640px) {
+  .tm-globe {
+    min-height: 360px;
+  }
+}
+
+.tm-globe-btn {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  cursor: zoom-in;
+}
+
+.tm-globe-skeleton {
+  position: absolute;
+  right: 6%;
+  bottom: -30%;
+  width: 90%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-line);
+  opacity: 0.5;
+}
+
+/* The countries, pinned to the picture on a wide screen. */
+.tm-chip {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 8px;
+  border-radius: 999px;
+  font-size: 14px;
+  background: var(--color-surface);
+  box-shadow: var(--acc-shadow), inset 0 0 0 1px var(--color-line);
+}
+
+@media (max-width: 899px) {
+  .tm-chip {
+    right: 14px;
+    bottom: 14px;
+  }
+}
+
+/* A slow breath on the markers, and nothing else moves. */
+.sg-marker {
+  animation: sg-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes sg-pulse {
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-marker,
+  .as-meter > span,
+  .tm-cta {
+    animation: none;
+    transition: none;
+  }
+}

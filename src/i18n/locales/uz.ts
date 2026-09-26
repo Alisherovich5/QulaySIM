@@ -497,6 +497,14 @@ const uz: Translation = {
     globeUnavailable: 'Globus bu qurilmada ko‘rsatilmaydi',
     ordersSubtitle: 'Barcha xaridlar, eng yangisidan boshlab.',
     overview: 'Umumiy ko’rinish',
+    hero: {
+      activeNone: 'Hozirda faol eSIM yo‘q',
+      activeSome: '{{n}} ta eSIM ishlayapti',
+      dataLabel: 'Sarflangan ma’lumot',
+      countriesHint: 'Tashrif buyurgan davlatlar',
+      spentHint: 'Barcha xarajatlar',
+    },
+    mapBody: 'Dunyo bo‘ylab sayohatlaringizni vizual tarzda kuzatib boring. Tashrif buyurgan davlatlar, faol eSIM’lar va ma’lumotlar sarfini interaktiv xaritada ko‘ring.',
   },
   device: {
     back: 'Bosh sahifaga',
