@@ -182,28 +182,22 @@ export default function Global() {
         </div>
       </section>
 
-      {/* The plans. The title travels with the control bar rather than sitting
-          above it — see the `heading` prop. */}
+      {/* The plans. Title and explainer above the control bar, which carries
+          only the controls — the bar is sticky, and a heading riding down the
+          page inside it took a row of room from every screen of plans. */}
+      <h2 id="plans" className="gl-plans-title">
+        {t('global.plansTitle')}
+      </h2>
+      <p className="gl-plans-note">{t('global.plansSubtitle')}</p>
       {detail && detail.plans.length > 0 ? (
         <GlobalPlanExplorer
           plans={detail.plans}
           onAdd={handleAdd}
           added={added}
           countries={countries}
-          heading={
-            <h2 id="plans" className="gl-plans-title">
-              {t('global.plansTitle')}
-            </h2>
-          }
-          note={<p className="gl-plans-note">{t('global.plansSubtitle')}</p>}
         />
       ) : (
-        <>
-          <h2 id="plans" className="mt-12 scroll-mt-24 text-xl font-700 sm:text-2xl">
-            {t('global.plansTitle')}
-          </h2>
-          <Card className="mt-6 p-6 text-sm text-slate-soft">{t('global.plansEmpty')}</Card>
-        </>
+        <Card className="mt-6 p-6 text-sm text-slate-soft">{t('global.plansEmpty')}</Card>
       )}
 
       {/* The cheaper alternative, said plainly. A customer going only around

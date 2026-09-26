@@ -178,6 +178,16 @@ const uz: Translation = {
     all: 'Hammasini ko‘rish',
   },
   global: {
+    card: {
+      label: 'Global tarif',
+      countries: '{{count}} ta davlat',
+      noHotspot: 'Mavjud emas',
+    },
+    view: {
+      label: 'Ko‘rinish',
+      grid: 'Kartalar',
+      list: 'Jadval',
+    },
     checkPlaceholder: 'Qaysi davlatga borasiz?',
     checkYes: '{{country}} qamrab olingan',
     checkPlans: '{{count}} ta global tarif shu davlatda ishlaydi, {{price}} dan boshlanadi.',
@@ -203,9 +213,12 @@ const uz: Translation = {
     filterClear: 'Tozalash',
     filterEmpty: 'Bu shartlarga mos tarif yo‘q. Filtrni kengaytiring.',
     sort: {
-      price: 'Arzondan',
+      price: 'Narx (o‘sish)',
       data: 'Hajm bo‘yicha',
       coverage: 'Qamrov bo‘yicha',
+      days: 'Muddat bo‘yicha',
+      perGb: '1 GB narxi bo‘yicha',
+      perDay: 'Kunlik narx bo‘yicha',
     },
     resultCount: '{{total}} tarifdan {{shown}} tasi ko‘rsatilyapti',
     coverageLink: 'Qaysi davlatlar?',

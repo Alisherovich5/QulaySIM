@@ -176,6 +176,16 @@ const en = {
     all: 'See all plans',
   },
   global: {
+    card: {
+      label: 'Global plan',
+      countries: '{{count}} countries',
+      noHotspot: 'Not available',
+    },
+    view: {
+      label: 'View',
+      grid: 'Cards',
+      list: 'Table',
+    },
     checkPlaceholder: 'Which country are you going to?',
     checkYes: '{{country}} is covered',
     checkPlans: '{{count}} worldwide plans work there, from {{price}}.',
@@ -201,9 +211,12 @@ const en = {
     filterClear: 'Clear',
     filterEmpty: 'No plan matches these filters. Try widening them.',
     sort: {
-      price: 'Cheapest',
+      price: 'Price (low to high)',
       data: 'By data',
       coverage: 'By coverage',
+      days: 'By validity',
+      perGb: 'By price per GB',
+      perDay: 'By price per day',
     },
     resultCount: 'Showing {{shown}} of {{total}} plans',
     coverageLink: 'Which countries?',

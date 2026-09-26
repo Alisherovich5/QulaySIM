@@ -579,11 +579,10 @@
 }
 
 
-/* --- The plans section header, inside the sticky control bar --- */
+/* --- The plans section header, above the sticky control bar --- */
 
 .site-shell .gl-plans-title {
-  margin: 0;
-  margin-inline-end: auto;
+  margin: 48px 0 0;
   scroll-margin-top: 6rem;
   font-size: clamp(1.3rem, 1.05rem + 1vw, 2.05rem);
   font-weight: 800;
@@ -597,4 +596,28 @@
   font-size: 14px;
   line-height: 1.6;
   color: var(--color-slate-soft);
+}
+
+/* --- /global plan card: the figures ------------------------------------------
+   Sized here rather than with utilities: `.site-shell h3` and `.site-shell p`
+   are unlayered and set 20px and 16px, which beat any Tailwind class. */
+
+.site-shell .gpc-data {
+  font-size: 2.15rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.site-shell .gpc-sub {
+  font-size: 14.5px;
+}
+
+.site-shell .gpc-price {
+  font-size: 1.9rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.site-shell .gpc-note {
+  font-size: 12px;
 }

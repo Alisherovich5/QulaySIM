@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { Check, ChevronDown, Globe2, Search, X } from 'lucide-react'
-import PlanCard from '../PlanCard'
+import { ArrowUpDown, CalendarDays, Check, ChevronDown, Database, LayoutGrid, List, Search, X } from 'lucide-react'
+import GlobalPlanCard from './GlobalPlanCard'
 import Flag from '../Flag'
 import { Card, PlaneIcon } from '../ui'
 import type { Country, Plan } from '../../lib/types'
@@ -49,16 +49,6 @@ interface Props {
    *  plans below, and this control still works on its own for anybody who
    *  scrolled straight to it. */
   pickedCountry?: { iso2: string; name: string } | null
-  /** The section's own title, rendered inside the control bar.
-   *
-   *  It sits here rather than above because the bar is sticky: a heading left
-   *  behind at the top of the section stops naming the controls the moment you
-   *  scroll, and the row then reads as three unlabelled dropdowns. */
-  heading?: ReactNode
-  /** The line under the bar. Kept out of `heading` so the sticky bar stays one
-   *  row tall — a two-line explainer travelling down the page with the
-   *  controls costs more room than it is worth. */
-  note?: ReactNode
 }
 
 type Sort = 'price' | 'data' | 'coverage' | 'days' | 'perGb' | 'perDay'
@@ -110,8 +100,6 @@ export default function GlobalPlanExplorer({
   added,
   countries,
   pickedCountry,
-  heading,
-  note,
 }: Props) {
   const { t, i18n } = useTranslation()
   const [sizes, setSizes] = useState<Set<number>>(new Set())
@@ -131,6 +119,24 @@ export default function GlobalPlanExplorer({
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<Sort>('price')
   const [dir, setDir] = useState<Dir>('asc')
+  /* Cards or the table. Remembered per browser, because somebody who prefers
+     comparing in the table prefers it next time too — and read defensively,
+     since storage can be blocked and must never cost the page. */
+  const [view, setView] = useState<'grid' | 'list'>(() => {
+    try {
+      return localStorage.getItem('qs-global-view') === 'list' ? 'list' : 'grid'
+    } catch {
+      return 'grid'
+    }
+  })
+  const pickView = (next: 'grid' | 'list') => {
+    setView(next)
+    try {
+      localStorage.setItem('qs-global-view', next)
+    } catch {
+      /* private mode — the choice simply is not remembered */
+    }
+  }
   const { currency, formatPrice, usdToUzs } = useCurrency()
 
   /* Ustunlardagi hosilaviy raqamlar EKRANDAGI jamidan kelib chiqadi.
@@ -348,14 +354,13 @@ export default function GlobalPlanExplorer({
           reading — which is exactly when a filter is wanted. */}
       <div
         ref={barRef}
-        className="sticky top-[var(--header-h,104px)] z-40 -mx-4 mt-6 border-y border-line bg-canvas/95 px-4 py-3 backdrop-blur-md sm:mx-0 sm:rounded-xl sm:border sm:px-4"
+        className="sticky top-[var(--header-h,104px)] z-40 -mx-4 mt-6 border-y border-line bg-surface/95 px-4 py-3 shadow-[0_12px_30px_-24px_rgb(15_40_50/0.35)] backdrop-blur-md sm:mx-0 sm:rounded-2xl sm:border sm:p-3"
       >
         <div className="flex flex-wrap items-center gap-2">
-          {heading}
           {/* Search, with real suggestions. Typing used to be answered with
               silence: a name that matched nothing left the list unchanged, and
               there was no way to tell "not covered" from "spelled differently". */}
-          <div className="relative min-w-[220px] flex-1">
+          <div className="relative min-w-[220px] flex-1 basis-full sm:basis-0">
             <Search
               size={16}
               aria-hidden
@@ -456,6 +461,7 @@ export default function GlobalPlanExplorer({
               className={trigger(sizes.size > 0, openMenu === 'size')}
               aria-expanded={openMenu === 'size'}
             >
+              <Database size={16} aria-hidden />
               {t('global.filterData')}
               {sizes.size > 0 && <span className="tabular-nums">· {sizes.size}</span>}
               <ChevronDown size={14} aria-hidden />
@@ -484,6 +490,7 @@ export default function GlobalPlanExplorer({
               className={trigger(durations.size > 0, openMenu === 'duration')}
               aria-expanded={openMenu === 'duration'}
             >
+              <CalendarDays size={16} aria-hidden />
               {t('global.filterDuration')}
               {durations.size > 0 && <span className="tabular-nums">· {durations.size}</span>}
               <ChevronDown size={14} aria-hidden />
@@ -512,6 +519,7 @@ export default function GlobalPlanExplorer({
               className={trigger(false, openMenu === 'sort')}
               aria-expanded={openMenu === 'sort'}
             >
+              <ArrowUpDown size={16} aria-hidden />
               {t(`global.sort.${sort}`)}
               <ChevronDown size={14} aria-hidden />
             </button>
@@ -582,40 +590,59 @@ export default function GlobalPlanExplorer({
             >
               {t('global.filterReset')}
             </button>
-            <span className="ml-auto text-xs tabular-nums text-slate-soft">
-              {t('global.resultCount', { shown: shown.length, total: plans.length })}
-            </span>
           </div>
         )}
       </div>
 
-      {note}
-
-      {!dirty && (
-        <p className="mt-4 text-sm tabular-nums text-slate-soft">
+      {/* The one count on the page. The filter chips used to carry a second
+          copy of it; with this row always shown, that said the same thing twice. */}
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <p className="text-sm tabular-nums text-slate-soft">
           {t('global.resultCount', { shown: shown.length, total: plans.length })}
         </p>
-      )}
+        {/* The table needs the width of a desktop; below it the cards stay
+            whichever is picked, so the switch is not offered there. */}
+        <div className="hidden gap-1.5 lg:flex" role="group" aria-label={t('global.view.label')}>
+          {(
+            [
+              ['grid', LayoutGrid, t('global.view.grid')],
+              ['list', List, t('global.view.list')],
+            ] as const
+          ).map(([key, Icon, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => pickView(key)}
+              aria-pressed={view === key}
+              aria-label={label}
+              title={label}
+              className={`focus-ring grid h-10 w-11 place-items-center rounded-xl transition ${
+                view === key
+                  ? 'bg-brand-600 text-white'
+                  : 'bg-surface text-slate-soft ring-1 ring-line hover:text-ink'
+              }`}
+            >
+              <Icon size={18} aria-hidden />
+            </button>
+          ))}
+        </div>
+      </div>
 
       {shown.length > 0 ? (
         <>
-          {/* Telefonda kartalar. Yetti ustunli jadvalni 390px ekranda o'qib
-              bo'lmaydi, yonlamasiga surish esa xarid qarorini qiyinlashtiradi. */}
-          <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:hidden">
+          {/* Cards, the default everywhere. With the table picked they stay
+              below lg, where seven columns do not fit a phone. */}
+          <div
+            className={`mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 ${view === 'list' ? 'lg:hidden' : ''}`}
+          >
             {shown.map((plan) => (
-              <div key={plan.id} className="flex h-full flex-col">
-                <PlanCard plan={plan} onAdd={onAdd} added={added === plan.id} />
-                {(plan.coverage?.length ?? 0) > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setCoverageOf(plan)}
-                    className="focus-ring mt-1 flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-600 text-slate-soft hover:text-brand-600 dark:hover:text-accent-400"
-                  >
-                    <Globe2 size={13} aria-hidden />
-                    {t('global.coverageLink')}
-                  </button>
-                )}
-              </div>
+              <GlobalPlanCard
+                key={plan.id}
+                plan={plan}
+                onAdd={onAdd}
+                added={added === plan.id}
+                onCoverage={setCoverageOf}
+              />
             ))}
           </div>
 
@@ -624,7 +651,7 @@ export default function GlobalPlanExplorer({
               va bir kun narxi shu yerda ko'rinadi — ular kartada yo'q edi va
               qaysi tarif haqiqatan arzonligini aytib beradigan ikki son shu. */}
           <div
-            className="mt-4 hidden rounded-2xl ring-1 ring-line lg:block"
+            className={`mt-4 hidden rounded-2xl ring-1 ring-line ${view === 'list' ? 'lg:block' : ''}`}
             style={{ '--gl-bar-h': `${barH}px` } as CSSProperties}
           >
             <table className="w-full border-collapse text-sm [&_tbody_tr:last-child_td:first-child]:rounded-bl-2xl [&_tbody_tr:last-child_td:last-child]:rounded-br-2xl [&_thead_th:first-child]:rounded-tl-2xl [&_thead_th:last-child]:rounded-tr-2xl">
@@ -766,7 +793,7 @@ export default function GlobalPlanExplorer({
               </tbody>
             </table>
           </div>
-          <p className="mt-2 hidden text-xs text-slate-soft lg:block">
+          <p className={`mt-2 hidden text-xs text-slate-soft ${view === 'list' ? 'lg:block' : ''}`}>
             {t('global.table.sortHint')}
           </p>
         </>

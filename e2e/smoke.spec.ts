@@ -240,6 +240,8 @@ test('the worldwide table sorts by the column you click', async ({ page, viewpor
     }),
   )
   await page.goto('/global')
+  // Cards are the default; the table is one press away.
+  await page.getByRole('button', { name: 'Jadval' }).click()
 
   const firstCell = page.locator('table tbody tr').first().locator('td').first()
   // Scoped to the table: "Hajmi" also names the filter dropdown in the bar above.

@@ -177,6 +177,16 @@ const ru: Translation = {
     all: 'Показать все',
   },
   global: {
+    card: {
+      label: 'Глобальный тариф',
+      countries: '{{count}} стран',
+      noHotspot: 'Нет',
+    },
+    view: {
+      label: 'Вид',
+      grid: 'Карточки',
+      list: 'Таблица',
+    },
     checkPlaceholder: 'В какую страну едете?',
     checkYes: '{{country}} — входит в покрытие',
     checkPlans: 'В этой стране работают {{count}} глобальных тарифа, от {{price}}.',
@@ -202,9 +212,12 @@ const ru: Translation = {
     filterClear: 'Очистить',
     filterEmpty: 'Под эти условия тарифов нет. Расширьте фильтр.',
     sort: {
-      price: 'Сначала дешёвые',
+      price: 'Цена (по возрастанию)',
       data: 'По объёму',
       coverage: 'По покрытию',
+      days: 'По сроку',
+      perGb: 'По цене за 1 ГБ',
+      perDay: 'По цене за день',
     },
     resultCount: 'Показано {{shown}} из {{total}} тарифов',
     coverageLink: 'Какие страны?',
